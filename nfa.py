@@ -50,6 +50,13 @@ class nfa (object):
       print "->",
       self.nxt.xprint ()
 
+class node_dfa:
+  def __init__ (self, nfa_state_list):
+    id = []
+    for i in nfa_state_list:
+      id.append(i.num)
+    self.id = "".join([str(x) for x in sorted(id)])
+    self.states = nfa_state_list
 
 class char_nfa (nfa):
   def __init__ (self, c):
@@ -102,49 +109,53 @@ def enumerate_states (automata, start=0):
     return start
   return enumerate_states (automata.nxt, start)
 
+def add_to_state_list (nfa_state_list, dfa_state_list):
+  new_dfa_state = node_dfa(nfa_state_list)
+  is_in_list = False
+  for dfa_state in dfa_state_list:
+    if dfa_state.id == new_dfa_state.id:
+      is_in_list = True
+      break
+  if not is_in_list:
+    dfa_state_list.append(new_dfa_state)
+  return dfa_state_list
+
+def determinate (automata, dfa_state_list=[]):
+  nfa_state_list = get_epsilon_closure(automata)
+  if nfa_state_list:
+    dfa_state_list = add_to_state_list(nfa_state_list, dfa_state_list)
+  if isinstance (automata, char_nfa):
+    pass
+  elif isinstance (automata, asterix_nfa):
+    determinate (automata.content)
+  elif isinstance (automata, or_nfa):
+    determinate (automata.alternative[0])
+    determinate (automata.alternative[1])
+  elif isinstance (automata, done_nfa):
+    pass
+  elif automata is None:
+    return
+  determinate (automata.nxt, dfa_state_list)
+  return dfa_state_list
+
 def get_epsilon_closure (automata):
   if isinstance (automata, char_nfa):
     return [automata]
   elif isinstance (automata, asterix_nfa):
-    a = get_epsilon_closure(automata.content)
-    a.append(automata.nxt)
-    a.append(automata)
-    return a
+    closure = get_epsilon_closure(automata.content)
+    closure.append(automata.nxt)
+    closure.append(automata)
+    return closure
   elif isinstance (automata, or_nfa):
-    a = get_epsilon_closure(automata.alternative[0])
-    b = get_epsilon_closure(automata.alternative[1])
-    b.append(automata)
-    return a + b
+    closure = get_epsilon_closure(automata.alternative[0])
+    closure1 = get_epsilon_closure(automata.alternative[1])
+    closure1.append(automata)
+    return closure + closure1
   elif isinstance (automata, done_nfa):
     return [automata]
   elif automata is None:
     return None
   return None
-
-#def get_moves (automata, symbol):
-#  if isinstance (automata, char_nfa):
-#    if automata.character == symbol:
-#      return [automata]
-#    else:
-#      return []
-#  elif isinstance (automata, asterix_nfa):
-#    if automata.content.charachter == symbol:
-#      return [automata.content]
-#    else:
-#      return []
-#  elif isinstance (automata, or_nfa):
-#    list = []
-#    if automata.alternative[0].charachter == symbol:
-#      list.append(automata.alternative[0])
-#    if automata.alternative[1].charachter == symbol:
-#      list.append(automata.alternative[1])
-#    return list
-#  elif isinstance (automata, done_nfa):
-#    return None
-#  elif automata is None:
-#    return None
-#  return None
-
 
 # a(a|b)x*
 f = char_nfa ('a') \
@@ -157,22 +168,15 @@ f = char_nfa('a').add_next_state(asterix_nfa(or_nfa(char_nfa('a'), char_nfa('b')
 
 f.xprint ()
 print f.count
-print
-
-a = get_epsilon_closure (f.nxt)
-for item in a:
-    item.xprint_one ()
 
 print
 print
 enumerate_states (f)
-
 f.xprint ()
 
-def parse (string):
-    pass
-    
-        
-        
-        
-     
+for i in determinate(f):
+    if i is not None:
+        print '------------------------'
+        for j in i.states:
+            j.xprint_one ()
+            print ';'
