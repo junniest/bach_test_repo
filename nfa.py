@@ -18,8 +18,18 @@ class nfa (object):
       self.end.nxt = state.start
       self.end = state.end
       self.count += state.count
-    
+      self.add_to_last_state (state.start)
     return self
+
+  def add_to_last_state (self, start):
+    if isinstance (self, or_nfa):
+      self.alternative[0].end.nxt = start
+      self.alternative[1].end.nxt = start
+      self.alternative[0].add_to_last_state (start)
+      self.alternative[1].add_to_last_state (start)
+    elif isinstance (self, asterix_nfa):
+      self.content.end.nxt = state.start 
+      self.content.add_to_last_state (start)
 
   def xprint_one(self):
     if self.num is not None:
@@ -50,6 +60,7 @@ class nfa (object):
       print "->",
       self.nxt.xprint ()
 
+""" DFA node class """
 class node_dfa:
   def __init__ (self, nfa_state_list):
     id = []
@@ -57,6 +68,17 @@ class node_dfa:
       id.append(i.num)
     self.id = "".join([str(x) for x in sorted(id)])
     self.states = nfa_state_list
+    self.paths = dict ()
+    self.marked = False
+    self.accepting = False
+  
+  def xprint (self):
+    print self.id, " accepting: ", self.accepting 
+    for symbol, state in self.paths.iteritems():
+      if state:
+        print symbol, state.id
+      else:
+        print symbol, None
 
 class char_nfa (nfa):
   def __init__ (self, c):
@@ -110,46 +132,48 @@ def enumerate_states (automata, start=0):
   return enumerate_states (automata.nxt, start)
 
 def add_to_state_list (nfa_state_list, dfa_state_list):
+  dfa_to_return = None
   new_dfa_state = node_dfa(nfa_state_list)
-  is_in_list = False
   for dfa_state in dfa_state_list:
     if dfa_state.id == new_dfa_state.id:
-      is_in_list = True
+      dfa_to_return = dfa_state
       break
-  if not is_in_list:
+  if dfa_to_return is None:
     dfa_state_list.append(new_dfa_state)
-  return dfa_state_list
 
-def determinate (automata, dfa_state_list=[]):
-  nfa_state_list = get_epsilon_closure(automata)
-  if nfa_state_list:
-    dfa_state_list = add_to_state_list(nfa_state_list, dfa_state_list)
-  if isinstance (automata, char_nfa):
-    pass
-  elif isinstance (automata, asterix_nfa):
-    determinate (automata.content)
-  elif isinstance (automata, or_nfa):
-    determinate (automata.alternative[0])
-    determinate (automata.alternative[1])
-  elif isinstance (automata, done_nfa):
-    pass
-  elif automata is None:
-    return
-  determinate (automata.nxt, dfa_state_list)
-  return dfa_state_list
+""" Returns moves possible from the given dfa state (nfa state list) by a specific symbol """
+def get_moves (dfa_state, symbol):
+  moves = []
+  for nfa_state in dfa_state.states:
+    if isinstance (nfa_state, char_nfa):
+      if nfa_state.character == symbol:
+        moves.append(nfa_state.nxt)
+  return moves
 
-def get_epsilon_closure (automata):
+""" Epsilon closure for a list of states """
+def get_epsilon_closure (nfa_state_list):
+  closure = []
+  for state in nfa_state_list:
+    closure_one = get_epsilon_closure_single (state)
+    if closure_one:
+      closure = closure + closure_one
+  if closure:
+    return closure
+  return None
+
+""" Epsilon closure for a single state """
+def get_epsilon_closure_single (automata):
   if isinstance (automata, char_nfa):
     return [automata]
   elif isinstance (automata, asterix_nfa):
-    closure = get_epsilon_closure(automata.content)
-    closure.append(automata.nxt)
-    closure.append(automata)
+    closure = get_epsilon_closure_single (automata.content)
+    closure.append (automata.nxt)
+    closure.append (automata)
     return closure
   elif isinstance (automata, or_nfa):
-    closure = get_epsilon_closure(automata.alternative[0])
-    closure1 = get_epsilon_closure(automata.alternative[1])
-    closure1.append(automata)
+    closure = get_epsilon_closure_single (automata.alternative[0])
+    closure1 = get_epsilon_closure_single (automata.alternative[1])
+    closure1.append (automata)
     return closure + closure1
   elif isinstance (automata, done_nfa):
     return [automata]
@@ -157,14 +181,74 @@ def get_epsilon_closure (automata):
     return None
   return None
 
+""" Gets first unmarked state from the dfa state list, which means that it wasn't processed yet """
+def get_unmarked (list):
+  new_list = filter(lambda x: not x.marked, list)
+  if new_list:
+    return new_list[0]
+  return None
+
+""" Returns a dfa state to which the given nfa path leads. """
+def get_state_to (nfa_state, dfa_state_list):
+  if not nfa_state.nxt:
+    return None
+  id = str (nfa_state.nxt.num)
+  for dfa_state in dfa_state_list:
+    ind = -1
+    try:
+      ind = dfa_state.id.index(id)
+    except:
+      pass
+    else:
+      return dfa_state
+  return None
+
+def rearrange (dfa_state_list):
+  for state in dfa_state_list:
+    for nfa_state in state.states:
+      if isinstance (nfa_state, char_nfa):
+        try:
+          a = state.paths[nfa_state.character]
+        except:
+          pass
+        else:
+          raise ValueError ()
+        state.paths[nfa_state.character] = get_state_to (nfa_state, dfa_state_list)
+      if isinstance (nfa_state, done_nfa):
+        state.accepting = True
+  return dfa_state_list
+
+def determinate (automata, symbols):
+  dfa_state_list = []
+  nfa_state_list = get_epsilon_closure_single (automata)
+  if nfa_state_list:
+    add_to_state_list (nfa_state_list, dfa_state_list)
+    dfa_state = get_unmarked (dfa_state_list)
+    while dfa_state:
+      dfa_state.marked = True
+      for symbol in symbols:
+        new_nfa_state_list = get_epsilon_closure (get_moves (dfa_state, symbol))
+        if new_nfa_state_list:
+          add_to_state_list (new_nfa_state_list, dfa_state_list)
+      dfa_state = get_unmarked (dfa_state_list)
+  return rearrange (dfa_state_list)
+
+
+
 # a(a|b)x*
 f = char_nfa ('a') \
     .add_next_state (or_nfa (char_nfa ('a'), char_nfa ('b'))) \
     .add_next_state (asterix_nfa (char_nfa ('x'))) \
     .add_next_state (done_nfa ())
 
-# a(a|b)*
-f = char_nfa('a').add_next_state(asterix_nfa(or_nfa(char_nfa('a'), char_nfa('b')))).add_next_state(done_nfa())
+# (a|b)*
+#f = char_nfa('a').add_next_state(asterix_nfa(or_nfa(char_nfa('a'), char_nfa('b')))).add_next_state(done_nfa())
+
+# (ab|bb)
+#f = or_nfa(char_nfa('a').add_next_state(char_nfa('b')), char_nfa('b').add_next_state(char_nfa('b'))).add_next_state(done_nfa())
+
+
+
 
 f.xprint ()
 print f.count
@@ -174,9 +258,11 @@ print
 enumerate_states (f)
 f.xprint ()
 
-for i in determinate(f):
+for i in determinate(f, 'abx'):
     if i is not None:
-        print '------------------------'
-        for j in i.states:
-            j.xprint_one ()
-            print ';'
+#        print '------------------------'
+#        print i.id
+##        for j in i.states:
+#            j.xprint ()
+#            print ';'
+        i.xprint ()
