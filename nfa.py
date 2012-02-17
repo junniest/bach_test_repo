@@ -115,6 +115,10 @@ class done_nfa (nfa):
     self.count = 1
 
 def enumerate_states (automata, start=0):
+  if automata is None:
+    return start
+  if automata.num is not None:
+    return enumerate_states (automata.nxt, start)
   if isinstance (automata, char_nfa):
     automata.num = start
     start += 1
@@ -130,8 +134,6 @@ def enumerate_states (automata, start=0):
   elif isinstance (automata, done_nfa):
     automata.num = start
     start += 1
-  elif automata is None:
-    return start
   return enumerate_states (automata.nxt, start)
 
 def add_to_state_list (nfa_state_list, dfa_state_list):
@@ -185,8 +187,8 @@ def get_epsilon_closure_single (automata):
   return None
 
 """ Gets first unmarked state from the dfa state list, which means that it wasn't processed yet """
-def get_unmarked (list):
-  new_list = filter(lambda x: not x.marked, list)
+def get_unmarked (dfa_state_list):
+  new_list = filter(lambda x: not x.marked, dfa_state_list)
   if new_list:
     return new_list[0]
   return None
@@ -222,7 +224,7 @@ def rearrange (dfa_state_list):
         state.accepting = True
   return dfa_state_list
 
-def determinate (automata, symbols):
+def determinate (automata, symbol_list):
   dfa_state_list = []
   nfa_state_list = get_epsilon_closure_single (automata)
   if nfa_state_list:
@@ -230,7 +232,7 @@ def determinate (automata, symbols):
     dfa_state = get_unmarked (dfa_state_list)
     while dfa_state:
       dfa_state.marked = True
-      for symbol in symbols:
+      for symbol in symbol_list:
         new_nfa_state_list = get_epsilon_closure (get_moves (dfa_state, symbol))
         if new_nfa_state_list:
           add_to_state_list (new_nfa_state_list, dfa_state_list)
