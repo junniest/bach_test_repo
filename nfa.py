@@ -15,20 +15,23 @@ class nfa (object):
     if self.start is None or self.end is None:
       raise Exception ("Abstract nfa instantiated")
     else:
+      tmp = self.end
       self.end.nxt = state.start
       self.end = state.end
       self.count += state.count
-      self.add_to_last_state (state.start)
+      tmp.add_to_last_state (state.start)
     return self
 
   def add_to_last_state (self, start):
     if isinstance (self, or_nfa):
+      print "add_to_last_state OR NFA"
       self.alternative[0].end.nxt = start
       self.alternative[1].end.nxt = start
       self.alternative[0].add_to_last_state (start)
       self.alternative[1].add_to_last_state (start)
     elif isinstance (self, asterix_nfa):
-      self.content.end.nxt = state.start 
+      print "add_to_last_state ASTERIX NFA"
+      self.content.end.nxt = start 
       self.content.add_to_last_state (start)
 
   def xprint_one(self):
@@ -190,7 +193,8 @@ def get_unmarked (list):
 
 """ Returns a dfa state to which the given nfa path leads. """
 def get_state_to (nfa_state, dfa_state_list):
-  if not nfa_state.nxt:
+  if nfa_state.nxt is None:
+    print "No next state"
     return None
   id = str (nfa_state.nxt.num)
   for dfa_state in dfa_state_list:
@@ -247,20 +251,13 @@ f = char_nfa ('a') \
 # (ab|bb)
 #f = or_nfa(char_nfa('a').add_next_state(char_nfa('b')), char_nfa('b').add_next_state(char_nfa('b'))).add_next_state(done_nfa())
 
-
-
-
-f.xprint ()
-print f.count
-
-print
-print
 enumerate_states (f)
 f.xprint ()
+print
 
 for i in determinate(f, 'abx'):
     if i is not None:
-#        print '------------------------'
+        print '------------------------'
 #        print i.id
 ##        for j in i.states:
 #            j.xprint ()
