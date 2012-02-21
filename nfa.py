@@ -10,6 +10,7 @@ class nfa (object):
     self.nxt  = None
     self.num = None
     self.count = 0
+    self.last_in_content = False
 
   def add_next_state (self, state):
     if self.start is None or self.end is None:
@@ -19,20 +20,20 @@ class nfa (object):
       self.end.nxt = state.start
       self.end = state.end
       self.count += state.count
-      tmp.add_to_last_state (state.start)
+      tmp.add_to_last_state (tmp, state.start)
     return self
 
-  def add_to_last_state (self, start):
+  def add_to_last_state (self, state0, state1):
     if isinstance (self, or_nfa):
       print "add_to_last_state OR NFA"
-      self.alternative[0].end.nxt = start
-      self.alternative[1].end.nxt = start
-      self.alternative[0].add_to_last_state (start)
-      self.alternative[1].add_to_last_state (start)
+      self.alternative[0].end.nxt = state1
+      self.alternative[1].end.nxt = state1
+      self.alternative[0].add_to_last_state (state0, state1)
+      self.alternative[1].add_to_last_state (state0, state1)
     elif isinstance (self, asterix_nfa):
       print "add_to_last_state ASTERIX NFA"
-      self.content.end.nxt = start 
-      self.content.add_to_last_state (start)
+      self.content.end.nxt = state0
+      self.content.add_to_last_state (state0, state1)
 
   def xprint_one(self):
     if self.num is not None:
@@ -59,9 +60,11 @@ class nfa (object):
   def xprint (self):
     self.xprint_one()
       
-    if (self.nxt is not None):
+    if self.nxt is not None and not self.last_in_content:
       print "->",
       self.nxt.xprint ()
+    if self.last_in_content and self.nxt is not None:
+      print "next is", self.nxt.num
 
 """ DFA node class """
 class node_dfa:
@@ -97,7 +100,7 @@ class asterix_nfa (nfa):
     self.content = state
     self.start = self
     self.end = self
-    self.count = state.count + 1
+    state.end.last_in_content = True
 
 class or_nfa (nfa):
   def __init__ (self, state0, state1):
@@ -106,6 +109,8 @@ class or_nfa (nfa):
     self.start = self
     self.end = self
     self.count = state0.count + state1.count + 1
+    state0.end.last_in_content = True
+    state1.end.last_in_content = True
 
 class done_nfa (nfa):
   def __init__ (self):
@@ -145,6 +150,8 @@ def add_to_state_list (nfa_state_list, dfa_state_list):
       break
   if dfa_to_return is None:
     dfa_state_list.append(new_dfa_state)
+    return new_dfa_state
+  return dfa_to_return
 
 """ Returns moves possible from the given dfa state (nfa state list) by a specific symbol """
 def get_moves (dfa_state, symbol):
@@ -212,14 +219,6 @@ def get_state_to (nfa_state, dfa_state_list):
 def rearrange (dfa_state_list):
   for state in dfa_state_list:
     for nfa_state in state.states:
-      if isinstance (nfa_state, char_nfa):
-        try:
-          a = state.paths[nfa_state.character]
-        except:
-          pass
-        else:
-          raise ValueError ()
-        state.paths[nfa_state.character] = get_state_to (nfa_state, dfa_state_list)
       if isinstance (nfa_state, done_nfa):
         state.accepting = True
   return dfa_state_list
@@ -235,23 +234,24 @@ def determinate (automata, symbol_list):
       for symbol in symbol_list:
         new_nfa_state_list = get_epsilon_closure (get_moves (dfa_state, symbol))
         if new_nfa_state_list:
-          add_to_state_list (new_nfa_state_list, dfa_state_list)
+          end_state = add_to_state_list (new_nfa_state_list, dfa_state_list)
+          dfa_state.paths[symbol] = end_state
       dfa_state = get_unmarked (dfa_state_list)
   return rearrange (dfa_state_list)
 
 
 
 # a(a|b)x*
-f = char_nfa ('a') \
-    .add_next_state (or_nfa (char_nfa ('a'), char_nfa ('b'))) \
-    .add_next_state (asterix_nfa (char_nfa ('x'))) \
-    .add_next_state (done_nfa ())
+#f = char_nfa ('a') \
+#    .add_next_state (or_nfa (char_nfa ('a'), char_nfa ('b'))) \
+#    .add_next_state (asterix_nfa (char_nfa ('x'))) \
+#    .add_next_state (done_nfa ())
 
 # (a|b)*
-#f = char_nfa('a').add_next_state(asterix_nfa(or_nfa(char_nfa('a'), char_nfa('b')))).add_next_state(done_nfa())
+f = asterix_nfa(or_nfa(char_nfa('a'), char_nfa('b'))).add_next_state(done_nfa())
 
-# (ab|bb)
-#f = or_nfa(char_nfa('a').add_next_state(char_nfa('b')), char_nfa('b').add_next_state(char_nfa('b'))).add_next_state(done_nfa())
+# (ab*|bb)
+f = or_nfa(char_nfa('a').add_next_state(asterix_nfa(char_nfa('b'))), char_nfa('b').add_next_state(char_nfa('b'))).add_next_state(done_nfa())
 
 enumerate_states (f)
 f.xprint ()
@@ -261,7 +261,7 @@ for i in determinate(f, 'abx'):
     if i is not None:
         print '------------------------'
 #        print i.id
-##        for j in i.states:
+#        for j in i.states:
 #            j.xprint ()
 #            print ';'
         i.xprint ()
