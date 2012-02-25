@@ -20,6 +20,9 @@ class nfa (object):
             self.end.nxt = state.start
             self.end = state.end
         return self
+    
+    def __repr__ (self):
+        return "<abstract nfa node>"
 
     def xprint(self):
         if self.num is not None:
@@ -55,13 +58,21 @@ class char_nfa (nfa):
         self.start = self
         self.end = self
 
+    def __repr__ (self):
+        return "{%s} char[%s]" % \
+        ((self.num is not None and str(self.num) or ""), self.character)
+
 class asterix_nfa (nfa):
-  def __init__ (self, state):
-    nfa.__init__ (self)
-    self.content = state
-    self.start = self
-    self.end = self
-    state.end.parent_asterix = self
+    def __init__ (self, state):
+        nfa.__init__ (self)
+        self.content = state
+        self.start = self
+        self.end = self
+        state.end.parent_asterix = self
+
+    def __repr__ (self):
+        return "{%s} (%s)*" %\
+        ((self.num is not None and str(self.num) or ""), repr (self.content))
 
 class or_nfa (nfa):
     def __init__ (self, state0, state1):
@@ -71,12 +82,22 @@ class or_nfa (nfa):
         self.end = self
         state0.end.parent_or = self
         state1.end.parent_or = self
+    
+    def __repr__ (self):
+        return "{%s} (%s | %s)" %\
+        ((self.num is not None and str(self.num) or ""), \
+          repr (self.alternative[0]), repr (self.alternative[1]))
+
 
 class done_nfa (nfa):
     def __init__ (self):
         nfa.__init__ (self)
         self.start = self
         self.end = self
+
+    def __repr__ (self):
+        return "{%s} [done]" % \
+        ((self.num is not None and str(self.num) or ""))
 
 # Class for Determinate Finate Automaton
 class node_dfa (object):
@@ -91,6 +112,10 @@ class node_dfa (object):
         self.marked = False
         self.accepting = False
   
+    def __repr__ (self):
+        state_list = [repr (s) for s in self.states]
+        return "<id:%s, marked:%i>" % (self.id, self.marked)
+
     def xprint (self):
         print self.id, " accepting: ", self.accepting 
         for symbol, state in self.paths.iteritems():
