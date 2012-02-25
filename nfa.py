@@ -9,7 +9,6 @@ class nfa (object):
     self.end = None
     self.nxt  = None
     self.num = None
-    self.count = 0
     self.parent_or = None
     self.parent_asterix = None
 
@@ -19,7 +18,6 @@ class nfa (object):
     else:
       self.end.nxt = state.start
       self.end = state.end
-      self.count += state.count
     return self
 
   def xprint_one(self):
@@ -75,7 +73,6 @@ class char_nfa (nfa):
   def __init__ (self, c):
     nfa.__init__ (self)
     self.character = c
-    self.count = 1
     self.start = self
     self.end = self
 
@@ -93,7 +90,6 @@ class or_nfa (nfa):
     self.alternative = (state0, state1)
     self.start = self
     self.end = self
-    self.count = state0.count + state1.count + 1
     state0.end.parent_or = self
     state1.end.parent_or = self
 
@@ -102,7 +98,6 @@ class done_nfa (nfa):
     nfa.__init__ (self)
     self.start = self
     self.end = self
-    self.count = 1
 
 def enumerate_states (automata, start=0):
   if automata is None:
