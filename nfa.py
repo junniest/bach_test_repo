@@ -215,6 +215,8 @@ def rearrange (dfa_state_list):
     for nfa_state in state.states:
       if isinstance (nfa_state, done_nfa):
         state.accepting = True
+  for i in xrange(len(dfa_state_list)):
+    dfa_state_list[i].id = i
   return dfa_state_list
 
 def determinate (automata, symbol_list):
@@ -233,32 +235,75 @@ def determinate (automata, symbol_list):
       dfa_state = get_unmarked (dfa_state_list)
   return rearrange (dfa_state_list)
 
+def parse_postfix (string, state_stack = [], num = 0):
+  while num < len (string):
+    char = string[num]
+    if char == '(':
+      num = num + 1
+      num = parse_postfix (string, state_stack, num)
+    elif char == ')':
+      return num
+    elif char == '*':
+      content = state_stack.pop ()
+      state = asterix_nfa (content)
+      state_stack.append (state)
+    elif char == '|':
+      state1 = state_stack.pop ()
+      state0 = state_stack.pop ()
+      state = or_nfa (state0, state1)
+      state_stack.append (state)
+    elif char == '.':
+      state1 = state_stack.pop ()
+      state0 = state_stack.pop ()
+      state0.add_next_state (state1)
+      state_stack.append (state0)
+    else:
+      state = char_nfa (char)
+      state_stack.append (state)
+    num = num + 1
+  state_stack[0].add_next_state(done_nfa())
+  for i in state_stack:
+    i.xprint ()
+  return state_stack[0]
+
+#parse_postfix ('(((vb.b.f)|)*(d)|)*')
+
 # a(a|b)x*
 #f = char_nfa ('a') \
 #    .add_next_state (or_nfa (char_nfa ('a'), char_nfa ('b'))) \
 #    .add_next_state (asterix_nfa (char_nfa ('x'))) \
 #    .add_next_state (done_nfa ())
+#postfix_string_f = 'a(ab|).x*.' 
 
 # (a|b)*
 #f = asterix_nfa(or_nfa(char_nfa('a'), char_nfa('b'))).add_next_state(done_nfa())
+#postfix_string_f = '(ab|)*'
 
 # (ab*|bb)
 #f = or_nfa(char_nfa('a').add_next_state(asterix_nfa(char_nfa('b'))), char_nfa('b').add_next_state(char_nfa('b'))).add_next_state(done_nfa())
+#postfix_string_f = 'ab*.bb.|'
 
 #((c*)*)*
 #f = asterix_nfa(asterix_nfa(asterix_nfa(char_nfa('c')))).add_next_state(done_nfa())
+#postfix_string_f = 'c***'
 
 #((c|a)|(b|xxb*))
 #f = or_nfa(or_nfa(char_nfa('c'), char_nfa('a')), or_nfa(char_nfa('b'), char_nfa('x').add_next_state(char_nfa('x')).add_next_state(asterix_nfa(char_nfa('b'))))).add_next_state(done_nfa())
+#postfix_string_f = '(ca|)(b(xx.b*.)|)|'
 
 #(((a|b)|c)|x)
 #f = or_nfa(or_nfa(or_nfa(char_nfa('a'), char_nfa('b')), char_nfa('c')), char_nfa('x')).add_next_state(done_nfa())
+#postfix_string_f = 'cb|c|x|'
 
 #x*(a|c)
 f = asterix_nfa(char_nfa('x')).add_next_state(or_nfa(char_nfa('a'), char_nfa('c'))).add_next_state(done_nfa())
+postfix_string_f = 'x*(ac|).' 
 
-enumerate_states (f)
 f.xprint ()
+
+f = parse_postfix (postfix_string_f)
+enumerate_states (f)
+
 print
 
 for i in determinate(f, 'abcxz'):
