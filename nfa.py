@@ -1,4 +1,4 @@
-__author__ = "Artem Shinkarov"
+__author__ = "Artem Shinkarov, June Pecherskaya"
 __date__ = "2012-02-09"
 
 "NFA class for regular expressions"
