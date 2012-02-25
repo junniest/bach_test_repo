@@ -1,7 +1,7 @@
 __author__ = "Artem Shinkarov, June Pecherskaya"
 __date__ = "2012-02-09"
 
-
+# Abstract class for Nondeterminate Finite Automaton
 class nfa (object):
   "NFA class for regular expressions"
   def __init__ (self):
@@ -46,26 +46,7 @@ class nfa (object):
       print "->", 
       self.nxt.xprint ()
 
-class node_dfa:
-  "DFA node class"
-  def __init__ (self, nfa_state_list):
-    id = []
-    for i in nfa_state_list:
-      id.append(i.num)
-    self.id = "".join([str(x) for x in sorted(id)])
-    self.states = nfa_state_list
-    self.paths = dict ()
-    self.marked = False
-    self.accepting = False
-  
-  def xprint (self):
-    print self.id, " accepting: ", self.accepting 
-    for symbol, state in self.paths.iteritems():
-      if state:
-        print symbol, state.id
-      else:
-        print symbol, None
-
+# Subclasses of NFA
 class char_nfa (nfa):
   def __init__ (self, c):
     nfa.__init__ (self)
@@ -96,6 +77,27 @@ class done_nfa (nfa):
     self.start = self
     self.end = self
 
+# Class for Determinate Finate Automaton
+class node_dfa (object):
+  "DFA node class"
+  def __init__ (self, nfa_state_list):
+    id = []
+    for i in nfa_state_list:
+      id.append(i.num)
+    self.id = "".join([str(x) for x in sorted(id)])
+    self.states = nfa_state_list
+    self.paths = dict ()
+    self.marked = False
+    self.accepting = False
+  
+  def xprint (self):
+    print self.id, " accepting: ", self.accepting 
+    for symbol, state in self.paths.iteritems():
+      if state:
+        print symbol, state.id
+      else:
+        print symbol, None
+
 def enumerate_states (automata, start=0):
   if automata is None:
     return start
@@ -117,6 +119,7 @@ def enumerate_states (automata, start=0):
     automata.num = start
     start += 1
   return enumerate_states (automata.nxt, start)
+
 
 def add_to_state_list (nfa_state_list, dfa_state_list):
   dfa_to_return = None
@@ -142,8 +145,9 @@ def get_next_state(state):
       return state.parent_asterix
   return None
 
-""" Returns moves possible from the given dfa state (nfa state list) by a specific symbol """
 def get_moves (dfa_state, symbol):
+  "Returns moves possible from the given dfa \
+   state (nfa state list) by a specific symbol"
   moves = []
   for nfa_state in dfa_state.states:
     if isinstance (nfa_state, char_nfa):
@@ -151,8 +155,8 @@ def get_moves (dfa_state, symbol):
         moves.append(get_next_state(nfa_state))
   return moves
 
-""" Epsilon closure for a list of states """
 def get_epsilon_closure (nfa_state_list):
+  "Epsilon closure for a list of states"
   closure = []
   closure_one = []
   for state in nfa_state_list:
@@ -163,8 +167,8 @@ def get_epsilon_closure (nfa_state_list):
     return closure
   return None
 
-""" Epsilon closure for a single state """
 def get_epsilon_closure_single (automata, closure):
+  "Epsilon closure for a single state"
   if not automata is None and not automata in closure:
     if isinstance (automata, char_nfa) or isinstance (automata, done_nfa):
       closure.append (automata)
@@ -179,15 +183,16 @@ def get_epsilon_closure_single (automata, closure):
     if not automata.parent_asterix is None:
       get_epsilon_closure_single (automata.parent_asterix, closure)
 
-""" Gets first unmarked state from the dfa state list, which means that it wasn't processed yet """
 def get_unmarked (dfa_state_list):
+  "Gets first unmarked state from the dfa state list,\
+   which means that it wasn't processed yet"
   new_list = filter(lambda x: not x.marked, dfa_state_list)
   if new_list:
     return new_list[0]
   return None
 
-""" Returns a dfa state to which the given nfa path leads. """
 def get_state_to (nfa_state, dfa_state_list):
+  "Returns a dfa state to which the given nfa path leads."
   if nfa_state.nxt is None:
     print "No next state"
     return None
