@@ -1,9 +1,9 @@
 __author__ = "Artem Shinkarov, June Pecherskaya"
 __date__ = "2012-02-09"
 
-"NFA class for regular expressions"
 
 class nfa (object):
+  "NFA class for regular expressions"
   def __init__ (self):
     self.start = None
     self.end = None
@@ -20,7 +20,7 @@ class nfa (object):
       self.end = state.end
     return self
 
-  def xprint_one(self):
+  def xprint(self):
     if self.num is not None:
       print "{%i}" % self.num,
     if isinstance (self.start, char_nfa):
@@ -41,16 +41,13 @@ class nfa (object):
         raise Exception ("[Done] must be the last state of regexp")
     else:
       raise Exception ("unknown nfa class %s" % self.start.__classname__)
-
-  def xprint (self):
-    self.xprint_one()
-      
+    
     if self.nxt is not None:
-      print "->",
+      print "->", 
       self.nxt.xprint ()
 
-""" DFA node class """
 class node_dfa:
+  "DFA node class"
   def __init__ (self, nfa_state_list):
     id = []
     for i in nfa_state_list:
@@ -244,13 +241,13 @@ def determinate (automata, symbol_list):
 #f = asterix_nfa(asterix_nfa(asterix_nfa(char_nfa('c')))).add_next_state(done_nfa())
 
 #((c|a)|(b|xxb*))
-#f = or_nfa(or_nfa(char_nfa('c'), char_nfa('a')), or_nfa(char_nfa('b'), char_nfa('x').add_next_state(char_nfa('x')).add_next_state(asterix_nfa(char_nfa('b'))))).add_next_state(done_nfa())
+f = or_nfa(or_nfa(char_nfa('c'), char_nfa('a')), or_nfa(char_nfa('b'), char_nfa('x').add_next_state(char_nfa('x')).add_next_state(asterix_nfa(char_nfa('b'))))).add_next_state(done_nfa())
 
 #(((a|b)|c)|x)
 #f = or_nfa(or_nfa(or_nfa(char_nfa('a'), char_nfa('b')), char_nfa('c')), char_nfa('x')).add_next_state(done_nfa())
 
 #x*(a|c)
-f = asterix_nfa(char_nfa('x')).add_next_state(or_nfa(char_nfa('a'), char_nfa('c'))).add_next_state(done_nfa())
+#f = asterix_nfa(char_nfa('x')).add_next_state(or_nfa(char_nfa('a'), char_nfa('c'))).add_next_state(done_nfa())
 
 enumerate_states (f)
 f.xprint ()
