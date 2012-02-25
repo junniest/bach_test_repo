@@ -10,30 +10,17 @@ class nfa (object):
     self.nxt  = None
     self.num = None
     self.count = 0
-    self.last_in_content = False
+    self.parent_or = None
+    self.parent_asterix = None
 
   def add_next_state (self, state):
     if self.start is None or self.end is None:
       raise Exception ("Abstract nfa instantiated")
     else:
-      tmp = self.end
       self.end.nxt = state.start
       self.end = state.end
       self.count += state.count
-      tmp.add_to_last_state (tmp, state.start)
     return self
-
-  def add_to_last_state (self, state0, state1):
-    if isinstance (self, or_nfa):
-      print "add_to_last_state OR NFA"
-      self.alternative[0].end.nxt = state1
-      self.alternative[1].end.nxt = state1
-      self.alternative[0].add_to_last_state (state0, state1)
-      self.alternative[1].add_to_last_state (state0, state1)
-    elif isinstance (self, asterix_nfa):
-      print "add_to_last_state ASTERIX NFA"
-      self.content.end.nxt = state0
-      self.content.add_to_last_state (state0, state1)
 
   def xprint_one(self):
     if self.num is not None:
@@ -60,11 +47,9 @@ class nfa (object):
   def xprint (self):
     self.xprint_one()
       
-    if self.nxt is not None and not self.last_in_content:
+    if self.nxt is not None:
       print "->",
       self.nxt.xprint ()
-    if self.last_in_content and self.nxt is not None:
-      print "next is", self.nxt.num
 
 """ DFA node class """
 class node_dfa:
@@ -100,7 +85,7 @@ class asterix_nfa (nfa):
     self.content = state
     self.start = self
     self.end = self
-    state.end.last_in_content = True
+    state.end.parent_asterix = self
 
 class or_nfa (nfa):
   def __init__ (self, state0, state1):
@@ -109,8 +94,8 @@ class or_nfa (nfa):
     self.start = self
     self.end = self
     self.count = state0.count + state1.count + 1
-    state0.end.last_in_content = True
-    state1.end.last_in_content = True
+    state0.end.parent_or = self
+    state1.end.parent_or = self
 
 class done_nfa (nfa):
   def __init__ (self):
@@ -153,20 +138,33 @@ def add_to_state_list (nfa_state_list, dfa_state_list):
     return new_dfa_state
   return dfa_to_return
 
+def get_next_state(state):
+  if state.nxt is not None:
+    return state.nxt
+  if state.parent_or is not None:
+    return get_next_state(state.parent_or)
+  if state.parent_asterix is not None:
+    if state.parent_asterix.parent_asterix is not None:
+      return get_next_state(state.parent_asterix)
+    else:
+      return state.parent_asterix
+  return None
+
 """ Returns moves possible from the given dfa state (nfa state list) by a specific symbol """
 def get_moves (dfa_state, symbol):
   moves = []
   for nfa_state in dfa_state.states:
     if isinstance (nfa_state, char_nfa):
       if nfa_state.character == symbol:
-        moves.append(nfa_state.nxt)
+        moves.append(get_next_state(nfa_state))
   return moves
 
 """ Epsilon closure for a list of states """
 def get_epsilon_closure (nfa_state_list):
   closure = []
+  closure_one = []
   for state in nfa_state_list:
-    closure_one = get_epsilon_closure_single (state)
+    get_epsilon_closure_single (state, closure_one)
     if closure_one:
       closure = closure + closure_one
   if closure:
@@ -174,24 +172,20 @@ def get_epsilon_closure (nfa_state_list):
   return None
 
 """ Epsilon closure for a single state """
-def get_epsilon_closure_single (automata):
-  if isinstance (automata, char_nfa):
-    return [automata]
-  elif isinstance (automata, asterix_nfa):
-    closure = get_epsilon_closure_single (automata.content)
-    closure.append (automata.nxt)
-    closure.append (automata)
-    return closure
-  elif isinstance (automata, or_nfa):
-    closure = get_epsilon_closure_single (automata.alternative[0])
-    closure1 = get_epsilon_closure_single (automata.alternative[1])
-    closure1.append (automata)
-    return closure + closure1
-  elif isinstance (automata, done_nfa):
-    return [automata]
-  elif automata is None:
-    return None
-  return None
+def get_epsilon_closure_single (automata, closure):
+  if not automata is None and not automata in closure:
+    if isinstance (automata, char_nfa) or isinstance (automata, done_nfa):
+      closure.append (automata)
+    elif isinstance (automata, asterix_nfa):
+      closure.append (automata)
+      get_epsilon_closure_single (automata.content, closure)
+      get_epsilon_closure_single (get_next_state(automata), closure)
+    elif isinstance (automata, or_nfa):
+      closure.append (automata)
+      get_epsilon_closure_single (automata.alternative[0], closure)
+      get_epsilon_closure_single (automata.alternative[1], closure)
+    if not automata.parent_asterix is None:
+      get_epsilon_closure_single (automata.parent_asterix, closure)
 
 """ Gets first unmarked state from the dfa state list, which means that it wasn't processed yet """
 def get_unmarked (dfa_state_list):
@@ -225,7 +219,7 @@ def rearrange (dfa_state_list):
 
 def determinate (automata, symbol_list):
   dfa_state_list = []
-  nfa_state_list = get_epsilon_closure_single (automata)
+  nfa_state_list = get_epsilon_closure ([automata])
   if nfa_state_list:
     add_to_state_list (nfa_state_list, dfa_state_list)
     dfa_state = get_unmarked (dfa_state_list)
@@ -239,8 +233,6 @@ def determinate (automata, symbol_list):
       dfa_state = get_unmarked (dfa_state_list)
   return rearrange (dfa_state_list)
 
-
-
 # a(a|b)x*
 #f = char_nfa ('a') \
 #    .add_next_state (or_nfa (char_nfa ('a'), char_nfa ('b'))) \
@@ -248,20 +240,28 @@ def determinate (automata, symbol_list):
 #    .add_next_state (done_nfa ())
 
 # (a|b)*
-f = asterix_nfa(or_nfa(char_nfa('a'), char_nfa('b'))).add_next_state(done_nfa())
+#f = asterix_nfa(or_nfa(char_nfa('a'), char_nfa('b'))).add_next_state(done_nfa())
 
 # (ab*|bb)
-f = or_nfa(char_nfa('a').add_next_state(asterix_nfa(char_nfa('b'))), char_nfa('b').add_next_state(char_nfa('b'))).add_next_state(done_nfa())
+#f = or_nfa(char_nfa('a').add_next_state(asterix_nfa(char_nfa('b'))), char_nfa('b').add_next_state(char_nfa('b'))).add_next_state(done_nfa())
+
+#((c*)*)*
+#f = asterix_nfa(asterix_nfa(asterix_nfa(char_nfa('c')))).add_next_state(done_nfa())
+
+#((c|a)|(b|xxb*))
+#f = or_nfa(or_nfa(char_nfa('c'), char_nfa('a')), or_nfa(char_nfa('b'), char_nfa('x').add_next_state(char_nfa('x')).add_next_state(asterix_nfa(char_nfa('b'))))).add_next_state(done_nfa())
+
+#(((a|b)|c)|x)
+#f = or_nfa(or_nfa(or_nfa(char_nfa('a'), char_nfa('b')), char_nfa('c')), char_nfa('x')).add_next_state(done_nfa())
+
+#x*(a|c)
+f = asterix_nfa(char_nfa('x')).add_next_state(or_nfa(char_nfa('a'), char_nfa('c'))).add_next_state(done_nfa())
 
 enumerate_states (f)
 f.xprint ()
 print
 
-for i in determinate(f, 'abx'):
+for i in determinate(f, 'abcxz'):
     if i is not None:
         print '------------------------'
-#        print i.id
-#        for j in i.states:
-#            j.xprint ()
-#            print ';'
         i.xprint ()
