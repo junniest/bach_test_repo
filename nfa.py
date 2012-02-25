@@ -1,6 +1,7 @@
 __author__ = "Artem Shinkarov, June Pecherskaya"
 __date__ = "2012-02-09"
 
+# Test commit, please ignore
 # Abstract class for Nondeterminate Finite Automaton
 class nfa (object):
     "NFA class for regular expressions"
