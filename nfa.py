@@ -219,23 +219,6 @@ def get_unmarked (dfa_state_list):
         return new_list[0]
     return None
 
-def get_state_to (nfa_state, dfa_state_list):
-    "Returns a dfa state to which the given nfa path leads."
-    if nfa_state.nxt is None:
-        print "No next state"
-        return None
-    id = str (nfa_state.nxt.num)
-    for dfa_state in dfa_state_list:
-        # FIXME  What the hell is this?
-        ind = -1
-        try:
-            ind = dfa_state.id.index(id)
-        except:
-            pass
-        else:
-            return dfa_state
-    return None
-
 def rearrange (dfa_state_list):
     for state in dfa_state_list:
         for nfa_state in state.states:
