@@ -106,7 +106,7 @@ class node_dfa (object):
         id = []
         for i in nfa_state_list:
             id.append(i.num)
-        self.id = "".join([str(x) for x in sorted(id)])
+        self.id = ",".join([str(x) for x in sorted(id)])
         self.states = nfa_state_list
         self.paths = dict ()
         self.marked = False
@@ -147,24 +147,23 @@ def enumerate_states (automata, start=0):
     return enumerate_states (automata.nxt, start)
 
 
-def add_to_state_list (nfa_state_list, dfa_state_list):
-    dfa_to_return = None
-    new_dfa_state = node_dfa(nfa_state_list)
-    for dfa_state in dfa_state_list:
-        if dfa_state.id == new_dfa_state.id:
-            dfa_to_return = dfa_state
-            break
-    if dfa_to_return is None:
-        dfa_state_list.append(new_dfa_state)
-        return new_dfa_state
-    
-    return dfa_to_return
+def add_to_state_list (lst, dfa_lst):
+    "Construct dfa from nfa states LST. In case dfa is not in\
+     in the list -- add it.  Return dfa."
+    dfa = node_dfa (lst)
+    if dfa.id not in [s.id for s in dfa_lst]:
+        dfa_lst.append (dfa)
+
+    return dfa
 
 def get_next_state(state):
     if state.nxt is not None:
         return state.nxt
     if state.parent_or is not None:
         return get_next_state(state.parent_or)
+
+    # FIXME Looks really suspicious.  What if we have more than
+    # two levels of nesting in asterix?
     if state.parent_asterix is not None:
         if state.parent_asterix.parent_asterix is not None:
             return get_next_state(state.parent_asterix)
@@ -215,7 +214,7 @@ def get_epsilon_closure_single (automata, closure):
 def get_unmarked (dfa_state_list):
     "Gets first unmarked state from the dfa state list,\
      which means that it wasn't processed yet"
-    new_list = filter(lambda x: not x.marked, dfa_state_list)
+    new_list = filter (lambda x: not x.marked, dfa_state_list)
     if new_list:
         return new_list[0]
     return None
@@ -263,6 +262,24 @@ def determinate (automata, symbol_list):
             dfa_state = get_unmarked (dfa_state_list)
     
     return rearrange (dfa_state_list)
+
+def det (automata, symbol_list):
+    dfa_state_list = []
+    nfa_state_list = get_epsilon_closure ([automata])
+    
+    if not nfa_state_list:
+        raise Exception ("No states were found for %s" % automata)
+        
+    add_to_state_list (nfa_state_list, dfa_state_list)
+    
+    for dfa in dfa_state_list:
+        for symbol in symbol_list:
+            nl = get_epsilon_closure (get_moves (dfa, symbol))
+            if nl:
+               dfa.paths[symbol] = add_to_state_list (nl, dfa_state_list)
+    
+    return rearrange (dfa_state_list)
+
 
 def parse_postfix (string, state_stack = [], num = 0):
     while num < len (string):
