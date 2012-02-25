@@ -268,3 +268,5 @@ for i in determinate(f, 'abcxz'):
     if i is not None:
         print '------------------------'
         i.xprint ()
+
+# vim: set ts=4 sw=4 sts=4 et
