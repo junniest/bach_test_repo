@@ -196,41 +196,53 @@ def det (automata, symbol_list):
     
     return rearrange (dfa_state_list)
 
-
-# FIXME I think that we need to parse an expression from infix
-# rather than from postfix.  What are the use-cases for postfix?
-def parse_postfix (string, state_stack = [], num = 0):
-    while num < len (string):
-        char = string[num]
-        if char == '(':
-            num = num + 1
-            num = parse_postfix (string, state_stack, num)
-        elif char == ')':
-            return num
-        elif char == '*':
-            content = state_stack.pop ()
-            state = asterix_nfa (content)
-            state_stack.append (state)
-        elif char == '|':
-            state1 = state_stack.pop ()
-            state0 = state_stack.pop ()
-            state = or_nfa (state0, state1)
-            state_stack.append (state)
-        elif char == '.':
-            # FIXME What the hell is this?
-            # '.' means any symbool!
-            state1 = state_stack.pop ()
-            state0 = state_stack.pop ()
-            state0.add_next_state (state1)
-            state_stack.append (state0)
-        else:
-            state = char_nfa (char)
-            state_stack.append (state)
+def parse_state (string, state_stack, num):
+    char = string [num]
+    if char == '(':
+        state_stack.append ('(')
         num = num + 1
-    state_stack[0].add_next_state(done_nfa())
-    for i in state_stack:
-        i.xprint ()
-    return state_stack[0]
+        while string [num] != ')':
+            num = parse_state (string, state_stack, num)
+        concat_state_list = []
+        state = state_stack.pop ()
+        while state != '(':
+            concat_state_list.append (state)
+            state = state_stack.pop ()
+        if concat_state_list:
+            length = len (concat_state_list) - 1
+            first_state = concat_state_list[length]
+            for i in xrange(length):
+                concat_state_list[length].add_next_state (concat_state_list [length - 1 - i])
+            state_stack.append (first_state)
+        num = num + 1
+    elif char == '*':
+        content = state_stack.pop ()
+        state = asterix_nfa (content)
+        state_stack.append (state)
+        num = num + 1
+    elif char == '|':
+        state0 = state_stack.pop ()
+        num = parse_state (string, state_stack, num + 1)
+        state1 = state_stack.pop ()
+        state = or_nfa (state0, state1)
+        state_stack.append (state)
+    else:
+        state = char_nfa (char)
+        state_stack.append (state)
+        num = num + 1
+    return num
+
+
+def parse_infix (string, state_stack = [], num = 0):
+    while num < len (string):
+        num = parse_state(string, state_stack, num)
+    if state_stack:
+        for i in xrange(len (state_stack) - 1):
+            state_stack[0].add_next_state(state_stack[i + 1])
+        state_stack[0].add_next_state(done_nfa())
+        return state_stack[0]
+    else: 
+        return None
 
 
 # vim: set ts=4 sw=4 sts=4 et

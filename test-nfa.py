@@ -64,5 +64,7 @@ for dfa in det(f, 'abcxz'):
         for p in dfa.paths:
             print "\t", p, "->", dfa.paths[p]
 
+print parse_infix ('ab(c|a)d*')
+
 # vim: set ts=4 sw=4 sts=4 et
 
