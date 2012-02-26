@@ -1,7 +1,7 @@
 __author__ = "Artem Shinkarov, June Pecherskaya"
 __date__ = "2012-02-09"
 
-# Test commit, please ignore
+
 # Abstract class for Nondeterminate Finite Automaton
 class nfa (object):
     "NFA class for regular expressions"
@@ -10,6 +10,7 @@ class nfa (object):
         self.end = None
         self.nxt  = None
         self.num = None
+        # FIXME can we live with only one type of parent?
         self.parent_or = None
         self.parent_asterix = None
 
@@ -24,6 +25,8 @@ class nfa (object):
     def __repr__ (self):
         return "<abstract nfa node>"
 
+    # FIXME This should be removed, by integrating this logics
+    # into the __repr__'s of inherited classes.
     def xprint(self):
         if self.num is not None:
             print "{%i}" % self.num,
@@ -50,7 +53,10 @@ class nfa (object):
             print "->", 
             self.nxt.xprint ()
 
+
 # Subclasses of NFA
+# FIXME  As `num' is not a member of nfa anymore, all the __repr__
+# should be adjusted.
 class char_nfa (nfa):
     def __init__ (self, c):
         nfa.__init__ (self)
@@ -61,6 +67,7 @@ class char_nfa (nfa):
     def __repr__ (self):
         return "{%s} char[%s]" % \
         ((self.num is not None and str(self.num) or ""), self.character)
+
 
 class asterix_nfa (nfa):
     def __init__ (self, state):
@@ -73,6 +80,7 @@ class asterix_nfa (nfa):
     def __repr__ (self):
         return "{%s} (%s)*" %\
         ((self.num is not None and str(self.num) or ""), repr (self.content))
+
 
 class or_nfa (nfa):
     def __init__ (self, state0, state1):
@@ -99,12 +107,13 @@ class done_nfa (nfa):
         return "{%s} [done]" % \
         ((self.num is not None and str(self.num) or ""))
 
+
 # Class for Determinate Finate Automaton
 class node_dfa (object):
     "DFA node class"
     def __init__ (self, nfa_lst):
-        num_lst = sorted ([str (s.num) for s in nfa_lst])
-        self.id = ",".join (num_lst)
+        #num_lst = sorted ([str (s.num) for s in nfa_lst])
+        #self.id = ",".join (num_lst)
         self.states = nfa_lst
         self.paths = dict ()
         self.accepting = False
@@ -113,27 +122,28 @@ class node_dfa (object):
         state_list = [repr (s) for s in self.states]
         return "<id:%s, accept:%r>" % (self.id, self.accepting)
 
-def enumerate_states (automata, start=0):
-    if automata is None:
-        return start
-    if automata.num is not None:
-        return enumerate_states (automata.nxt, start)
-    if isinstance (automata, char_nfa):
-        automata.num = start
-        start += 1
-    elif isinstance (automata, asterix_nfa):
-        automata.num = start
-        start += 1
-        start = enumerate_states (automata.content, start)
-    elif isinstance (automata, or_nfa):
-        automata.num = start
-        start += 1
-        start = enumerate_states (automata.alternative[0], start)
-        start = enumerate_states (automata.alternative[1], start)
-    elif isinstance (automata, done_nfa):
-        automata.num = start
-        start += 1
-    return enumerate_states (automata.nxt, start)
+
+#def enumerate_states (automata, start=0):
+#    if automata is None:
+#        return start
+#    if automata.num is not None:
+#        return enumerate_states (automata.nxt, start)
+#    if isinstance (automata, char_nfa):
+#        automata.num = start
+#        start += 1
+#    elif isinstance (automata, asterix_nfa):
+#       automata.num = start
+#       start += 1
+#       start = enumerate_states (automata.content, start)
+#   elif isinstance (automata, or_nfa):
+#       automata.num = start
+#       start += 1
+#       start = enumerate_states (automata.alternative[0], start)
+#       start = enumerate_states (automata.alternative[1], start)
+#   elif isinstance (automata, done_nfa):
+#       automata.num = start
+#       start += 1
+#   return enumerate_states (automata.nxt, start)
 
 
 def add_to_state_list (lst, dfa_lst):
@@ -141,15 +151,16 @@ def add_to_state_list (lst, dfa_lst):
      in the list -- add it.  Return dfa."
     dfa = node_dfa (lst)
     
-    l = filter (lambda x: x.id == dfa.id, dfa_lst)
+    l = filter (lambda x: set (x.states) == set (dfa.states), dfa_lst)
     if len (l) == 1:
         dfa = l[0];
     elif len (l) == 0:
         dfa_lst.append (dfa)
     else:
-        raise Exception ("duplicate dfa with id %r found" % dfa.id)
+        raise Exception ("duplicate dfa with id %r found" % dfa.states)
 
     return dfa
+
 
 def get_next_state(state):
     if state.nxt is not None:
@@ -166,6 +177,7 @@ def get_next_state(state):
             return state.parent_asterix
     return None
 
+
 def get_moves (dfa_state, symbol):
     "Returns moves possible from the given dfa \
      state (nfa state list) by a specific symbol"
@@ -175,6 +187,7 @@ def get_moves (dfa_state, symbol):
             if nfa_state.character == symbol:
                 moves.append (get_next_state(nfa_state))
     return moves
+
 
 def get_epsilon_closure (nfa_state_list):
     "Epsilon closure for a list of states"
@@ -207,6 +220,7 @@ def get_epsilon_closure_single (automata, closure):
         if not automata.parent_asterix is None:
             get_epsilon_closure_single (automata.parent_asterix, closure)
 
+
 def rearrange (dfa_state_list):
     for state in dfa_state_list:
         for nfa_state in state.states:
@@ -215,6 +229,7 @@ def rearrange (dfa_state_list):
     for i in xrange(len(dfa_state_list)):
         dfa_state_list[i].id = i
     return dfa_state_list
+
 
 def det (automata, symbol_list):
     dfa_state_list = []
@@ -234,6 +249,8 @@ def det (automata, symbol_list):
     return rearrange (dfa_state_list)
 
 
+# FIXME I think that we need to parse an expression from infix
+# rather than from postfix.  What are the use-cases for postfix?
 def parse_postfix (string, state_stack = [], num = 0):
     while num < len (string):
         char = string[num]

@@ -53,7 +53,7 @@ f = asterix_nfa (char_nfa('x'))\
 
 f = reg6
 
-enumerate_states (f)
+#enumerate_states (f)
 f.xprint ()
 
 print
