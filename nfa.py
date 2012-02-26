@@ -178,7 +178,7 @@ def get_moves (dfa_state, symbol):
     for nfa_state in dfa_state.states:
         if isinstance (nfa_state, char_nfa):
             if nfa_state.character == symbol:
-                moves.append(get_next_state(nfa_state))
+                moves.append (get_next_state(nfa_state))
     return moves
 
 def get_epsilon_closure (nfa_state_list):
@@ -282,6 +282,8 @@ def parse_postfix (string, state_stack = [], num = 0):
             state = or_nfa (state0, state1)
             state_stack.append (state)
         elif char == '.':
+            # FIXME What the hell is this?
+            # '.' means any symbool!
             state1 = state_stack.pop ()
             state0 = state_stack.pop ()
             state0.add_next_state (state1)
@@ -295,49 +297,5 @@ def parse_postfix (string, state_stack = [], num = 0):
         i.xprint ()
     return state_stack[0]
 
-#parse_postfix ('(((vb.b.f)|)*(d)|)*')
-
-# a(a|b)x*
-#f = char_nfa ('a') \
-#    .add_next_state (or_nfa (char_nfa ('a'), char_nfa ('b'))) \
-#    .add_next_state (asterix_nfa (char_nfa ('x'))) \
-#    .add_next_state (done_nfa ())
-#postfix_string_f = 'a(ab|).x*.' 
-
-# (a|b)*
-#f = asterix_nfa(or_nfa(char_nfa('a'), char_nfa('b'))).add_next_state(done_nfa())
-#postfix_string_f = '(ab|)*'
-
-# (ab*|bb)
-#f = or_nfa(char_nfa('a').add_next_state(asterix_nfa(char_nfa('b'))), char_nfa('b').add_next_state(char_nfa('b'))).add_next_state(done_nfa())
-#postfix_string_f = 'ab*.bb.|'
-
-#((c*)*)*
-#f = asterix_nfa(asterix_nfa(asterix_nfa(char_nfa('c')))).add_next_state(done_nfa())
-#postfix_string_f = 'c***'
-
-#((c|a)|(b|xxb*))
-#f = or_nfa(or_nfa(char_nfa('c'), char_nfa('a')), or_nfa(char_nfa('b'), char_nfa('x').add_next_state(char_nfa('x')).add_next_state(asterix_nfa(char_nfa('b'))))).add_next_state(done_nfa())
-#postfix_string_f = '(ca|)(b(xx.b*.)|)|'
-
-#(((a|b)|c)|x)
-#f = or_nfa(or_nfa(or_nfa(char_nfa('a'), char_nfa('b')), char_nfa('c')), char_nfa('x')).add_next_state(done_nfa())
-#postfix_string_f = 'cb|c|x|'
-
-#x*(a|c)
-f = asterix_nfa(char_nfa('x')).add_next_state(or_nfa(char_nfa('a'), char_nfa('c'))).add_next_state(done_nfa())
-postfix_string_f = 'x*(ac|).' 
-
-f.xprint ()
-
-f = parse_postfix (postfix_string_f)
-enumerate_states (f)
-
-print
-
-for i in determinate(f, 'abcxz'):
-    if i is not None:
-        print '------------------------'
-        i.xprint ()
 
 # vim: set ts=4 sw=4 sts=4 et
