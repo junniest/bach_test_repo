@@ -25,7 +25,7 @@ postf_reg3 = 'c***'
 
 #((c|a)|(b|xxb*))
 reg4 = or_nfa (or_nfa(char_nfa ('c'), char_nfa ('a')),\
-               or_nfa(char_nfa ('b'),\ 
+               or_nfa(char_nfa ('b'),\
                       char_nfa ('x').add_next_state(char_nfa('x'))\
                       .add_next_state(asterix_nfa(char_nfa('b')))))\
        .add_next_state(done_nfa())
@@ -51,15 +51,18 @@ f = asterix_nfa (char_nfa('x'))\
     .add_next_state (or_nfa (char_nfa('a'), char_nfa ('c')))\
     .add_next_state (done_nfa ())
 
-f.xprint ()
+f = reg6
+
 enumerate_states (f)
+f.xprint ()
 
 print
 
-for i in determinate(f, 'abcxz'):
-    if i is not None:
-        print '------------------------'
-        i.xprint ()
+for dfa in det(f, 'abcxz'):
+    if dfa is not None:
+        print dfa
+        for p in dfa.paths:
+            print "\t", p, "->", dfa.paths[p]
 
 # vim: set ts=4 sw=4 sts=4 et
 

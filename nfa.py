@@ -102,27 +102,16 @@ class done_nfa (nfa):
 # Class for Determinate Finate Automaton
 class node_dfa (object):
     "DFA node class"
-    def __init__ (self, nfa_state_list):
-        id = []
-        for i in nfa_state_list:
-            id.append(i.num)
-        self.id = ",".join([str(x) for x in sorted(id)])
-        self.states = nfa_state_list
+    def __init__ (self, nfa_lst):
+        num_lst = sorted ([str (s.num) for s in nfa_lst])
+        self.id = ",".join (num_lst)
+        self.states = nfa_lst
         self.paths = dict ()
-        self.marked = False
         self.accepting = False
   
     def __repr__ (self):
         state_list = [repr (s) for s in self.states]
-        return "<id:%s, marked:%i>" % (self.id, self.marked)
-
-    def xprint (self):
-        print self.id, " accepting: ", self.accepting 
-        for symbol, state in self.paths.iteritems():
-            if state:
-                print symbol, state.id
-            else:
-                print symbol, None
+        return "<id:%s, accept:%r>" % (self.id, self.accepting)
 
 def enumerate_states (automata, start=0):
     if automata is None:
@@ -151,8 +140,14 @@ def add_to_state_list (lst, dfa_lst):
     "Construct dfa from nfa states LST. In case dfa is not in\
      in the list -- add it.  Return dfa."
     dfa = node_dfa (lst)
-    if dfa.id not in [s.id for s in dfa_lst]:
+    
+    l = filter (lambda x: x.id == dfa.id, dfa_lst)
+    if len (l) == 1:
+        dfa = l[0];
+    elif len (l) == 0:
         dfa_lst.append (dfa)
+    else:
+        raise Exception ("duplicate dfa with id %r found" % dfa.id)
 
     return dfa
 
@@ -193,6 +188,7 @@ def get_epsilon_closure (nfa_state_list):
     if closure:
         return closure
     return None
+    
 
 def get_epsilon_closure_single (automata, closure):
     "Epsilon closure for a single state"
@@ -211,14 +207,6 @@ def get_epsilon_closure_single (automata, closure):
         if not automata.parent_asterix is None:
             get_epsilon_closure_single (automata.parent_asterix, closure)
 
-def get_unmarked (dfa_state_list):
-    "Gets first unmarked state from the dfa state list,\
-     which means that it wasn't processed yet"
-    new_list = filter (lambda x: not x.marked, dfa_state_list)
-    if new_list:
-        return new_list[0]
-    return None
-
 def rearrange (dfa_state_list):
     for state in dfa_state_list:
         for nfa_state in state.states:
@@ -227,24 +215,6 @@ def rearrange (dfa_state_list):
     for i in xrange(len(dfa_state_list)):
         dfa_state_list[i].id = i
     return dfa_state_list
-
-def determinate (automata, symbol_list):
-    dfa_state_list = []
-    nfa_state_list = get_epsilon_closure ([automata])
-    
-    if nfa_state_list:
-        add_to_state_list (nfa_state_list, dfa_state_list)
-        dfa_state = get_unmarked (dfa_state_list)
-        while dfa_state:
-            dfa_state.marked = True
-            for symbol in symbol_list:
-                new_nfa_state_list = get_epsilon_closure (get_moves (dfa_state, symbol))
-                if new_nfa_state_list:
-                   end_state = add_to_state_list (new_nfa_state_list, dfa_state_list)
-                   dfa_state.paths[symbol] = end_state
-            dfa_state = get_unmarked (dfa_state_list)
-    
-    return rearrange (dfa_state_list)
 
 def det (automata, symbol_list):
     dfa_state_list = []
