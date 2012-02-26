@@ -10,9 +10,7 @@ class nfa (object):
         self.end = None
         self.nxt  = None
         self.num = None
-        # FIXME can we live with only one type of parent?
-        self.parent_or = None
-        self.parent_asterix = None
+        self.parent = None
 
     def add_next_state (self, state):
         if self.start is None or self.end is None:
@@ -46,7 +44,7 @@ class asterix_nfa (nfa):
         self.content = state
         self.start = self
         self.end = self
-        state.end.parent_asterix = self
+        state.end.parent = self
 
     def __repr__ (self):
         str = "( %s )*" % repr (self.content)
@@ -61,8 +59,8 @@ class or_nfa (nfa):
         self.alternative = (state0, state1)
         self.start = self
         self.end = self
-        state0.end.parent_or = self
-        state1.end.parent_or = self
+        state0.end.parent = self
+        state1.end.parent = self
     
     def __repr__ (self):
         str = "( %s | %s )" % (repr (self.alternative[0]), repr (self.alternative[1]))
@@ -115,16 +113,16 @@ def add_to_state_list (lst, dfa_lst):
 def get_next_state(state):
     if state.nxt is not None:
         return state.nxt
-    if state.parent_or is not None:
-        return get_next_state(state.parent_or)
+    if isinstance (state.parent, or_nfa):
+        return get_next_state(state.parent)
 
     # FIXME Looks really suspicious.  What if we have more than
     # two levels of nesting in asterix?
-    if state.parent_asterix is not None:
-        if state.parent_asterix.parent_asterix is not None:
-            return get_next_state(state.parent_asterix)
+    if isinstance (state.parent, asterix_nfa):
+        if isinstance (state.parent.parent, asterix_nfa):
+            return get_next_state(state.parent)
         else:
-            return state.parent_asterix
+            return state.parent
     return None
 
 
@@ -167,8 +165,8 @@ def get_epsilon_closure_single (automata, closure):
             get_epsilon_closure_single (automata.alternative[0], closure)
             get_epsilon_closure_single (automata.alternative[1], closure)
         
-        if not automata.parent_asterix is None:
-            get_epsilon_closure_single (automata.parent_asterix, closure)
+        if isinstance (automata.parent, asterix_nfa):
+            get_epsilon_closure_single (automata.parent, closure)
 
 
 def rearrange (dfa_state_list):

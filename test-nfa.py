@@ -38,7 +38,7 @@ reg5 = or_nfa (or_nfa (or_nfa (char_nfa ('a'), char_nfa ('b')),\
        .add_next_state(done_nfa())
 
 
-# (a | ( b | c * ) ) *
+# (x|(a|(b|c*)*)*)
 reg6 = or_nfa (char_nfa ("x"),\
        asterix_nfa (or_nfa (char_nfa ('a'), \
                             asterix_nfa (or_nfa (char_nfa ('b'),\
