@@ -25,38 +25,8 @@ class nfa (object):
     def __repr__ (self):
         return "<abstract nfa node>"
 
-    # FIXME This should be removed, by integrating this logics
-    # into the __repr__'s of inherited classes.
-    def xprint(self):
-        if self.num is not None:
-            print "{%i}" % self.num,
-        if isinstance (self.start, char_nfa):
-            print "char[%s]" % self.start.character,
-        elif isinstance (self.start, asterix_nfa):
-            print "(",
-            self.start.content.xprint ()
-            print ")*",
-        elif isinstance (self.start, or_nfa):
-            print "(",
-            self.start.alternative[0].xprint ()
-            print "|",
-            self.start.alternative[1].xprint ()
-            print ")",
-        elif isinstance (self.start, done_nfa):
-            print "[Done]"        
-            if self.start.nxt is not None:
-                raise Exception ("[Done] must be the last state of regexp")
-        else:
-            raise Exception ("unknown nfa class %s" % self.start.__classname__)
-    
-        if self.nxt is not None:
-            print "->", 
-            self.nxt.xprint ()
-
 
 # Subclasses of NFA
-# FIXME  As `num' is not a member of nfa anymore, all the __repr__
-# should be adjusted.
 class char_nfa (nfa):
     def __init__ (self, c):
         nfa.__init__ (self)
@@ -65,9 +35,10 @@ class char_nfa (nfa):
         self.end = self
 
     def __repr__ (self):
-        return "{%s} char[%s]" % \
-        ((self.num is not None and str(self.num) or ""), self.character)
-
+        str = "char[%s]" % (self.character) 
+        if self.nxt is not None:
+            str = str + " -> " + repr (self.nxt)
+        return str
 
 class asterix_nfa (nfa):
     def __init__ (self, state):
@@ -78,8 +49,10 @@ class asterix_nfa (nfa):
         state.end.parent_asterix = self
 
     def __repr__ (self):
-        return "{%s} (%s)*" %\
-        ((self.num is not None and str(self.num) or ""), repr (self.content))
+        str = "( %s )*" % repr (self.content)
+        if self.nxt is not None:
+            str = str + " -> " + repr (self.nxt)
+        return str
 
 
 class or_nfa (nfa):
@@ -92,9 +65,10 @@ class or_nfa (nfa):
         state1.end.parent_or = self
     
     def __repr__ (self):
-        return "{%s} (%s | %s)" %\
-        ((self.num is not None and str(self.num) or ""), \
-          repr (self.alternative[0]), repr (self.alternative[1]))
+        str = "( %s | %s )" % (repr (self.alternative[0]), repr (self.alternative[1]))
+        if self.nxt is not None:
+            str = str + " -> " + repr (self.nxt)
+        return str
 
 
 class done_nfa (nfa):
@@ -104,16 +78,15 @@ class done_nfa (nfa):
         self.end = self
 
     def __repr__ (self):
-        return "{%s} [done]" % \
-        ((self.num is not None and str(self.num) or ""))
+        if self.start.nxt is not None:
+            raise Exception ("[Done] must be the last state of regexp")
+        return "[Done]"
 
 
 # Class for Determinate Finate Automaton
 class node_dfa (object):
     "DFA node class"
     def __init__ (self, nfa_lst):
-        #num_lst = sorted ([str (s.num) for s in nfa_lst])
-        #self.id = ",".join (num_lst)
         self.states = nfa_lst
         self.paths = dict ()
         self.accepting = False
@@ -121,29 +94,6 @@ class node_dfa (object):
     def __repr__ (self):
         state_list = [repr (s) for s in self.states]
         return "<id:%s, accept:%r>" % (self.id, self.accepting)
-
-
-#def enumerate_states (automata, start=0):
-#    if automata is None:
-#        return start
-#    if automata.num is not None:
-#        return enumerate_states (automata.nxt, start)
-#    if isinstance (automata, char_nfa):
-#        automata.num = start
-#        start += 1
-#    elif isinstance (automata, asterix_nfa):
-#       automata.num = start
-#       start += 1
-#       start = enumerate_states (automata.content, start)
-#   elif isinstance (automata, or_nfa):
-#       automata.num = start
-#       start += 1
-#       start = enumerate_states (automata.alternative[0], start)
-#       start = enumerate_states (automata.alternative[1], start)
-#   elif isinstance (automata, done_nfa):
-#       automata.num = start
-#       start += 1
-#   return enumerate_states (automata.nxt, start)
 
 
 def add_to_state_list (lst, dfa_lst):
