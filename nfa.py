@@ -196,56 +196,8 @@ def det (automata, symbol_list):
     
     return rearrange (dfa_state_list)
 
-#def parse_state (string, state_stack, num):
-#    char = string [num]
-#    if char == '(':
-#        state_stack.append ('(')
-#        num = num + 1
-#        while string [num] != ')':
-#            num = parse_state (string, state_stack, num)
-#        concat_state_list = []
-#        state = state_stack.pop ()
-#        while state != '(':
-#            concat_state_list.append (state)
-#            state = state_stack.pop ()
-#        if concat_state_list:
-#            length = len (concat_state_list) - 1
-#            first_state = concat_state_list[length]
-#            for i in xrange(length):
-#                concat_state_list[length].add_next_state (concat_state_list [length - 1 - i])
-#            state_stack.append (first_state)
-#        num = num + 1
-#    elif char == '*':
-#        content = state_stack.pop ()
-#        state = asterix_nfa (content)
-#        state_stack.append (state)
-#        num = num + 1
-#    elif char == '|':
-#        state0 = state_stack.pop ()
-#        num = parse_state (string, state_stack, num + 1)
-#        state1 = state_stack.pop ()
-#        state = or_nfa (state0, state1)
-#        state_stack.append (state)
-#    else:
-#        state = char_nfa (char)
-#        state_stack.append (state)
-#        num = num + 1
-#    return num
-#
-#
-#def parse_infix (string, state_stack = [], num = 0):
-#    while num < len (string):
-#        num = parse_state(string, state_stack, num)
-#    if state_stack:
-#        for i in xrange(len (state_stack) - 1):
-#            state_stack[0].add_next_state(state_stack[i + 1])
-#        state_stack[0].add_next_state(done_nfa())
-#        return state_stack[0]
-#    else: 
-#        return None
-
-
 class getter (object):
+    "Getter class for the string"
     def __init__ (self, string):
         self.string = string
         self.ind = 0
@@ -259,62 +211,75 @@ class getter (object):
     
     def unget (self):
         self.ind = self.ind - 1
+        
+    def eof (self):
+        if self.ind == len(self.string):
+            return True
+        return False
 
+def concat (stack, seq_len):
+    "If possible, concatenates the last seq_len states of the stack"
+    i = 1
+    while len (stack) > 1 and i < seq_len:
+        state1 = stack.pop()
+        state0 = stack.pop()
+        stack.append (state0.add_next_state (state1))
+        i = i + 1
 
-def parse_primary (gtr, state_stack):
+def handle_primary (gtr, stack):
+    "Handles the primary matches - characters and *, calls handle_or for brace content"
+    c = gtr.get_char ();
+    if c is None:
+        return
+    if c.isalnum ():
+        stack.append (char_nfa (c))
+        return
+    if c == '*':
+        stack.append (asterix_nfa (stack.pop ()))
+        return
+    if c == '(':
+        handle_or (gtr, stack)
+        c = gtr.get_char ()
+        if c != ')':
+            raise Exception ('Closing brace expected, got %s instead.' % c)
+        return
+    gtr.unget ()
+    return
+
+def handle_seq (gtr, stack):
+    "Handles primary match sequenes"
+    handle_primary (gtr, stack)
+    seq_len = 1
     char = gtr.get_char ()
-    if char is None:
-        return
-    if char == '*':
-        content = state_stack.pop ()
-        state = asterix_nfa (content)
-        state_stack.append(state)
-        return
-    if char == '|' or char == '(' or char == ')':
+    while char is not None and char != '|' and char != ')':
         gtr.unget ()
-        return
-    state = char_nfa (char)
-    state_stack.append (state)
-    parse_primary (gtr, state_stack)    
+        old_len = len (stack)
+        handle_primary (gtr, stack)
+        if (old_len != len (stack)):
+            seq_len = seq_len + 1
+        char = gtr.get_char ()
+    concat (stack, seq_len)
+    gtr.unget ()
+    return
 
-def concat_states (state_stack):
-    if not state_stack:
-        return
-    concat_state_list = []
-    state = state_stack.pop ()
-    while state != '(':
-        concat_state_list.append (state)
-        if state_stack:
-            state = state_stack.pop ()
-        else:
-            break
-    if concat_state_list:
-        length = len (concat_state_list) - 1
-        first_state = concat_state_list[length]
-        for i in xrange (length):
-            concat_state_list[length].add_next_state (concat_state_list [length - 1 - i])
-        state_stack.append (first_state)
-
-def parse_secondary (gtr, state_stack = []):
-    parse_primary (gtr, state_stack)
-    concat_states (state_stack)
-    char = gtr.get_char ()
-    if char is None:
-        return state_stack
-    if char == "|":
-        parse_primary (gtr, state_stack)
-        state0 = state_stack.pop ()
-        state1 = state_stack.pop ()
-        state_stack.append (or_nfa(state1, state0))
-    elif char == ')':
-        concat_states (state_stack)
-    elif char == '(':
-        state_stack.append ('(')
-    parse_secondary (gtr, state_stack)
-    return state_stack
-
+def handle_or (gtr, stack):
+    "Handles or's"
+    handle_seq (gtr, stack)
+    if gtr.get_char () == "|":
+        handle_seq (gtr, stack)
+        state0 = stack.pop ()
+        state1 = stack.pop ()
+        stack.append (or_nfa (state1, state0))
+    else:
+        gtr.unget ()
+    
 def parse (string):
     gtr = getter (string)
-    print parse_secondary (gtr, [])
+    stack = []
+    handle_or (gtr, stack)
+    if not stack:
+        raise Exception ('Empty regexp!')
+    stack[0].add_next_state (done_nfa ())
+    return stack[0]
 
 # vim: set ts=4 sw=4 sts=4 et

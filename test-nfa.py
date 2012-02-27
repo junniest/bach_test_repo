@@ -1,27 +1,28 @@
 from nfa import *
 
+letters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
 # a(a|b)x*
 reg0 = char_nfa ('a') \
        .add_next_state (or_nfa (char_nfa ('a'), char_nfa ('b'))) \
        .add_next_state (asterix_nfa (char_nfa ('x'))) \
        .add_next_state (done_nfa ())
-postf_reg0 = 'a(ab|).x*.' 
+regexp0 = 'a(a|b)x*' 
 
 # (a|b)*
 reg1 = asterix_nfa(or_nfa(char_nfa('a'), char_nfa('b')))\
        .add_next_state(done_nfa())
-postf_reg1 = '(ab|)*'
+regexp1 = '(a|b)*'
 
 # (ab*|bb)
 reg2 = or_nfa (char_nfa ('a').add_next_state (asterix_nfa(char_nfa('b'))),\
                char_nfa ('b').add_next_state (char_nfa('b')))\
        .add_next_state(done_nfa())
-postf_reg2 = 'ab*.bb.|'
+regexp2 = '(ab*|bb)'
 
 #((c*)*)*
 reg3 = asterix_nfa(asterix_nfa(asterix_nfa(char_nfa('c')))).add_next_state(done_nfa())
-postf_reg3 = 'c***'
+regexp3 = '((c*)*)*'
 
 #((c|a)|(b|xxb*))
 reg4 = or_nfa (or_nfa(char_nfa ('c'), char_nfa ('a')),\
@@ -29,14 +30,14 @@ reg4 = or_nfa (or_nfa(char_nfa ('c'), char_nfa ('a')),\
                       char_nfa ('x').add_next_state(char_nfa('x'))\
                       .add_next_state(asterix_nfa(char_nfa('b')))))\
        .add_next_state(done_nfa())
-postf_reg4 = '(ca|)(b(xx.b*.)|)|'
+regexp4 = '((c|a)|(b|xxb*))'
 
 #(((a|b)|c)|x)
 reg5 = or_nfa (or_nfa (or_nfa (char_nfa ('a'), char_nfa ('b')),\
                        char_nfa('c')),\
                char_nfa('x'))\
        .add_next_state(done_nfa())
-
+regexp5 = '(((a|b)|c)|x)'
 
 # (x|(a|(b|c*)*)*)
 reg6 = or_nfa (char_nfa ("x"),\
@@ -44,29 +45,22 @@ reg6 = or_nfa (char_nfa ("x"),\
                             asterix_nfa (or_nfa (char_nfa ('b'),\
                                                  asterix_nfa (char_nfa ('c')))))) \
        ).add_next_state (done_nfa ())
+regexp6 = '(x|(a|(b|c*)*)*)'
 
+# x*(a|c)
+reg7 = asterix_nfa (char_nfa('x'))\
+       .add_next_state (or_nfa (char_nfa('a'), char_nfa ('c')))\
+       .add_next_state (done_nfa ())
+regexp7 = 'x*(a|c)'
 
-# x* a | c
-f = asterix_nfa (char_nfa('x'))\
-    .add_next_state (or_nfa (char_nfa('a'), char_nfa ('c')))\
-    .add_next_state (done_nfa ())
+reg = regexp7
+print reg
+f = parse (reg)
 
-f = reg6
-
-#enumerate_states (f)
-print f
-
-print
-
-for dfa in det(f, 'abcxz'):
+for dfa in det(f, letters):
     if dfa is not None:
         print dfa
         for p in dfa.paths:
             print "\t", p, "->", dfa.paths[p]
 
-#print parse_infix ('ab(c|a)d*')
-
-parse ('fd|ds')
-
 # vim: set ts=4 sw=4 sts=4 et
-
