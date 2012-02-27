@@ -53,14 +53,19 @@ reg7 = asterix_nfa (char_nfa('x'))\
        .add_next_state (done_nfa ())
 regexp7 = 'x*(a|c)'
 
-reg = regexp7
-print reg
-f = parse (reg)
+automata_list = [det (parse (regexp0), letters), det (parse (regexp1), letters), det (parse (regexp2), letters), \
+                 det (parse (regexp3), letters), det (parse (regexp4), letters), det (parse (regexp5), letters), \
+                 det (parse (regexp6), letters), det (parse (regexp7), letters), det (parse ('abc'), letters)]
+regexp_list = [regexp0, regexp1, regexp2, regexp3, regexp4, regexp5, regexp6, regexp7, 'abc']
+execute ("aaab", automata_list, regexp_list)
 
-for dfa in det(f, letters):
-    if dfa is not None:
-        print dfa
-        for p in dfa.paths:
-            print "\t", p, "->", dfa.paths[p]
+#reg = regexp7
+#print reg
+#f = parse (reg)
+#for dfa in det(f, letters):
+#    if dfa is not None:
+#        print dfa
+#        for p in dfa.paths:
+#            print "\t", p, "->", dfa.paths[p]
 
 # vim: set ts=4 sw=4 sts=4 et
