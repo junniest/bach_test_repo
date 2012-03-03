@@ -194,7 +194,91 @@ def det (automata, symbol_list):
             if nl:
                dfa.paths[symbol] = add_to_state_list (nl, dfa_state_list)
     
-    return rearrange (dfa_state_list)
+    return minimize (rearrange (dfa_state_list))
+
+
+def get_group_no(state, group_list):
+    "Gets the group number which contains the state in question"
+    for i in xrange (len (group_list)):
+        if state in group_list[i]:
+            return i
+    raise Exception ("No group contains given state")
+
+
+def break_to_groups (group, group_list):
+    "Breaks the given group into smaller groups according to the paths they have"
+    result = []
+    state_path_list = []
+    # the cycle creates pairs of states and their paths encoded as paths to a particular group number in the given group_list
+    for state in group:
+        paths = {}
+        for char, path in state.paths.iteritems ():
+            paths[char] = get_group_no(state.paths.get (char), group_list)
+        state_path_list.append ((state, paths))
+    # split the created list into smaller groups according to their paths
+    while state_path_list:
+        state, paths = state_path_list.pop ()
+        new_group = [state]
+        remaining_state_path_list = []
+        for nstate, npaths in state_path_list:
+            if npaths == paths:
+                new_group.append (nstate)
+            else:
+                remaining_state_path_list.append ((nstate, npaths))
+        state_path_list = remaining_state_path_list
+        result.append (sorted (new_group))
+    return result
+
+
+def minimize (automata):
+    "This method minimizes the automata"
+    # starting breakdown - finishing and unfinishing states are separated
+    group_list = [[],[]]
+    for state in automata:
+        if state.accepting:
+            group_list[0].append (state)
+        else:
+            group_list[1].append (state)
+    old_group_list = []
+    
+    # if old and new group lists are equal, we're done minimizing
+    while not group_list == old_group_list:
+        old_group_list = group_list[:]
+        new_group_list = []
+        for group in group_list:
+            if len(group) == 1:
+                new_group_list.append(group)
+            else:
+                new_group_list = new_group_list + break_to_groups(group[:], group_list)
+        group_list = new_group_list
+    return make_automata_from_groups (group_list)
+
+
+def make_automata_from_groups (group_list):
+    "This method reforms a list of groups (after minimization) into an automata"
+    start_state = None
+    # All the first elements of a group are a new state
+    automata = [group[0] for group in group_list]
+    for group in group_list:
+        if len (group) == 1: # if group length is 1 it's just a state, nothing to do
+            break
+        # if s group has several states, we have to replace these states in all paths so that the paths are correct 
+        new_state = group [0]
+        for i in xrange(2, len (group)):
+            old_state = group [i]
+            for state in automata:
+                for (key, path) in state.paths.iteritems ():
+                    if path.equals (old_state):
+                        state.paths[key] = new_state
+                        break
+    for state in automata:
+        if state.id == 0:
+            start_state = state
+            break
+    automata.remove (start_state)
+    automata = sorted (automata)
+    automata.insert (0, start_state)
+    return automata
 
 class getter (object):
     "Getter class for the string"
