@@ -19,17 +19,15 @@ def random_group (s, rec):
     if (s == ""):
         s = random_word (random.randint (1, 5));
 
-    g = random.randint (1, 4);
+    g = random.randint (1, 3);
     if (g == 1):
         return random_group (s, rec-1)
     elif (g == 2):
-        return "(%s)?" % random_group (s, rec-1)
-    elif (g == 3):
         return "(%s)*" % random_group (s, rec-1)
-    elif (g == 4):
+    elif (g == 3):
         s = random_group (s, rec-1)
         s1 = random_group ("", rec)
-        return "(%s | %s)" % (s, s1)
+        return "(%s|%s)" % (s, s1)
 
 def random_rexp ():
     return random_group ("", 4)
@@ -60,14 +58,17 @@ def test_nfa_rexp ():
     import nfa
 
     rexp, string, matcher = gen_test ()
+    print rexp, string
 
     if (matcher is None):
         print "Syupid python cannot build a matcher for %s" % rexp
+    else:
+        print  matcher.match(string)
 
     letters = "".join ([chr (ord ('a') + c) for c in xrange (26)])
-    
+
     # FIXME This thing loops forever by some reason
-    res = nfa.execute (string, [nfa.det (nfa.parse (rexp), letters)], [rexp])
+    res = nfa.execute (string, [nfa.det (nfa.parse (rexp), letters)], [rexp])     
 
     # further here we should have something like
     # res_nfa = matcher.match (string)
