@@ -1,4 +1,15 @@
-Automaton minimization
+\documentclass{article}
+
+\author{June Pecherskaya \and Artem Shinkarov}
+\date{\today}
+\title{Automaton minimization}
+
+\begin{document}
+
+\maketitle
+
+% Here is a very useful link:
+% http://www.cs.uky.edu/~lewis/essays/compilers/min-fa.html
 
 A set of words that are recognized by a certain regular expression are
 also recognized by a group of automata. These automata might have
@@ -11,11 +22,12 @@ As the naming of the states is unimportant, we will say that two
 automata are the same up to state names if one can be transformed to
 another be simply renaming the states.It turns out that for each
 regular language exists a unique (up to state names) automaton with a
-minimal number of states. (1)
+minimal number of states\footnote{Do I have to give the proof that the
+minimal automaton exists?}.
 
 Before being able to continue to the actual minimization of automata,
 a definitions is required. We will say that string x distinguishes
-state s from state t if only one state reached from t and s by
+state $s$ from state $t$ if only one state reached from $t$ and $s$ by
 following x is an accepting state. So two states are distinguishable
 if there exists a string that distiguishes them. Any accepting state
 is distinguishable from any nonaccepting state by an empty string (a
@@ -43,16 +55,16 @@ all groups in the current partition, then again for the new partition,
 until no group can be split further.   
 
 Then a representative is selected from each group so that:
-  1) The start state of the new automaton is the representative of the
-     group containing the start state of the old automaton.
-  2) The accepting states of the new automaton are representatives of
-     the groups that contain accepting states of the old automaton.
-  3) If state s is a representative of some group G and it has a
-     transition to state t of the old automaton. Let r be the
-     representative of the group containing t. Then we replace t in all
-     of the transitions from s to the representative state r.
-
+\begin{enumerate}
+  \item The start state of the new automaton is the representative of the
+        group containing the start state of the old automaton.
+  \item The accepting states of the new automaton are representatives of
+        the groups that contain accepting states of the old automaton.
+  \item If state $s$ is a representative of some group G and it has a
+        transition to state $t$ of the old automaton. Let $r$ be the
+        representative of the group containing $t$. Then we replace $t$ in all
+        of the transitions from $s$ to the representative state $r$.
+\end{enumerate}
 Therefore we create a new automaton with the minimum number of states.
-(1) - Do I have to give the proof that the minimal automaton exists?
-
+\end{document}
 
