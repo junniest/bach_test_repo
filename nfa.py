@@ -179,6 +179,8 @@ def rearrange (dfa_state_list):
     return dfa_state_list
 
 
+# FIXME The symbol_list is bullshit.  You can build a symbol list 
+# from the nfa itself.  Please remove.
 def det (automata, symbol_list):
     dfa_state_list = []
     nfa_state_list = get_epsilon_closure ([automata])
@@ -366,6 +368,9 @@ def parse (string):
     stack[0].add_next_state (done_nfa ())
     return stack[0]
 
+# FIXME Why the function takes automata_list and regexp_list, which
+# eventually must be connected.  Can't it get aotomata-list by
+# parsing and determinating each element of regex_list?
 def execute (string, automata_list, regexp_list):
     auto_dict = dict (zip (xrange (len(automata_list)), [auto[0] for auto in automata_list]))
     for char in string:
@@ -382,5 +387,7 @@ def execute (string, automata_list, regexp_list):
         print "Accepted regexp ", regexp_list [i]
     if not auto_dict:
         print "No accepted regexps"
+
+
 
 # vim: set ts=4 sw=4 sts=4 et
