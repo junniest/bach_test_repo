@@ -372,7 +372,8 @@ def parse (string):
 # eventually must be connected.  Can't it get aotomata-list by
 # parsing and determinating each element of regex_list?
 def execute (string, automata_list, regexp_list):
-    auto_dict = dict (zip (xrange (len(automata_list)), [auto[0] for auto in automata_list]))
+    auto_dict = dict (zip (xrange (len(automata_list)),\
+			   [auto[0] for auto in automata_list]))
     for char in string:
         to_throw_out = []
         for key in auto_dict.iterkeys ():
@@ -380,13 +381,17 @@ def execute (string, automata_list, regexp_list):
                 auto_dict[key] = auto_dict.get (key).paths.get (char)
             else:
                 to_throw_out.append (key)
-        auto_dict = dict (filter (lambda (key, item): not key in to_throw_out, auto_dict.iteritems()))
-    auto_dict = dict (filter (lambda (key, item): item.accepting, auto_dict.iteritems()))
+	pred = lambda (key, item): not key in to_throw_out
+        auto_dict = dict (filter (pred, auto_dict.iteritems()))
+
+    pred = lambda (key, item): item.accepting
+    auto_dict = dict (filter (pred, auto_dict.iteritems()))
     
-    for i in auto_dict.iterkeys ():
-        print "Accepted regexp ", regexp_list [i]
-    if not auto_dict:
-        print "No accepted regexps"
+    return not not auto_dict
+    #for i in auto_dict.iterkeys ():
+    #    print "Accepted regexp ", regexp_list [i]
+    #if not auto_dict:
+    #    print "No accepted regexps"
 
 
 
