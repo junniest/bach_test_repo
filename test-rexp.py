@@ -49,7 +49,7 @@ def gen_test ():
     s, ms =  random_rexp ()
     r = None
     try:
-        r = re.compile (s)
+        r = re.compile ('^'+s+'$')
     except Exception as inst:
         # Stupid python dose not like some of
         # random regexps.  :(

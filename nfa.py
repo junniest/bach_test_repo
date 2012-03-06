@@ -262,21 +262,20 @@ def make_automata_from_groups (group_list):
     # All the first elements of a group are a new state
     automata = [group[0] for group in group_list]
     for group in group_list:
-        if len (group) == 1: # if group length is 1 it's just a state, nothing to do
-            break
-        # if s group has several states, we have to replace these states in all paths so that the paths are correct 
         new_state = group [0]
-        for i in xrange(2, len (group)):
+        if new_state.id == 0:
+            start_state = new_state
+        if len (group) == 1: # if group length is 1 it's just a state, nothing to do
+            continue
+        # if s group has several states, we have to replace these states in all paths so that the paths are correct 
+        for i in xrange(1, len (group)):
             old_state = group [i]
+            if old_state.id == 0:
+                start_state = new_state
             for state in automata:
                 for (key, path) in state.paths.iteritems ():
-                    if path.equals (old_state):
+                    if path == old_state:
                         state.paths[key] = new_state
-                        break
-    for state in automata:
-        if state.id == 0:
-            start_state = state
-            break
     automata.remove (start_state)
     automata = sorted (automata)
     automata.insert (0, start_state)
