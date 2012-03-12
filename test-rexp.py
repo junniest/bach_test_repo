@@ -12,71 +12,75 @@ def random_word (l):
         s += random_symbol ()
     return s
 
-def random_group (s, rec):
+def random_group (s, rec, ms):
     if (rec == 0):
-        return s
+        return s, ms
 
-    if (s == ""):
+    if s == "":
         s = random_word (random.randint (1, 5));
 
-    g = random.randint (1, 4);
+    if ms == "":
+	ms = s
+
+    g = random.randint (1, 3);
     if (g == 1):
-        return random_group (s, rec-1)
+        return random_group (s, rec-1, ms)
     elif (g == 2):
-        return "(%s)?" % random_group (s, rec-1)
+	s, ms = random_group (s, rec-1, ms)
+	w = random_word (random.randint (1,5))
+
+        return "((%s)*%s)" % (s, w), (ms * random.randint (0,3)) + w
     elif (g == 3):
-        return "(%s)*" % random_group (s, rec-1)
-    elif (g == 4):
-        s = random_group (s, rec-1)
-        s1 = random_group ("", rec)
-        return "(%s | %s)" % (s, s1)
+        s, ms1 = random_group (s, rec-1, ms)
+        s1, ms2 = random_group ("", rec, "")
+
+	if random.randint (1,2) == 1:
+	  ms = ms1
+	else: 
+	  ms = ms2
+        return "(%s|%s)" % (s, s1), ms
 
 def random_rexp ():
-    return random_group ("", 4)
+    rexp, ms = random_group ("", 4, "")
+    return "(%s)" % rexp, ms
 
 
 def gen_test ():
-    s =  random_rexp ()
+    s, ms =  random_rexp ()
     r = None
     try:
-        r = re.compile (s)
+        r = re.compile ('^'+s+'$')
     except Exception as inst:
         # Stupid python dose not like some of
         # random regexps.  :(
         pass
 
-    ss = []
-    for t in s:
-        if t >= 'a' and t <= 'z':
-            ss += t
-    ns = ""
-    for p in xrange (len (ss) * 3):
-        ns += ss[random.randint (0, len (ss) -1)]
-
-    return s, ns, r
+    return s, ms, r
 
 
-def test_nfa_rexp ():
+def test_nfa_rexp (num):
     import nfa
 
     rexp, string, matcher = gen_test ()
 
-    if (matcher is None):
-        print "Syupid python cannot build a matcher for %s" % rexp
+    # print "matching `%s' against `%s'" % (rexp, string)
+    
+    pytest = False
+    if matcher is not None:
+	m = matcher.match (string)
+	if m is not None:
+	    pytest = m.group (0) == string
 
     letters = "".join ([chr (ord ('a') + c) for c in xrange (26)])
-    
-    # FIXME This thing loops forever by some reason
+
     res = nfa.execute (string, [nfa.det (nfa.parse (rexp), letters)], [rexp])
+    #print "\tpython:%r\t\tpechka-nfa:%r" % (pytest, res)
+    if pytest == res:
+	print "Test %i: passed!" % num
+    else:
+	print "Test %i: failed!" % num
+	print "\t`%s' against `%s'" % (rexp, string)
+	print "\tpython:%r\t\tpechka-nfa:%r" % (pytest, res)
 
-    # further here we should have something like
-    # res_nfa = matcher.match (string)
-    # if res_nfa is not None and res is not None
-    #   print "test passed"
-    # elif res_nfa is None and res is None
-    #   print "test passed"
-    # else:
-    #   print "test failed"
-
-test_nfa_rexp ()
-
+for i in xrange (500):
+    test_nfa_rexp (i+1)

@@ -262,21 +262,20 @@ def make_automata_from_groups (group_list):
     # All the first elements of a group are a new state
     automata = [group[0] for group in group_list]
     for group in group_list:
-        if len (group) == 1: # if group length is 1 it's just a state, nothing to do
-            break
-        # if s group has several states, we have to replace these states in all paths so that the paths are correct 
         new_state = group [0]
-        for i in xrange(2, len (group)):
+        if new_state.id == 0:
+            start_state = new_state
+        if len (group) == 1: # if group length is 1 it's just a state, nothing to do
+            continue
+        # if s group has several states, we have to replace these states in all paths so that the paths are correct 
+        for i in xrange(1, len (group)):
             old_state = group [i]
+            if old_state.id == 0:
+                start_state = new_state
             for state in automata:
                 for (key, path) in state.paths.iteritems ():
-                    if path.equals (old_state):
+                    if path == old_state:
                         state.paths[key] = new_state
-                        break
-    for state in automata:
-        if state.id == 0:
-            start_state = state
-            break
     automata.remove (start_state)
     automata = sorted (automata)
     automata.insert (0, start_state)
@@ -372,7 +371,8 @@ def parse (string):
 # eventually must be connected.  Can't it get aotomata-list by
 # parsing and determinating each element of regex_list?
 def execute (string, automata_list, regexp_list):
-    auto_dict = dict (zip (xrange (len(automata_list)), [auto[0] for auto in automata_list]))
+    auto_dict = dict (zip (xrange (len(automata_list)),\
+			   [auto[0] for auto in automata_list]))
     for char in string:
         to_throw_out = []
         for key in auto_dict.iterkeys ():
@@ -380,13 +380,17 @@ def execute (string, automata_list, regexp_list):
                 auto_dict[key] = auto_dict.get (key).paths.get (char)
             else:
                 to_throw_out.append (key)
-        auto_dict = dict (filter (lambda (key, item): not key in to_throw_out, auto_dict.iteritems()))
-    auto_dict = dict (filter (lambda (key, item): item.accepting, auto_dict.iteritems()))
+	pred = lambda (key, item): not key in to_throw_out
+        auto_dict = dict (filter (pred, auto_dict.iteritems()))
+
+    pred = lambda (key, item): item.accepting
+    auto_dict = dict (filter (pred, auto_dict.iteritems()))
     
-    for i in auto_dict.iterkeys ():
-        print "Accepted regexp ", regexp_list [i]
-    if not auto_dict:
-        print "No accepted regexps"
+    return not not auto_dict
+    #for i in auto_dict.iterkeys ():
+    #    print "Accepted regexp ", regexp_list [i]
+    #if not auto_dict:
+    #    print "No accepted regexps"
 
 
 
