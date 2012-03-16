@@ -1,0 +1,55 @@
+\section{\label{sec:parser}Parser model}
+
+Our work is concerned with a dynamic grammar modification on the
+fly, and as a base of our approach we are going to consider an
+LL(k) recursive descent parser with a certain properties.
+
+As a running example in this paper we are going to use an imaginary
+language with a C-like syntax.  Consider a grammar of the language.
+
+\begin{verbatim}
+program       ::=  ( function ) * ;
+function      ::=  type-id  '(' arg-list ')' stmt-block ;
+arg-list      ::=  ( type-id  id ) * ;
+stmt-block    ::=  '{' ( expr ';' ) * '}' ;
+expr          ::=  fun-call | assign | return | cond-expr ;
+fun-call      ::=  id '(' ( expr ) * ')' ;
+assign        ::=  id '=' expr ;
+cond-expr     ::=  bin-expr '?' cond-expr ':' expr ;
+bin-expr      ::=  bin-expr binop primary-expr
+primary-expr  ::=  number | prefix-op expr | '(' expr ')' ;
+binop         ::=  '&&' | '||' | '==' | '!=' ... ;
+prefix-op     ::=  '-' | '+' | '!' | '~' ;
+\end{verbatim}
+
+% These are the requirements.
+First of all we ask, that every production is represented as a function
+with a signature \verb/Parser -> (AST|Error)/, i.e function gets a
+parser-object on input and returns either an AST node or an error.
+We would call those functions handle-functions. We require that 
+handle-functions structure mimic a formulation of the grammar,
+i.e. if a production A depends on a production B, we require 
+function handle-A to call function handle-B.
+
+Each handle-function implements error recovery (if needed) and takes
+care about disambiguating productions according to the language
+specification, resolving operation priorities, syntax ambiguities
+and so on.  Each handle function has an access to the parser, which
+keeps has an internal state, which changes when a handle-function
+is applied.  In a some sense an application of a handle-function
+is a reduce step of a shift-reducer.
+
+Each handle-function is paired with a predicate function which checks
+whether a sequence of tokens pointed by a parser-state matches a 
+given rule.  This type of functions we will call is-functions.
+Application of an is-function does not modify the state of
+the parser.  Is-functions may require unbounded look-ahead from 
+the parser, which also happens to be a requirement.  We assume that in
+order to resolve complicated ambiguities unbounded look-ahead is needed
+anyways, as language expressions normally allow unbounded nesting.
+
+
+Assuming that all the requirements are met, the grammar $G = (N, T, P,
+S)$ provides a full information required to build a support for
+user-defined matches.
+

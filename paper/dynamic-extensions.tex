@@ -1,0 +1,41 @@
+\section{Dynamic extension}
+
+We introduce a generic syntax extension which can be applied to any
+language recognized by a parser which meet all the requirements from
+section~\ref{sec:parser}.  The syntax extension is capable to perform
+standard preprocessing tasks providing also a functionality to do
+partial evaluation and non-trivial generic code transformations.
+
+On the user level we introduce a single function which is called 
+\verb|match| and which substitutes a sequence of tokens matched
+with a certain pattern with another sequence of tokens.  
+Consider the following example:
+\begin{verbatim}
+match [\expr] foo ( a , b )   ->  [\expr] a + b
+\end{verbatim}
+where we substitute a sequence of tokens \verb|foo (a,b)|, which would 
+be normally matched by an `expr' rule of our grammar, with  with
+token-sequence \verb|a + b| and applying `expr' production on them.
+Note that the above definition has a number of differences from the 
+classical C preprocessor macro-definition \verb|#define foo(a, b) a + b|.
+First of all, the above match definition is not a function and \verb|a|
+\verb|b| are not arguments, hence, the match would not replace
+expressions \verb|foo (2, 3)| or \verb|foo (b, a)|.  Secondly, the
+match is bounded to one particular production, which means that it
+would not perform a substitution in case one wrote \verb|foo (a, b)|
+as a member of a statement block.  Thirdly, the result of the
+substitution is always a single value, which avoids the classical
+situation with missing parentheses in the macro definition, i.e.
+if a macro-definition \verb|#define foo(a, b) a + b| is applied to 
+\verb|foo (2,3) * 5|, expansion would make it \verb|2 + 3 * 5|, where
+a conceptual expansion of the above match would look like 
+\verb|(2+3) * 5|.
+
+\fixme{Speak about patterns}
+
+\fixme{Speak about rewriting systems}
+
+\fixme{Speak about functions}
+
+\fixme{Show that match-functions form a \(\lambda\) calculus}
+

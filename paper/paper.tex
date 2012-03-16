@@ -1,4 +1,6 @@
-\documentclass{article}
+\documentclass[a4paper, draft]{article}
+
+\newcommand{\fixme}[1]{\vskip 5mm\noindent{\bf FIXME}: {\it #1}}
 
 \author{Julija Pecherska \and Artoms \v{S}inkarovs \and Pavels Zai\v{c}enkovs}
 \title{On dynamic extensions of context-dependent parser}
@@ -10,12 +12,11 @@
 \begin{abstract}
 \end{abstract}
 
-\section{Introduction}
 \input{intro.tex}
 
-\section{Parser model}
+\input{parser-model.tex}
 
-\section{Dynamic extension}
+\input{dynamic-extensions.tex}
 
 \section{Application}
 \subsection{Preprocessing}
@@ -25,6 +26,9 @@
 \section{Evaluation}
 
 \section{Future work}
+
+\bibliographystyle{plain}
+\bibliography{paper}
 
 
 \end{document}

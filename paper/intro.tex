@@ -1,14 +1,14 @@
-
-% parser model
+\section{Introduction}
 
 Most of the modern programming language syntax cannot be formulated
-using a context free grammar.  The problem is that rich and comfortable
-syntax brings a lot of ambiguities.  Consider the following examples:
+using a context free grammar only.  The problem is that rich
+syntax very often comes with a number of ambiguities.  Consider the 
+following examples:
 \begin{enumerate}
     \item The classical example from C language is a type-cast 
           syntax.  As a user can define an arbitrary type using
           \verb|typedef| construct, the type casting expression
-          \verb|(x) + 5| is undecidable, unless we know that 
+          \verb|(x) + 5| is undecidable, unless we know if
           \verb|x| is a type or not.
     \item Assume that we extend C syntax to allow an array 
           concatenation using infix binary \verb|++| operator and
@@ -26,8 +26,8 @@ syntax brings a lot of ambiguities.  Consider the following examples:
           obviously an error, or \verb|minus (log (x), log (y))|.
 \end{enumerate}
 
-Sometimes it may be the case, that context influences not only on
-the parsing decisions, but on the lexing decisions either.  Consider
+Sometimes it may be the case that context influences not only
+parsing decisions but also the lexing decisions.  Consider
 the following examples:
 \begin{enumerate}
     \item C++ allows nested templates, which means that one could
@@ -45,73 +45,22 @@ the following examples:
           \verb|+|, \verb|-|, \verb|5|).
 \end{enumerate}
 
-In order to resolve the ambiguities mentioned witin the classical
-grammar formulation assuming its execution on a hift-reduce machine,
-we have to make sure that we can annotate the grammar with a correct
-solution for each shift/reduce or reduce/reduce conflict, which puts
+In order to resolve the above ambiguities using LALR parser generator
+engine, we have to make sure that one can annotate the grammar with a correct
+choices for each shift/reduce or reduce/reduce conflict, which puts
 a number of restrictions on the execution engine.  Secondly, we have
 to implement the context support, which means that we need to have a
-mechanism for that which would not interfear with conflict-resolution.
+mechanism which would not interfear with conflict-resolution.
 Finally, one has to have an interface to a lexer in case lexing becomes
 context-dependent, and it may be integrated with an error-recovery
 mechanism.
 
-Having said that, we may see, that using a tool that generates an
-execution engine from the grammar specification could be of the same
-challenge as writing a parser by hands, where all the ambiguities 
-could be carefully resolved according to the language specification.
-
-As we are looking for a way to allow user change a certain parser
-behaviour on the fly, we would like to formulate our approach not 
-in terms of standard grammars, but in terms of a parser, which 
-implements a certain language and meet a certain requirements.
-
-We are going to formulate those requirements starting with an example
-of context-free grammar of an imaginary language with a C-like syntax.
-
-\begin{verbatim}
-program       ::=  ( function ) * ;
-function      ::=  type-id  '(' arg-list ')' stmt-block ;
-arg-list      ::=  ( type-id  id ) * ;
-stmt-block    ::=  '{' ( expr ';' ) * '}' ;
-expr          ::=  fun-call | assign | return | cond-expr ;
-fun-call      ::=  id '(' ( expr ) * ')' ;
-assign        ::=  id '=' expr ;
-cond-expr     ::=  bin-expr '?' cond-expr ':' expr ;
-bin-expr      ::=  bin-expr binop primary-expr
-primary-expr  ::=  number | prefix-op expr | '(' expr ')' ;
-binop         ::=  '&&' | '||' | '==' | '!=' ... ;
-prefix-op     ::=  '-' | '+' | '!' | '~' ;
-\end{verbatim}
-
-First of all we ask, that every production is represented as a function
-with a signature \verb/Parser -> (AST|Error)/, i.e function gets a
-parser-object on input and returns either an AST node or an error.
-We would call those functions handle-functions. We require that 
-handle-functions structure mimic a formulation of the grammar,
-i.e. if a production A depends on a poduction B, we require 
-funtion handle-A to call function handle-B.
-
-Each handle-function implements error recovery (if needed) and takes
-care about disambiguating productions according to the language
-specification, resolving operation priorities, syntax ambiguities
-and so on.  Each handle function has an access to the parser, which
-keeps has an internal state, which changes when a handle-function
-is applied.  In a some sense an application of a handle-function
-is a reduce step of a shift-reducer.
-
-Each handle-function is paired with a predicate function which checks
-whether a sequence of tokens pointed by a parser-state matches a 
-given rule.  This type of functions we will call is-functions.
-Application of an is-function does not modify the state of
-the parser.  Is-functions may require unbounded look-ahead from 
-the parser, which also happens to be a requirement.  We assume that in
-order to resolve complicated ambiguities unbounded look-ahead is needed
-anyways, as language expressions normally allow unbounded nesting.
-
-
-Assuming that all the requirements are met, the grammar $G = (N, T, P,
-S)$ provides a full information required to build a support for
-user-defined matches.
-
+Having said that, we may see that using parser generators could be of
+the same challenge as writing a parser by hands, where all the
+ambiguities could be carefully resolved according to the language
+specification.  As it turns out most of the complicated languages
+front-ends use hand-written recursive descendent parsers, specially
+treating ambiguous cases.  For example the following languages do:
+C/C++/ObjectiveC in GNU GCC~\cite{gcc}, clang in LLVM~\cite{}, 
+javascript in google V8~\cite{}.
 
