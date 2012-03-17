@@ -6,7 +6,7 @@ section~\ref{sec:parser}.  The syntax extension is capable to perform
 standard preprocessing tasks providing also a functionality to do
 partial evaluation and non-trivial generic code transformations.
 
-On the user level we introduce a single function which is called 
+On the user level we introduce a single macro definition which is called 
 \verb|match| and which substitutes a sequence of tokens matched
 with a certain pattern with another sequence of tokens.  
 Consider the following example:
@@ -14,24 +14,67 @@ Consider the following example:
 match [\expr] foo ( a , b )   ->  [\expr] a + b
 \end{verbatim}
 where we substitute a sequence of tokens \verb|foo (a,b)|, which would 
-be normally matched by an `expr' rule of our grammar, with  with
+be normally matched by an `expr' rule of our grammar, with
 token-sequence \verb|a + b| and applying `expr' production on them.
-Note that the above definition has a number of differences from the 
-classical C preprocessor macro-definition \verb|#define foo(a, b) a + b|.
-First of all, the above match definition is not a function and \verb|a|
-\verb|b| are not arguments, hence, the match would not replace
-expressions \verb|foo (2, 3)| or \verb|foo (b, a)|.  Secondly, the
-match is bounded to one particular production, which means that it
-would not perform a substitution in case one wrote \verb|foo (a, b)|
-as a member of a statement block.  Thirdly, the result of the
-substitution is always a single value, which avoids the classical
-situation with missing parentheses in the macro definition, i.e.
-if a macro-definition \verb|#define foo(a, b) a + b| is applied to 
-\verb|foo (2,3) * 5|, expansion would make it \verb|2 + 3 * 5|, where
-a conceptual expansion of the above match would look like 
-\verb|(2+3) * 5|.
-
-\fixme{Speak about patterns}
+The above definition has a number of differences from the 
+classical C preprocessor macro-definition \verb|#define foo(a, b) a + b|:
+\begin{itemize}
+  \item The above macro definition is not a function and \verb|a|
+  \verb|b| are not arguments. The macro will match expressions where identifiers \verb|a| and
+  \verb|b| are passed. In terms of tokens, only the sequence of tokens
+  \verb|'foo', '(', 'a', 'b', ')'| will be matched.
+  Hence, the match would not replace
+  expressions \verb|foo (2, 3)| or \verb|foo (b, a)|. 
+  \item The match is bounded to one particular production in the grammar, which
+  is `expr' in this example. It means that it 
+  would not perform a substitution in case one wrote \verb|foo (a, b)|
+  as a member of a statement block or a function header.
+  \item The result of the substitution is always a single value, which avoids 
+  the classical situation with missing parentheses in the macro definition, 
+  i.e. if a macro-definition \verb|#define foo(a, b) a + b| is applied to 
+  \verb|foo (2,3) * 5|, expansion would make it \verb|2 + 3 * 5|, where
+  a conceptual expansion of the above match would look like \verb|(2+3) * 5|.
+\end{itemize}
+It should be pointed out that in order to associate macro with some production
+it's necessary to provide grammar rules for a programmer. This will allow to
+take context into account and to interact with grammar parser dynamically.
+\subsection{Language patterns}
+The depicted parser would be impractical without pattern matching. To
+illustrate this we 
+would like to match expression \verb|foo(a, b)|, which can be occured in place 
+of `expr' production and \verb|a|, \verb|b| are allowed to be any relevant
+arguments.
+\begin{verbatim}
+match [\expr] foo ( \expr , \expr ) 
+   -> [\expr] \expr[1] + \expr[2]
+\end{verbatim}
+Let's compare this example with the previous one. We state here that we expect
+two token sequences in the brackets that would be interpreted as `expr'
+productions. The type of production is important as this allows to perform an 
+effective type checking. Specifically, this macro will recognize 
+\verb|foo (return 0, 1)| as a fallaicious, unlike the C macro which will not
+point out any error. \\
+It is noteworthy to mention about pitfalls of this approach. The macro
+extension associates user-defined rules with the grammar of the language.
+Therefore, these rules might conflict with existing ones and an ambiguous
+grammar can be produced. We state here that user has to control such situations
+himself, otherwise, an error of the parser will be raise. \\
+Furthermore, we provide an interface to a lexer. For instance, it's possible to
+use some specific tokens in user-defined productions.
+\begin{verbatim}
+match [\expr] | \expr | -> [\expr] absolute_value (\expr[1])
+\end{verbatim}
+Here we introduce a new \verb/|/ token which could be used for getting an
+absolute number value. A remarkable point is that expressions such as 
+\verb/|-5|/ or even \verb/||-5||/, as this macro takes lexical scope into
+account. Notice that \verb/|1|2|/ will produce an error as expected. \\
+New tokens defined in the left part of the matcher are appended to a valid token
+table. We can use them equally well as `native grammar' tokens. It allows to
+build legacy rules using new tokens:
+\begin{verbatim}
+match [\expr] < \expr > -> [\expr] | \expr[1] |
+\end{verbatim}
+As a matter of fact only defined tokens can be used in the right part of the macro. 
 
 \fixme{Speak about rewriting systems}
 

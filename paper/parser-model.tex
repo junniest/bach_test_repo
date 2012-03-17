@@ -11,8 +11,8 @@ language with a C-like syntax.  Consider a grammar of the language.
 program       ::=  ( function ) * ;
 function      ::=  type-id  '(' arg-list ')' stmt-block ;
 arg-list      ::=  ( type-id  id ) * ;
-stmt-block    ::=  '{' ( expr ';' ) * '}' ;
-expr          ::=  fun-call | assign | return | cond-expr ;
+stmt-block    ::=  '{' ( expr | return ';' ) * '}' ;
+expr          ::=  fun-call | assign | cond-expr ;
 fun-call      ::=  id '(' ( expr ) * ')' ;
 assign        ::=  id '=' expr ;
 cond-expr     ::=  bin-expr '?' cond-expr ':' expr ;
@@ -24,7 +24,7 @@ prefix-op     ::=  '-' | '+' | '!' | '~' ;
 
 % These are the requirements.
 First of all we ask, that every production is represented as a function
-with a signature \verb/Parser -> (AST|Error)/, i.e function gets a
+with a signature \verb/Parser -> (AST|Error)/, i.e. function gets a
 parser-object on input and returns either an AST node or an error.
 We would call those functions handle-functions. We require that 
 handle-functions structure mimic a formulation of the grammar,
