@@ -1,0 +1,45 @@
+\subsection{Macros in Lisp}
+In some way the concept of Lisp is very close to the idea of dynamic parser
+described here. Instead of operating with strings, Lisp deals with tokens.
+However, the syntax of Lisp is very different from the most programming
+languages. This makes macro transformation an efficient tool in Lisp. The main
+question here is to figure out are we capable to have a similar functionality
+in our dynamic parser regardless syntax differences. \\
+A Lisp program is represented as a nested list structure. Each list
+represents a form which can be transformed or evaluated. The homoiconicity in
+Lisp allows to simplify macro processing significantly. Consider the problem
+mentioned in section \ref{sec:intro}: \verb|log (x) - log (y)| -- expression
+which could be interpreted differently depending on the context. In Lisp each
+case would have a separate representation: \verb|((log (- (log x))) y)| or
+\verb|(- (log x) (log y))|. You can see that there is no need for compiler to
+guess the context. \\
+There is another advantage of such approach. The prefix notation allows to make
+a decision depending on the first character in the list. Particularly, there 
+are two options:
+\begin{enumerate}
+    \item Mark expression as a function call, providing  the first character is 
+          defined in the function table.
+    \item Evaluate the expression given a macro definition. 
+\end{enumerate}
+A macro expansion consists of two steps as well, which are performed
+sequentionally:
+\begin{enumerate}
+    \item Build an expression specified by macro definition.
+    \item Evaluate generated expression.
+\end{enumerate}
+These steps are distinguished as the first one operates with expressions, and
+the second one deals with its values. To perform evaluation an expression-value
+table is needed, because when expression transformation can't be performed, the
+evaluation process begins. Macro expansion performance capabilities generally
+depend on evaluation. To improve evaluation there are several incremental Lisp
+compilers. These compilers can evaluate expressions in macro when all necessary
+information become available. \\
+It should be pointed out that it is possible to build a dynamic parser similar
+to the one in Lisp, however some issues are to be handled:
+\begin{itemize}
+    \item Given a program represented as a sequence of tokens, it is necessary
+    to resolve the context unambiguously. In some particular cases it could be
+    a tricky task, as a number of look-ahead tokens is unbounded.
+    \item There is no `decisive' token in the sequence. We are to use regular
+    expressions to parse the whole expression. 
+\end{itemize}
