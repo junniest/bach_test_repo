@@ -1,0 +1,41 @@
+\section{ML/I macros}
+ML/I macros processor\cite{mli} is going to be covered in this section. 
+Basically our 
+dynamic parser described here and ML/I share the idea of supporting the 
+regular expression functionality. This could be a very powerful
+instrument to support almost any expression substitution. However, there is a
+bunch of problems. Let's have a close look on ML/I macros processor and see how
+the problems are handled there. \\
+ML/I can be regarded as a processor which operates with strings. In many cases
+it behaves like a macro-processor in C. If we define macro 
+\verb|#define foo bar| in C, it will substitute \verb|xfoo foo yfooz foox| 
+string for \verb|xfoo bar yfooz foox|. It follows that delimeter characters as
+whitespaces and `new line' are
+taken into account. In ML/I the same macro will look like
+\begin{verbatim}
+MCDEF foo AS bar
+\end{verbatim}
+This leads to the fact that even in the simplest case characters can't be
+interpreted in the same way. \\
+ML/I would be a poor macro-processor if it didn't support any argument passing.
+The argument passing is tightly connected with delimiter characters in ML/I.
+Arguments can be occured in any place between non-delimiter characters. An
+equivalent expression for
+\begin{verbatim}
+#define unstack x \
+{		  \
+  x = stack[ptr]; \
+  ptr = ptr - 1;  \
+}
+\end{verbatim}
+will be\cite{mli-guide}
+\begin{verbatim}
+MCDEF UNSTACK
+AS <%A1. = STACK[PTR];
+PTR = PTR - 1;>
+\end{verbatim}
+Access to arguments is done by writing \verb|\%An.| where n is the number of the
+argument passed. We access to the arguments in the dynamic parser in the same
+way, by enumerating arguments. Problems arise when we would like to support
+variable number of arguments and more complex match expressions.
+...Some text here...
