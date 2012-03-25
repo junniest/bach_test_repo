@@ -1,45 +1,37 @@
 \subsection{Macros in Lisp}
-In some way the concept of Lisp is very close to the idea of dynamic parser
-described here. Instead of operating with strings, Lisp deals with tokens.
-However, the syntax of Lisp is very different from the most programming
-languages. This makes macro transformation an efficient tool in Lisp. The main
-question here is to figure out are we capable to have a similar functionality
-in our dynamic parser regardless syntax differences. \\
-A Lisp program is represented as a nested list structure. Each list
-represents a form which can be transformed or evaluated. The homoiconicity in
-Lisp allows to simplify macro processing significantly. Consider the problem
-mentioned in section \ref{sec:intro}: \verb|log (x) - log (y)| -- expression
-which could be interpreted differently depending on the context. In Lisp each
-case would have a separate representation: \verb|((log (- (log x))) y)| or
-\verb|(- (log x) (log y))|. You can see that there is no need for compiler to
-guess the context. \\
-There is another advantage of such approach. The prefix notation allows to make
-a decision depending on the first character in the list. Particularly, there 
-are two options:
+Due to the Lisp's fully parenthesized Polish prefix syntax notation there is a
+powerful macro engine. We are going to cover its main principles and
+advantages.
 \begin{enumerate}
-    \item Mark expression as a function call, providing  the first character is 
-          defined in the function table.
-    \item Evaluate the expression given a macro definition. 
+    \item There is no need to mark out a structure from a token sequence for
+    the internal representation (IR). Every sequence of tokens in parenthesis
+    shapes an expression called \emph{form}. A program on Lisp represents a tree
+    of nested forms. This property is called \emph{homoiconicity}, as the
+    source code of a program can be proceeded by means of the same language. In
+    this case it is possible to consider a macro-definition as a left tree
+    substitution for one in the right part. For example, 
+    \begin{verbatim}
+    (defmacro sum (x y z) 
+    (list '+ (list '* x y) (list '* z z))
+    \end{verbatim} 
+    macros defines a list substitution for the nested list structure.
+    \item Any valid expression in Lisp represents a form. Even the whole
+    program is a form.  Therefore, it is possible to replace huge parts of a
+    program and even the whole program.  
+    \item Lisp's compiler does not match the whole expression (or a form) in
+    order to find out either a corresponding macros is defined. Due to the
+    prefix notation a `keyword' is the first token in a form.  If a macro
+    definition is occured in the macro table under the same keyword, then we
+    have to perform a macro substitution.  \\
+    However, this simplicity has a disadvantage too. Macros overloading is
+    not allowed in Lisp.  
+    \item A macro processor in Lisp not only substitutes
+    expressions, but also evaluates them. There is an expression-value table in
+    Lisp, where each expression is associated with it's value. For example, if
+    we write \verb|(setq a 3)|, then an expression \verb|a| has a corresponding
+    value \verb|3|. Consequently, if we create a list \verb|(list a (+ a 1))|,
+    a list \verb|(3 4)| will be returned, as this expression will be evaluated
+    during compilation. This emphasizes an interpetive nature of the language.
+    Although expression evaluation is not covered in the Common Lisp standart,
+    many compilers, such as GNU CLisp, CMU Common List support this feature.
 \end{enumerate}
-A macro expansion consists of two steps as well, which are performed
-sequentionally:
-\begin{enumerate}
-    \item Build an expression specified by macro definition.
-    \item Evaluate generated expression.
-\end{enumerate}
-These steps are distinguished as the first one operates with expressions, and
-the second one deals with its values. To perform evaluation an expression-value
-table is needed, because when expression transformation can't be performed, the
-evaluation process begins. Macro expansion performance capabilities generally
-depend on evaluation. To improve evaluation there are several incremental Lisp
-compilers. These compilers can evaluate expressions in macro when all necessary
-information become available. \\
-It should be pointed out that it is possible to build a dynamic parser similar
-to the one in Lisp, however some issues are to be handled:
-\begin{itemize}
-    \item Given a program represented as a sequence of tokens, it is necessary
-    to resolve the context unambiguously. In some particular cases it could be
-    a tricky task, as a number of look-ahead tokens is unbounded.
-    \item There is no `decisive' token in the sequence. We are to use regular
-    expressions to parse the whole expression. 
-\end{itemize}
