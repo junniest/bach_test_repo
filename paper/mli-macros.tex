@@ -1,41 +1,39 @@
-\section{ML/I macros}
-ML/I macros processor\cite{mli} is going to be covered in this section. 
-Basically our 
-dynamic parser described here and ML/I share the idea of supporting the 
-regular expression functionality. This could be a very powerful
-instrument to support almost any expression substitution. However, there is a
-bunch of problems. Let's have a close look on ML/I macros processor and see how
-the problems are handled there. \\
-ML/I can be regarded as a processor which operates with strings. In many cases
-it behaves like a macro-processor in C. If we define macro 
-\verb|#define foo bar| in C, it will substitute \verb|xfoo foo yfooz foox| 
-string for \verb|xfoo bar yfooz foox|. It follows that delimeter characters as
-whitespaces and `new line' are
-taken into account. In ML/I the same macro will look like
+\section{ML/1 macros}
+ML/1 is a stream-based macros processor\cite{mli}. It operates on a sequence of
+tokens.  The processor reads tokens one by one and performs input stream
+transformation taking into account the rules defined. \\ 
+In macro definition we define a correspondence between token sequence from the
+input and replace tokens. All atomic tokens are separated by delimiter tokens,
+such as `space' or `new line'. Suprisingly, there are no arguments placed in
+the macro rule to match. The arguments can appear between any atomic tokens.
+For example, 
 \begin{verbatim}
-MCDEF foo AS bar
+MCDEF foo bar baz AS ...
 \end{verbatim}
-This leads to the fact that even in the simplest case characters can't be
-interpreted in the same way. \\
-ML/I would be a poor macro-processor if it didn't support any argument passing.
-The argument passing is tightly connected with delimiter characters in ML/I.
-Arguments can be occured in any place between non-delimiter characters. An
-equivalent expression for
-\begin{verbatim}
-#define unstack x \
-{		  \
-  x = stack[ptr]; \
-  ptr = ptr - 1;  \
-}
-\end{verbatim}
-will be\cite{mli-guide}
-\begin{verbatim}
-MCDEF UNSTACK
-AS <%A1. = STACK[PTR];
-PTR = PTR - 1;>
-\end{verbatim}
-Access to arguments is done by writing \verb|\%An.| where n is the number of the
-argument passed. We access to the arguments in the dynamic parser in the same
-way, by enumerating arguments. Problems arise when we would like to support
-variable number of arguments and more complex match expressions.
-...Some text here...
+will match \verb|foo xx bar yy baz|, because arguments are inserted between
+atomic tokens. In order to restrict such insertion, tokens have to be combined
+into another one, atomic token. Thus in most cases the information about exact
+number of arguments and their names is not accessible. Therefore, arguments are
+accessed by number in the order they are met in the input string. Basically,
+this allows to support variable number of arguments. Here arises a problem of
+handling these arguments, because we do not know in advance how many arguments
+we have and we don't even know their types.  \\
+The following features of macro language allow to handle arguments properly:
+\begin{enumerate}
+    \item Tokens placed between argument tokens are called delimiters. It is
+    possible not only to access arguments, but also delimiter tokens,
+    enumerating them.
+    \item It is possible to define `if' condition statements. `Jumps' or `goto'
+    statemens are also supported. Consequently, we can verify delimiter tokens
+    number and its type, and perform substitutions accordingly.
+    \item Local variables can be used inside macros. This allows to describe
+    loop statements for iterating over the arguments.
+    \item ML/1 supports nested macro calls. While searching for delimiters and
+    arguments we can meet another macro call. In this case, we descend to a
+    lower level and return it's delimiters and arguments. Finally, they are
+    inserted in the `top' list.
+\end{enumerate}
+To sum up, ML/1 provides advanced features for macro processing. It is
+implemented as an imperative language operating on the stream of tokens.  It
+supports conditions, loops, branchs and assignment, so the language is
+Turing-complete.
