@@ -46,27 +46,32 @@
 \maketitle
 
 \begin{abstract}
-The idea of using a preprocessor before actual compilation is proven to be
-useful, however, automatic verification of a program that uses preprocessor
-macros is extremely hard.  The main difficulty comes from conceptual separation
-of grammatical rules of the language and substitution mechanisms underneath a
-preprocessor.  For example, C/C++ preprocessor is included in the language
-standards, but still the expressiveness of this tool is very limited in both
-computational power and syntax extension capabilities.  Modern programming
-languages define a syntax that cannot be described precisely using context free
-grammars.  This problem is well known, and as a solution there are parser
-generators like ANTLR, which generates LL(*) parsers rather than LALR/LR.
-Nevertheless, a lot of real-world parsers are implemented by hand.
+The idea of using a preprocessor before the actual compilation 
+is proven to be useful, however, the automatic verification of
+such a programs is extremely hard.  The main difficulty comes
+from conceptual separation of grammatical rules of the language
+and substitution mechanisms underneath a preprocessor.  C/C++
+preprocessor is included into the standard of the languages,
+however, expressiveness of this tool is very limited in both
+computational power, and syntax extension capabilities.  The
+modern programming languages nowadays define a syntax which 
+cannot be described precisely using context free grammars.
+This problem is well known, and as a solution there are parser
+generators like ANTLR which generates LL(*) parsers rather than
+LALR/LR.  Nevertheless, a lot of real-world parsers are 
+implemented by hand.
 
-In this paper we present a way of building a preprocessor that allows
-introducing dynamic changes to the grammar and that works on top of any
-recursive descent parser that meets certain requirements.  The preprocessing
-step consists of 2 substeps. First is matching a list of tokens against a
-regular expression built on tokens and encoded production names of the given
-grammar. And the second is transforming the result using a functional language.
-We demonstrate that using this approach makes it possible to i) give static
-guarantees regarding the preprocessing rules; ii) safely express non-trivial
-syntactical constructions; and iii) perform a restricted partial evaluation.
+In this paper we present a way of building a preprocessor which 
+allows dynamic changes of the grammar and which works on top of
+any recursive descent parser which meets a certain requirements.
+The preprocessing step consists of matching a list of tokens 
+against a regular expression built on tokens and encoded 
+production names of the given grammar and transforming the
+result using a functional language.  We demonstrate that using
+the proposed approach it becomes possible to i) give a static
+guarantees regarding the preprocessing rules; ii) safely express
+non-trivial syntactical constructions; and iii) perform a 
+restricted partial evaluation.
 \end{abstract}
 
 \input{intro.tex}
