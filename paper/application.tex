@@ -43,9 +43,9 @@ example allows us to write \verb|3!| instead of an integer  number, and
 compiler will return substituted and evaluated during compilation phase
 expression \verb|6|.
 \subsection{Preprocessing}
-In this approach macroprocessor doesn't allow us to parse some C preprocessor's
-constructs. We provide the macroprocessor which handle parser's context.
-However, C preprocessor works out of scope. For example, we can use 
+Using this approach macroprocessor doesn't allow us to parse some C
+preprocessor's constructs. We provide the macroprocessor which handle parser's
+context.  However, C preprocessor works out of scope. For example, we can use
 \verb|#if ... #endif| directives wherever in the source code. However, our
 macroprocessor works inside a context. This problem can be solved by
 introducing macro language inside lexer. Although it allows to define arbitrary
