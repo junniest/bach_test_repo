@@ -1,8 +1,8 @@
-\documentclass[a4paper, draft]{article}
-
+%\documentclass[a4paper]{article}
+\documentclass[a4paper]{llncs}
 
 \usepackage[T2A]{fontenc}
-\usepackage[utf8]{inputenc}
+\usepackage[utf8x]{inputenc}
 \usepackage[russian, english]{babel}
 \usepackage{color}
 \usepackage[colorlinks,bookmarksopen,bookmarksnumbered,citecolor=red,urlcolor=red]{hyperref}
@@ -10,14 +10,47 @@
 
 \newcommand{\fixme}[1]{\vskip 5mm\noindent{\bf FIXME}: {\it #1}}
 
-\author{J\=ulija Pe\v{c}erska \and Artoms \v{S}inkarovs \and Pavels Zai\v{c}enkovs}
-\title{On dynamic extensions of context-dependent parser}
+\author{Jūlija Pečerska\inst{1}, Artjoms Šinkarovs\inst{2}, Pavels Zaičenkovs\inst{3}}
 \date{\today}
+\title{On dynamic extensions of context-dependent parser\\
+       --- Extended Abstract ---}
+\institute{
+  University of Latvia,
+  Raiņa bulvāris 19, Rīga,
+  Latvija, LV-1586
+\and
+  Heriot-Watt University,
+  Riccarton, Edinburgh,
+  EH14 4AS, United Kingdom
+\and
+  Moscow Institute of Physics and Technology,
+  141700, 9, Institutskii per., Dolgoprudny, 
+  Moscow Region, Russia
+}
+
 
 \begin{document}
 \maketitle
 
 \begin{abstract}
+Most of the modern programming languages define a syntax which 
+cannot be described precisely using context free grammars.  For
+that reason a lot of parsers are implemented by hands, avoiding
+parser-generators like bison or antlr.  The idea of using a
+preprocessor before the actual compilation is proven to be
+useful, however the automatic verification of such a programs
+is extremely hard in case preprocessor and the parser act
+independently, like for example in C/C++.
+
+In this paper we present a way of building a preprocessor on top
+of an existing recursive descent parser.  The preprocessing step
+consists of matching a list of tokens against a regular expression
+built on tokens and encoded production names of the given grammar
+and transforming the result using a functional language.  We 
+demonstrate that using the proposed approach it becomes possible
+to i) give a static guarantees regarding the preprocessing rules;
+ii) safely express non-trivial syntactical constructions; and
+iii) perform a restricted partial evaluation.
 \end{abstract}
 
 \input{intro.tex}
