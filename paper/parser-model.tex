@@ -14,17 +14,17 @@ Fig.~\ref{fig:grammar}.
 \centering
 \begin{verbatim}
 program       ::=  ( function ) * ;
-function      ::=  type-id  '(' arg-list ')' stmt-block ;
-arg-list      ::=  ( type-id  id ) * ;
-stmt-block    ::=  '{' ( expr | return ';' ) * '}' ;
-expr          ::=  fun-call | assign | cond-expr ;
-fun-call      ::=  id '('expr (',' expr ) * ')' ;
+function      ::=  type_id  '(' arg_list ')' stmt_block ;
+arg_list      ::=  ( type_id  id ) * ;
+stmt_block    ::=  '{' ( expr | return ';' ) * '}' ;
+expr          ::=  fun_call | assign | cond_expr ;
+fun_call      ::=  id '('expr (',' expr ) * ')' ;
 assign        ::=  id '=' expr ;
-cond-expr     ::=  bin-expr '?' cond-expr ':' expr ;
-bin-expr      ::=  bin-expr binop primary-expr
-primary-expr  ::=  number | prefix-op expr | '(' expr ')' ;
+cond_expr     ::=  bin_expr '?' cond_expr ':' expr ;
+bin_expr      ::=  bin_expr binop primary_expr
+primary_expr  ::=  number | prefix_op expr | '(' expr ')' ;
 binop         ::=  '&&' | '||' | '==' | '!=' ... ;
-prefix-op     ::=  '-' | '+' | '!' | '~' ;
+prefix_op     ::=  '-' | '+' | '!' | '~' ;
 \end{verbatim}
 \caption{\label{fig:grammar}A grammar of a C-like language.}
 \end{figure}

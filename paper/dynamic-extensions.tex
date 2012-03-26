@@ -1,4 +1,10 @@
-\section{\label{sec:dynext}Dynamic extension}
+\section{\label{sec:dynext}Dynamic extensions}
+
+In this section we are going to describe a syntax of the preprocessing
+rules and demonstrate the way to prove a correctness of the
+transformation.
+
+\subsection{Match Syntax}
 
 The preprocessing rules are defined using the following syntax:
 \begin{verbatim}
@@ -37,5 +43,129 @@ expression, namely (\verb/|/, \verb|*|, \verb|(|, \verb|)|) will
 be escaped as well like: (\verb/\|/, \verb|\*|, \verb|\(|, \verb|\)|).
 For the simplicity reasons we would assume that we do not introduce
 any conflicts by defining escape symbols.  In case the conflict 
-appears, we may change an escape symbol, or even whole escaping
-mechanism/
+would appear, we may change an escape symbol, or even whole escaping
+mechanism, but it does not influence the matter.  In case the conflict 
+would appear, we may change an escape symbol, or even whole escaping
+mechanism, but it does not influence the matter.
+
+Now we can demonstrate a simple substitution example on the language
+defined in Fig.~\ref{fig:grammar}.  Assume that function \verb|reverse|
+is defined in $T$ and it reverses any list of pseudo-tokens, and what
+we need is to flip the arguments in a function called \verb|foo|.  In
+that case the following match would perform such a substitution.
+\begin{verbatim}
+match [\fun_call] v = \id ( \expr \( , \expr \) \*
+   -> [\fun_call] reverse (v)
+\end{verbatim}
+
+\subsection{$T$ language and correctness}
+In order to perform a transformation of the matched list we define a
+minimalistic functional language called $T$ in order to demonstrate
+the approach.  The core definition of $T$ is given by Fig.~\ref{fig:t}.
+
+\begin{figure}
+\begin{verbatim}
+program         ::= ( function ) *
+function        ::= id '::' fun_type id var-list '=' expr
+fun_type        ::= (type | '(' fun_type ')') '->' fun_type
+var_list        ::= id ? | id (',' id ) *
+expr            ::= id | expr expr | let_expr | if_expr | builtin
+let_rec         ::= 'let' id '=' expr (',' id '=' expr) * 'in' expr
+if_expr         ::= 'if' cond_expr 'then' expr 'else' expr
+cond_expr       ::= 'type' expr '==' type | expr
+builtin         ::= 'cons' '(' expr ',' (expr | 'nil')')' 
+                    | 'head' expr | 'tail' expr | 'value' expr
+                    | pseudo_token '[' expr ']' | number
+                    | + | - | ...
+type            ::= pseudotoken_regexp | int | regexp_t
+\end{verbatim}
+\caption{\label{fig:t}Grammar to define language $T$}
+\end{figure}
+
+The main use-case of the language is to traverse over the matched
+list of pseudo-tokens applying recursion, head, tail and cons
+constructs.  In order to stop the recursion we also introduce
+arithmetic operations on integers.  In order to perform partial
+evaluation, we need to have an interface to the value of the
+pseudo-token.  For that reason we introduce function \verb|value|
+which is applicable to the pseudo-tokens which have a constant
+integer value (in our example it is a \verb|\number| pseudo-token).
+In order to construct an object from integer, we are using
+\verb|\number[42]| syntax.  The \verb|value| function operates
+on integers only for the simplicity of the model only, the basic
+types can be extended in future.
+
+\subsubsection{Type system}
+In order to prove a correctness of the match, we are going to use
+a specially designed type-system which is based on the regular 
+expression being treated as types.  We are going to use a type
+inference to check if the function application in the right hand
+side of the match is allowed within a given production.  In the
+current paper we are not going to give a definition of all the
+type deduction rules, however, we are going to do that in the 
+full paper.  Further in this section we are going to share the
+basic ideas and principles.
+
+The main idea of the type system for $T$ is to treat a regular
+expression as a type.  We start with a fact that if the 
+right-hand side of the system was called, then the match succeeded
+and the result of the match is a flat list of pseudo-tokens
+but from the regular expression we have an additional information
+about the structure of this list.  In order to perform a type 
+inference, we observe that regular languages, hence regular 
+expression bring a number of set operations, which is a key
+driving force of the inference.  First of all, it is easy to
+define a subset relationship on two regular expressions
+$r_1 \sqsubseteq r_2$.  As we know, we can always build a DFA for
+a regular expression and minimize it, which gives us a minimal
+possible automaton for the language recognized by a given regular
+expression.  It means that $r_1 \sqsubseteq r_2 \Rightarrow 
+min (det (r_1)) \sqsubseteq min (det (r_2))$.  For two minimized 
+automatons $A_1$ and $A_2$, $A_1 \sqsubseteq A_2$ means that there
+is a mapping $\Psi$ of $A_1$ states to $A_2$ states such that:
+\[
+    Start (A_1) \to Start (A_2) \in \Psi
+\]
+\[
+    \forall s \in States (A_1) \forall e \in Edges (s),
+    \Psi (Transition (s, e)) = Transition (\Psi (s), e)
+\]
+
+$States (x)$ denotes a set of all the states of automaton $x$,
+$Edges (s)$ is a set of pseudo-tokens which mark the outcoming
+edges of state $s$.  Finally, $Transition (s, t)$ denotes a
+state which is reachable from $s$, using edge marked with $t$.
+
+The subset relationship is going to be used to create a sub-typing
+hierarchy, and we also have a notion of a super-type of
+the hierarchy, which is given by a regular expression \verb|.*|,
+we are going to denote this type $\top$.  It is obvious to see that
+$\forall t_i \in R, t_i \sqsubseteq \top$.
+
+It is possible to construct a type for head and tail application
+by following the edges from the starting state of DFA in case of
+head, and creating a set of sub-automatons in case of tail.
+Furthermore we can infer a type for recursive head/tial traversal
+over the list in either direction.  In order to do that, one has
+to construct a set of all the sub-automatons of a given one in 
+case of forward traversal and the set of all sub-automatons of
+the reversed automaton in case of backward.
+
+In order to propagate type information in the branches obtained from the
+application of \verb|type| construct, we have to know how to subtract
+two regular expressions, which is again simple.  If $T$ and $S$  are
+respective DFAs for subtracted types, all we have to do is to construct
+$C = T \times S$ and make the final states of $C$ be the pairs where $T$
+states are final and $S$ states are not. 
+
+The type inference procedure itself borrows an idea from SaC type
+system~\cite{} when we start with an abstract type \verb|regexp_t|
+which is $\top$ and recursively precise the type until we get to
+a fixed point.
+
+
+
+
+
+
+
