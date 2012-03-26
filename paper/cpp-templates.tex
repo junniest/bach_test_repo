@@ -1,0 +1,19 @@
+\subsection{Templates}
+Another example of macro-processing are templates, which are widely used in
+C++. In contrast with macros, which performs a string substitution on
+preprocessing stage, templates are a language that is executed during
+compilation and integrated into the type system of C++. \\
+Templates are used to operate with generic types. It allows to avoid code
+repetition for every specific type. We define a function using some abstract
+types and then abstract types are replaced with actual ones in function call.
+For every type a compiler generates a function, repeating the entire code for
+every type. \\ 
+Templates can be used in terms of metaprogramming, as it allows to perform
+evaluations at compile-time, instead of computing at runtime. It provides
+sufficient features to perform all kind of evaluations. It can be proved that
+C++ templates are turing complete\cite{veldhuizen}. The matter is that
+templates support function specialisation and nested template calls. This
+allows to describe recursive calls which will be unrolled in compile-time. Code
+optimizations, such as constant folding or loop unrolling, are able to fold
+expressions produced by templates in order to reduce amount of runtime
+computations.
