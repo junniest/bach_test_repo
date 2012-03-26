@@ -59,16 +59,16 @@ The second option is more complex. In this case we combine the automata created
 for each of the matches together into a single DFA. This is done in order to
 reduce matching time, the automata megring algorithm is described in the full
 article.  The second option is more interesting, as it allows matching of
-\verb/n/ independent patterns in $O(l)$ steps, where \verb/l/ is the amount of
-tokens to be matched.
+\verb/n/ independent patterns in $O(l)$ steps, where \verb/l/ is the amount
+of tokens to be matched. It is important to note as well that our method of
+joining the automata preserves the priority hierarchy of the matches. 
 
 We do not explicitly select a method of operation with joining DFA in the
 article, we only give the complexities of the proposed variants. This is
 because the optimal solution selection should be based on the practical uses of
-the system. It is impossible to state, without any actual examples, what will
-be more time-effective during execution. Even though the second option is
-time-consuming when adding and removing matches, the dramatic improvement in
-execution time might come from the fact that match count is relatively small,
-but the automaton execution will, at worst cases, be performed for every token
-in the source text.
+the system. Even though the second option is time-consuming when adding and
+removing matches, the dramatic improvement in execution time might come from
+the fact that match count is relatively small, but the automaton execution
+will, at worst cases, be performed for every token in the source text. The
+actual selection remains to be made by the readers.
 
