@@ -1,9 +1,11 @@
-\section{Introduction}
-\label{sec:intro}
-Most of the modern programming language syntax cannot be formulated
-using a context free grammar only.  The problem is that rich
-syntax very often comes with a number of ambiguities.  Consider the 
-following examples:
+\section{\label{sec:intro}Introduction}
+
+Very often expressiveness of programming language introduce a number
+ambiguities in its syntax.  The language specification clearly states
+how to resolve the conflict, however it may not be possible to 
+formulate the resolution in terms of context free grammars.  In order
+to illustrate that consider the following examples.
+
 \begin{enumerate}
     \item The classical example from C language is a type-cast 
           syntax.  As a user can define an arbitrary type using
@@ -18,49 +20,52 @@ following examples:
           an application of postfix \verb|++| indexed by \verb|1|
           or it could be an array concatenation of \verb|a| and 
           \verb|[1]|.
-    \item Assuming the language allows any unary function to be
-          applied as infix, postfix and standard notation, we cannot 
-          disambiguate an expression \verb|log (x) - log (y)|, if
-          we allow unary application of postfix minus.  Potential
-          interpretations are: \verb|log (- log (x)) (y)| which is
-          obviously an error, or \verb|minus (log (x), log (y))|.
+    \item Assuming the language allows any unary function or operator
+          to be applied as infix and postfix, we cannot 
+          disambiguate the following expression:
+\begin{verbatim}
+log (x) - log (y)
+\end{verbatim}
+          Potential interpretations are: 
+          \verb|log (uminus (log (x))) (y)|, which is obviously an 
+          error, or \verb|minus (log (x), log (y))|.
 \end{enumerate}
 
-Sometimes it may be the case that context influences not only
-parsing decisions but also the lexing decisions.  Consider
-the following examples:
+\noindent
+Sometimes the context may influences not only parsing decisions but 
+also lexing decisions.  Consider the following examples:
 \begin{enumerate}
     \item C++ allows nested templates, which means that one could
-          write an expression \verb|template <type foo, list <int>>|, 
+          write an expression \verb|template <typename foo, list <int>>|, 
           assuming that the last \verb|>>| is two closing groups.  In
           order to do that, the lexer must be aware of this context,
-          as in a standard context character sequence \verb|<<| means
-          shift left.
+          as in a standard context character sequence \verb|>>| means
+          shift right operation.
     \item Assuming that a programmer is allowed to define her own 
           operators, the lexer rules must be changed, in case 
-          the name of the operator extends the existing one.  For
-          example, assume one defined an operation \verb|+-|.
+          the name of a new operator extends the existing one.  For
+          example, assume one defines an operation \verb|+-|.
           It means that from now on an expression \verb|+-5| should
           be lexed as (\verb|+-|, \verb|5|), rather than (
           \verb|+|, \verb|-|, \verb|5|).
 \end{enumerate}
 
 In order to resolve the above ambiguities using LALR parser generator
-engine, we have to make sure that one can annotate the grammar with a correct
-choices for each shift/reduce or reduce/reduce conflict, which puts
-a number of restrictions on the execution engine.  Secondly, we have
-to implement the context support, which means that we need to have a
-mechanism which would not interfere with conflict-resolution.
-Finally, one has to have an interface to a lexer in case lexing becomes
-context-dependent, and it may be integrated with an error-recovery
-mechanism.
+engine, we have to make sure that one can annotate the grammar with a
+correct choices for each shift/reduce or reduce/reduce conflict, which
+puts a number of requirements on the syntax of parser generator and on
+the finite-state machine execution engine.  Secondly, we have to
+introduce contexts without interfering with the above
+conflict-resolution.  Finally, one has to have an interface to a lexer
+in case lexing is context-dependent, and all the mechanisms should be
+aware of error-recovery facilities.
 
 Having said that, we may see that using parser generators could be of
 the same challenge as writing a parser by hands, where all the
 ambiguities could be carefully resolved according to the language
-specification.  As it turns out most of the complicated languages
+specification.  As it turns out, most of the complicated languages
 front-ends use hand-written recursive descendent parsers, specially
 treating ambiguous cases.  For example the following languages do:
-C/C++/ObjectiveC in GNU GCC~\cite{gcc}, clang in LLVM~\cite{}, 
-javascript in google V8~\cite{}.
+C/C++/ObjectiveC in GNU GCC~\cite{gcc}, clang in LLVM~\cite{clang}, 
+JavaScript in Google V8~\cite{v8}.
 

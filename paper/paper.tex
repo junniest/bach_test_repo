@@ -7,6 +7,20 @@
 \usepackage{color}
 \usepackage[colorlinks,bookmarksopen,bookmarksnumbered,citecolor=red,urlcolor=red]{hyperref}
 \usepackage{graphicx}
+\usepackage{listings}
+
+\definecolor{lbcolor}{rgb}{0.95,0.95,0.95}
+\newcommand{\codesize}{\fontsize{8}{8}\selectfont}
+\lstset{% general command to set parameter(s)
+    language=C,
+    basicstyle=\codesize,          % print whole listing small
+    %keywordstyle=\color{black}\bfseries,
+                                % underlined bold black keywords
+    identifierstyle=,           % nothing happens
+    stringstyle=\ttfamily,      % typewriter type for strings
+    showstringspaces=false%
+}
+
 
 \newcommand{\fixme}[1]{\vskip 5mm\noindent{\bf FIXME}: {\it #1}}
 
