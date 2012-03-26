@@ -4,7 +4,8 @@
 \usepackage[utf8x]{inputenc}
 \usepackage[russian, english]{babel}
 \usepackage{color}
-\usepackage[colorlinks,bookmarksopen,bookmarksnumbered,citecolor=red,urlcolor=red]{hyperref}
+\usepackage[colorlinks,bookmarksopen,bookmarksnumbered,%
+            citecolor=red,urlcolor=red]{hyperref}
 \usepackage{graphicx}
 \usepackage{listings}
 
@@ -12,7 +13,7 @@
 \newcommand{\codesize}{\fontsize{8}{8}\selectfont}
 \lstset{% general command to set parameter(s)
     language=C,
-    basicstyle=\codesize,          % print whole listing small
+    basicstyle=\codesize,       % print whole listing small
     %keywordstyle=\color{black}\bfseries,
                                 % underlined bold black keywords
     identifierstyle=,           % nothing happens

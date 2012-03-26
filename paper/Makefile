@@ -3,7 +3,7 @@ DOC := paper
 PKG := $(DOC)-$(shell date +%F).tar.gz
 all: paper.pdf
 
-paper.pdf: paper.tex intro.tex parser-model.tex dynamic-extensions.tex
+paper.pdf: paper.tex intro.tex parser-model.tex dynamic-extensions.tex paper.bib
 	pdflatex $(DOC).tex
 	bibtex $(DOC)
 	pdflatex $(DOC).tex
