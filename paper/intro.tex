@@ -50,6 +50,7 @@ also lexing decisions.  Consider the following examples:
           \verb|+|, \verb|-|, \verb|5|).
 \end{enumerate}
 
+\noindent
 In order to resolve the above ambiguities using table-based parser generator,
 we have to make sure that one can annotate the grammar with correct choices for
 each shift/reduce or reduce/reduce conflict. This puts a number of requirements
@@ -116,8 +117,8 @@ of correctness.
 Despite all the correctness complications macro systems are not powerful
 enough to introduce new language constructs.  For example, it would be natural
 to represent a number's absolute value as \verb/|a|/, or to allow a number of
-user-defined literals to introduce units in a programming language like \verb/5
-kg/ or \verb|8 mm|.  Even if a macro-system can do it, resolving nested
+user-defined literals to introduce units in a programming language like 
+\verb/5kg/ or \verb|8 mm|.  Even if a macro-system can do it, resolving nested
 expressions treating one and the same symbol differently still might be
 confusing.  For example, would it be possible for some macro system to
 transform an expression \verb/| a|b |/ into \verb/abs (a|b)/?
@@ -135,7 +136,7 @@ used by parser.  To make it even more powerful we allow a
 regular expression on pseudo-tokens, still being able to 
 guarantee the correctness of the transformation.
 
-The rest of the paper is organized as following:
+The rest of the paper is organized as follows:
 \fixme{BLA-bla-bla}
 
 
