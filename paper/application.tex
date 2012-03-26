@@ -1,0 +1,45 @@
+\section{Application}
+\subsection{Syntax extension}
+With the help of macro extension it is possible to extend language's syntax.
+Assume, we would like to have a mathematical notation for absolute value
+\verb/|5|/. Our macros will look like:
+\begin{verbatim}
+\match [\expr] v = '|' \expr '|' -> [\num] abs-match (tail (init (v)))
+
+abs-match :: \expr -> \expr
+abs-match x = abs(x)
+\end{verbatim}
+Here we define an additional production to parse \verb|expr| rule. A matcher
+will return a list with matched tokens, such as 
+\verb/('|', ..., '|')/ from which we need to remove the
+first and the last tokens. Then we substitute matched expression with a
+function call.
+\subsection{Templates}
+The macroprocessor can be used as templates in C++. Templates are used to
+evaluate expressions at compile-time. To illustrate this, let's consider
+factorial computation example.
+\begin{verbatim}
+\match [\number] v = \number '!' -> [\number] fact-match (v)
+\match [\expr] v = \expr '!' -> [\expr] fact-match-expr (v)
+
+match-fun fact-match :: \number -> \number
+fact-match x = 1 if value (x)
+      | value (x) * fact-match (\number[value (x) - 1]) otherwise
+
+match-fun fact-match-expr :: \expr -> \expr
+fact-match-expr x = factorial (x)
+\end{verbatim}
+We extend here \verb|number| and \verb|expr| productions with mathematical
+notation for factorial using exclamation sign. In case of \verb|expr| we simply
+call \verb|factorial| function. In addition, we want to compute expression at
+compiler-time if we evaluate a constant expression. Similarly to templates, we
+can unroll macro-calls and evaluate constant expressions. Thus if we write
+\verb|3!|, we will get \verb|6| during compilation phase.
+\subsection{Preprocessing}
+The macroprocessor deals with language context. However, C preprocessor is
+working out of context. For example, we can write any expression inside
+\verb|#if ... #endif| directives. In our macroprocessor we can allow to work
+out of parser's scope. However, in this case we have to deal with token
+conflicts between lexer and parser. In this way, if we define `out of scope'
+macro \verb|< ... >|, then binary operations \verb|<| and \verb|>| will be
+interpreted as parts of this directive.  
