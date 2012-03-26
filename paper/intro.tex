@@ -46,26 +46,100 @@ also lexing decisions.  Consider the following examples:
           the name of a new operator extends the existing one.  For
           example, assume one defines an operation \verb|+-|.
           It means that from now on an expression \verb|+-5| should
-          be lexed as (\verb|+-|, \verb|5|), rather than (
+          be lexed as (\verb|+-|, \verb|5|), rather than (%
           \verb|+|, \verb|-|, \verb|5|).
 \end{enumerate}
 
-In order to resolve the above ambiguities using LALR parser generator
-engine, we have to make sure that one can annotate the grammar with a
+In order to resolve the above ambiguities using table-based parser
+generator, we have to make sure that one can annotate the grammar with a
 correct choices for each shift/reduce or reduce/reduce conflict, which
-puts a number of requirements on the syntax of parser generator and on
+puts a number of requirements on the syntax of a parser generator and on
 the finite-state machine execution engine.  Secondly, we have to
 introduce contexts without interfering with the above
-conflict-resolution.  Finally, one has to have an interface to a lexer
+conflict-resolution.  Finally, one has to have an interface to a lexer,
 in case lexing is context-dependent, and all the mechanisms should be
 aware of error-recovery facilities.
 
 Having said that, we may see that using parser generators could be of
 the same challenge as writing a parser by hands, where all the
 ambiguities could be carefully resolved according to the language
-specification.  As it turns out, most of the complicated languages
+specification.  As it turns out, most of the real-world language
 front-ends use hand-written recursive descendent parsers, specially
 treating ambiguous cases.  For example the following languages do:
 C/C++/ObjectiveC in GNU GCC~\cite{gcc}, clang in LLVM~\cite{clang}, 
 JavaScript in Google V8~\cite{v8}.
+
+The main goal of any preprocessor is to perform a substitution of
+one sequence with another.  The unit of the sequence may 
+be different depending on the agreement, however the common
+case is to say that the unit is a sequence of characters of the
+same class.  The number of classes is normally fixed, however 
+character belonging to the class may be static as in C preprocessor,
+where for example notion of space cannot be changed; or dynamic as
+in \TeX, where one could specify that a certain character is a 
+delimiter.  Then the substitution itself is a replacement of 
+units in a sequence which are treated as arguments, with the 
+assigned arguments.  The key problem here, as we are concerned
+in this paper is a lack of separation between the rewriting itself
+and transformation of token-sequence.  Consider an example of
+a C macro:
+\begin{verbatim}
+#define foo(x, y) x y
+\end{verbatim}
+First of all, it is really hard to say anything about the result
+of this macro, as \verb|foo (5,6)| expands to \verb|5 6|, but
+both \verb|foo (,5)| and \verb|foo (5,)| expands to \verb|5|.
+Secondly, as comma is a part of syntax definition of the macro
+then one cannot just pass a token sequence \verb|5, 6| as a
+first argument of \verb|foo|.  In order to resolve this one
+may escape the comma by wrapping it in parentheses and calling
+\verb|foo ((5,6), 7)| which will expand to \verb|(5, 6) 7|.
+The only way to flattern the list is to perform an application
+of another macro.  For example:
+\begin{verbatim}
+#define first(x, y) x
+#define bar(x, y) first x y
+\end{verbatim}
+So we have higher-order macro here, but it would work only if
+arguments have a right type and the application of 
+\verb|bar ((5,6), x)| would expand to \verb|5, x|, however
+application of \verb|bar (5, 6)| would not provide an error
+but would expand to \verb|first 5 6|.  And as a last example
+we can make original macro \verb|foo| return 3 arguments
+by expanding \verb|foo (5, foo (6, 7))| which will expand to
+\verb|5 6 7|.  We may clearly see that making some static 
+conclusions by checking a system of macros is impossible, as
+it may all depend on the application; and making any dynamic
+decisions with respect to the correctness of substitution is
+also not possible, as there is no way to declare the criteria
+of correctness.
+
+Despite all the correctness complications macro systems are
+are not powerful enough to introduce a new language constructs.
+For example, it would be natural to write an absolute value
+as \verb/|a|/, or to allow a number of user-defined literals to
+introduce units in a programming language like \verb/5 kg/ or
+\verb|8 mm|.  Even if a macro-system can do it, then it is
+may be confusing to resolve nested expressions treating one
+and the same symbol differently.  For example, would it be 
+possible for some macro system to transform an expression 
+\verb/| a|b |/ into \verb/abs (a|b)/?
+
+The proper way of doing macro-substitutions is to allow an
+extension to the grammar.  However, providing a handle on
+arbitrary changes of the grammar may lead to uncontrolled 
+changes in the semantics of the language, which again would
+be hard to prove if the program is correct.
+
+As a solution to the given problem we introduce a preprocessing
+which works on the sequence of pseudo-tokens which is a combination
+of tokens recognized by parser and productions of the grammar
+used by parser.  To make it even more powerful we allow a 
+regular expression on pseudo-tokens, still being able to 
+guarantee a correctness of the transformation.
+
+The rest of the paper is organized as following:
+\fixme{BLA-bla-bla}
+
+
 
