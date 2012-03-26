@@ -15,7 +15,7 @@ is used to perform a preprocessing transformation on the list of
 tokens.  
 
 The \verb|regexp| regular expression is a box standard regular
-expression which is defined by the grammar at Fig.~\ref{reggram}.
+expression which is defined by the grammar at Fig.~\ref{fig:reggram}.
 \begin{figure}[h!]
 \begin{verbatim}
 regexp          ::= concat-regexp '|' regexp
@@ -32,4 +32,10 @@ easily extended.
 
 Further down in this paper we are going to use an escaped syntax 
 for pseudo-tokens which represent grammar production names, like
-\verb|\expr|, \verb|function|, etc.  The 
+\verb|\expr|, \verb|function|, etc.  The operators of regular
+expression, namely (\verb/|/, \verb|*|, \verb|(|, \verb|)|) will
+be escaped as well like: (\verb/\|/, \verb|\*|, \verb|\(|, \verb|\)|).
+For the simplicity reasons we would assume that we do not introduce
+any conflicts by defining escape symbols.  In case the conflict 
+appears, we may change an escape symbol, or even whole escaping
+mechanism/
