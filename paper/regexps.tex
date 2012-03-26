@@ -13,10 +13,11 @@ to minimize the effort needed to execute the match. This task is performed
 using the subset construction algorithm.
 
 In order to minimise execution time even further, we minimise the created DFA.
-The minimisation algorithm is described in detail in the "Dragon Book". The
-algorithm creates sets of states that cannot be distinguished by any input
-token sequence. Once the algorithm fails to break the sets into smaller ones
-it stops. These sets of states then become new states of the minimal automaton.
+The minimisation algorithm is described in detail in the "Dragon
+Book"\cite{dragon-book}. The algorithm creates sets of states that cannot be
+distinguished by any input token sequence. Once the algorithm fails to break
+the sets into smaller ones it stops. These sets of states then become new
+states of the minimal automaton.
 
 It is essential to note that the existence of such minimal automaton is
 provable, despite the complexity of the regular expression it describes. This

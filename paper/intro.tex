@@ -20,15 +20,15 @@ present the following examples.
           an application of postfix \verb|++| indexed by \verb|1|
           or it could be an array concatenation of \verb|a| and 
           \verb|[1]|.
-    \item Assuming the language allows any unary function or operator
-          to be applied as infix and postfix, we cannot 
-          disambiguate the following expression:
-\begin{verbatim}
-log (x) - log (y)
-\end{verbatim}
-          Potential interpretations are: 
-          \verb|log (uminus (log (x))) (y)|, which is obviously an 
-          error, or \verb|minus (log (x), log (y))|.
+%    \item Assuming the language allows any unary function or operator
+%          to be applied as infix and postfix, we cannot 
+%          disambiguate the following expression:
+%\begin{verbatim}
+%log (x) - log (y)
+%\end{verbatim}
+%          Potential interpretations are: 
+%          \verb|log (uminus (log (x))) (y)|, which is obviously an 
+%          error, or \verb|minus (log (x), log (y))|.
 \end{enumerate}
 
 \noindent
