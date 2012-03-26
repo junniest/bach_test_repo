@@ -10,8 +10,8 @@ The preprocessing rules are defined using the following syntax:
 \begin{verbatim}
 match [\prod1] v = regexp   ->   [\prod2] f (v)
 \end{verbatim}
-This reads as following: if at the beginning of production \verb|prod1|
-a stream of pseudo-tokens pointed by parser matches a regular expression
+This reads as follows: if at the beginning of production \verb|prod1|
+a stream of pseudo-tokens pointed at by the parser matches a regular expression
 \verb|regexp|, which can be aliased with variable named \verb|v| in the
 right hand side of the match, then the matched tokens will be replaced 
 with a reduction of \verb|prod2| production applied on a list of 
@@ -38,14 +38,12 @@ easily extended.
 
 Further down in this paper we are going to use an escaped syntax 
 for pseudo-tokens which represent grammar production names, like
-\verb|\expr|, \verb|function|, etc.  The operators of regular
+\verb|\expr|, \verb|\function|, etc.  The operators of regular
 expression, namely (\verb/|/, \verb|*|, \verb|(|, \verb|)|) will
 be escaped as well like: (\verb/\|/, \verb|\*|, \verb|\(|, \verb|\)|).
-For the simplicity reasons we would assume that we do not introduce
-any conflicts by defining escape symbols.  In case the conflict 
-would appear, we may change an escape symbol, or even whole escaping
-mechanism, but it does not influence the matter.  In case the conflict 
-would appear, we may change an escape symbol, or even whole escaping
+For simplicity reasons we assume that we do not introduce
+any conflicts by defining escape symbols.  In case a conflict 
+appears, we may change the escape symbol, or even the whole escaping
 mechanism, but it does not influence the matter.
 
 Now we can demonstrate a simple substitution example on the language
@@ -96,9 +94,9 @@ on integers only for the simplicity of the model only, the basic
 types can be extended in future.
 
 \subsubsection{Type system}
-In order to prove a correctness of the match, we are going to use
+In order to prove the correctness of the match, we are going to use
 a specially designed type-system which is based on the regular 
-expression being treated as types.  We are going to use a type
+expressions being treated as types.  We are going to use a type
 inference to check if the function application in the right hand
 side of the match is allowed within a given production.  In the
 current paper we are not going to give a definition of all the
@@ -108,12 +106,12 @@ basic ideas and principles.
 
 The main idea of the type system for $T$ is to treat a regular
 expression as a type.  We start with a fact that if the 
-right-hand side of the system was called, then the match succeeded
-and the result of the match is a flat list of pseudo-tokens
-but from the regular expression we have an additional information
+right-hand side of the system was called and the match succeeded
+then the result of the match is a flat list of pseudo-tokens.
+However from the regular expression we have additional information
 about the structure of this list.  In order to perform a type 
 inference, we observe that regular languages, hence regular 
-expression bring a number of set operations, which is a key
+expression bring a number of set operations, which is the key
 driving force of the inference.  First of all, it is easy to
 define a subset relationship on two regular expressions
 $r_1 \sqsubseteq r_2$.  As we know, we can always build a DFA for
@@ -121,7 +119,7 @@ a regular expression and minimize it, which gives us a minimal
 possible automaton for the language recognized by a given regular
 expression.  It means that $r_1 \sqsubseteq r_2 \Rightarrow 
 min (det (r_1)) \sqsubseteq min (det (r_2))$.  For two minimized 
-automatons $A_1$ and $A_2$, $A_1 \sqsubseteq A_2$ means that there
+automata $A_1$ and $A_2$, $A_1 \sqsubseteq A_2$ means that there
 is a mapping $\Psi$ of $A_1$ states to $A_2$ states such that:
 \[
     Start (A_1) \to Start (A_2) \in \Psi
@@ -138,27 +136,27 @@ state which is reachable from $s$, using edge marked with $t$.
 
 The subset relationship is going to be used to create a sub-typing
 hierarchy, and we also have a notion of a super-type of
-the hierarchy, which is given by a regular expression \verb|.*|,
+the hierarchy, which is represented by a regular expression \verb|.*|,
 we are going to denote this type $\top$.  It is obvious to see that
 $\forall t_i \in R, t_i \sqsubseteq \top$.
 
 It is possible to construct a type for head and tail application
 by following the edges from the starting state of DFA in case of
-head, and creating a set of sub-automatons in case of tail.
-Furthermore we can infer a type for recursive head/tial traversal
+head, and creating a set of sub-automata in case of tail.
+Furthermore we can infer a type for recursive head/tail traversal
 over the list in either direction.  In order to do that, one has
-to construct a set of all the sub-automatons of a given one in 
-case of forward traversal and the set of all sub-automatons of
+to construct a set of all the sub-automata of a given one in 
+case of forward traversal and the set of all sub-automata of
 the reversed automaton in case of backward.
 
 In order to propagate type information in the branches obtained from the
 application of \verb|type| construct, we have to know how to subtract
-two regular expressions, which is again simple.  If $T$ and $S$  are
-respective DFAs for subtracted types, all we have to do is to construct
+two regular expressions, which is, again, simple.  If $T$ and $S$  are
+respective DFA for subtracted types, all we have to do is to construct
 $C = T \times S$ and make the final states of $C$ be the pairs where $T$
 states are final and $S$ states are not. 
 
-The type inference procedure itself borrows an idea from SaC type
+The type inference procedure itself borrows the idea from SaC type
 system~\cite{} when we start with an abstract type \verb|regexp_t|
 which is $\top$ and recursively precise the type until we get to
 a fixed point.
