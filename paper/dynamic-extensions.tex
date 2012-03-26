@@ -1,224 +1,35 @@
-\section{Dynamic extension}
+\section{\label{sec:dynext}Dynamic extension}
 
-We introduce a generic syntax extension which can be applied to any
-language recognized by a parser which meet all the requirements from
-section~\ref{sec:parser}.  The syntax extension is capable to perform
-standard preprocessing tasks providing also a functionality to do
-partial evaluation and non-trivial generic code transformations.
-
-On the user level we introduce a single macro definition which is called 
-\verb|match| and which substitutes a sequence of tokens matched
-with a certain pattern with another sequence of tokens.  
-Consider the following example:
+The preprocessing rules are defined using the following syntax:
 \begin{verbatim}
-match [\expr] foo ( a , b )   ->  [\expr] a + b
+match [\prod1] v = regexp   ->   [\prod2] f (v)
 \end{verbatim}
-where we substitute a sequence of tokens \verb|foo (a,b)|, which would 
-be normally matched by an `expr' rule of our grammar, with
-token-sequence \verb|a + b| and applying `expr' production on them.
-The above definition has a number of differences from the 
-classical C preprocessor macro-definition \verb|#define foo(a, b) a + b|:
-\begin{itemize}
-  \item The above macro definition is not a function and \verb|a|
-  \verb|b| are not arguments. The macro will match expressions where
-  identifiers \verb|a| and \verb|b| are passed. In terms of tokens, only
-  the sequence of tokens \verb|'foo', '(', 'a', 'b', ')'| will be
-  matched.  Hence, the match would not replace expressions 
-  \verb|foo (2, 3)| or \verb|foo (b, a)|. 
-  \item The match is bounded to one particular production in the
-  grammar, which is `expr' in this example.  It means that it would not
-  perform a substitution in case one wrote \verb|foo (a, b)| as a member
-  of a statement block or a function header.
-  \item The result of the substitution is always a single value, which avoids 
-  the classical situation with missing parentheses in the macro definition, 
-  i.e. if a macro-definition \verb|#define foo(a, b) a + b| is applied to 
-  \verb|foo (2,3) * 5|, expansion would make it \verb|2 + 3 * 5|, where
-  a conceptual expansion of the above match would look like \verb|(2+3) * 5|.
-\end{itemize}
-It should be pointed out that in order to associate macro with some production
-it's necessary to provide grammar rules for a programmer. This will allow to
-take context into account and to interact with grammar parser dynamically.
+This reads as following: if at the beginning of production \verb|prod1|
+a stream of pseudo-tokens pointed by parser matches a regular expression
+\verb|regexp|, which can be aliased with variable named \verb|v| in the
+right hand side of the match, then the matched tokens will be replaced 
+with a reduction of \verb|prod2| production applied on a list of 
+pseudo-tokens that is being returned by \verb|f (v)|.  Function \verb|f|
+is a function which is defined in functional language $T$ and which
+is used to perform a preprocessing transformation on the list of 
+tokens.  
 
-
-\subsection{Language patterns}
-\fixme{This subsection has to be rewritten!}
-The depicted parser would be impractical without pattern matching. To
-illustrate this we 
-would like to match expression \verb|foo(a, b)|, which can be occurred in place 
-of `expr' production and \verb|a|, \verb|b| are allowed to be any relevant
-arguments.
+The \verb|regexp| regular expression is a box standard regular
+expression which is defined by the grammar at Fig.~\ref{reggram}.
+\begin{figure}[h!]
 \begin{verbatim}
-match [\expr] foo ( \expr , \expr ) 
-   -> [\expr] \expr[1] + \expr[2]
+regexp          ::= concat-regexp '|' regexp
+concat-regexp   ::= asterisk-regexp  concat-regexp
+asterisk-regexp ::= unary-regexp '*' | unary-regexp
+unary-regexp    ::= pseudo-token | '(' regexp ')'
 \end{verbatim}
-Let's compare this example with the previous one. We state here that we expect
-two token sequences in the brackets that would be interpreted as `expr'
-productions. The type of production is important as this allows to perform an 
-effective type checking. Specifically, this macro will recognize 
-\verb|foo (return 0, 1)| as a fallacious, unlike the C macro which will not
-point out any error. \\
-It is noteworthy to mention about pitfalls of this approach. The macro
-extension associates user-defined rules with the grammar of the language.
-Therefore, these rules might conflict with existing ones and an ambiguous
-grammar can be produced. We state here that user has to control such situations
-himself, otherwise, an error of the parser will be raise. \\
-Furthermore, we provide an interface to a lexer. For instance, it's possible to
-use some specific tokens in user-defined productions.
-\begin{verbatim}
-match [\expr] | \expr | -> [\expr] absolute_value (\expr[1])
-\end{verbatim}
-Here we introduce a new \verb/|/ token which could be used for getting an
-absolute number value. A remarkable point is that expressions such as 
-\verb/|-5|/ or even \verb/||-5||/, as this macro takes lexical scope into
-account. Notice that \verb/|1|2|/ will produce an error as expected. \\
-New tokens defined in the left part of the matcher are appended to a valid token
-table. We can use them equally well as `native grammar' tokens. It allows to
-build legacy rules using new tokens:
-\begin{verbatim}
-match [\expr] < \expr > -> [\expr] | \expr[1] |
-\end{verbatim}
-As a matter of fact only defined tokens can be used in the right part of the macro. 
+\cation{\label{fig:reggram}Grammar of the regular expressions on
+pseudo-tokens}
+\end{figure}
+In this paper we are using a minimalistic syntax for regular expression
+to demonstrate some basic properties.  Later on, this syntax may be 
+easily extended.
 
-\fixme{Rewritten until this very moment}
-
-Matches work as a standard Term Rewrite System $(S, R)$, where 
-$S$ is a set of terms; $S = L_t \cup P_t$, where $L_t$ is a set
-of tokens recognized by lexer, and $P_t$ is a set of pseudo-tokens
-which are escaped production-names of the parser.  $R$ is a set of
-rewrite rules, where $\forall r_i \in R \Rightarrow r_i :: \{S \cup R_t\}^n
-\to S^m$.  $R_t$ is a set of regular expression symbols which is
-allowed to formulate a rule.
-
-Each rule has a general form of:
-$$
-    s_1\;\;\textrm{if}\;\; p(s_1) \rightarrow s_2.
-$$
-
-Where $s_1$ is a regular expression over tokens and pseudo-tokens,
-$p(s_1)$ is a predicate which must evaluate to true, in order to
-enable match expand; $s_2$ is a sequence of tokens and pseudo-tokens
-which is used as a substitution.
-
-The left hand side of each match allows a user to build a new
-production of the grammar restricted by a power of regular
-expressions.  So, for instance it would not be possible to
-build a rule $(a^kb^m, k = m)$, as the new rule is recognized
-by DFA without any memory.
-
-Now as a left-hand side of the match has a free form and the
-rewriting system is recursive by its nature, we face face a 
-number of problems in case we want to prove correctness of 
-the system.  We have a standard word problem and stopping 
-problem of the rewrite system.  It is important to understand
-that in our case we are not dealing with a single TRS, but
-we have a mechanism to construct an arbitrary rewrite system.
-
-Another important problem is to guarantee that the right-hand
-side of the match, is a valid rule in a given production of a
-given grammar.  For example:
-\begin{verbatim}
-...
-match [\expr] bar ( \id, \expr )     -> [\expr] \id{1} ( \expr{1} )
-match [\expr] foo ( \expr , \expr )  -> [\expr] bar ( baz , \expr{1} )
-match [\expr] \id ( \expr )          -> [\expr] \id{1} ( \expr{1}, \expr{1} )
-...
-\end{verbatim}
-Here we can see, that there is no chance to check statically whether the 
-last rule is going to be expanded to the one of the matches or not, as 
-it depends only on the value of \verb|id|.  Now, in case of \verb|foo|
-we cannot check, if a user meant to pass a higher-order function
-\verb|baz| or just a token \verb|baz|.  
-
-It would be possible to resolve the situation at runtime, and one
-still would not be able to get a program that does not belong to the
-language generated by the grammar.  However, the meaning of the
-program is unprovable, which practically means we have a powerful
-tool to obfuscate the code.
-
-In order to resolve the situation, we want to introduce more static
-knowledge to the rewriting rules by introducing types.  Now, we have
-to understand, that there is a clear distinction between the match
-that performs a substitution, and the helper-matches which make 
-a transformation of the tokens matched by the left part of the match.
-The main reason here is that when we express a transformation of the
-matched token-sequence, the intermediate results we pass through
-helper-matches don't have to be a valid parser expressions.  However
-we still want to type-check them.  Consider the following example:
-\verb|(expr + expr ...)|:
-\begin{verbatim}
-match [\expr] foo (\expr \(, \expr \) *)  
-   -> [\expr] bar replace (tail (res), \, , +)
-\end{verbatim}
-
-This match replaces function \verb|foo (1,2,3)| call with
-\verb|bar (1+2+3)|.  In order to do that we want to have
-a generic function that operates on the list of tokens and
-pseudo-tokens, which replaces every occurrence of `,' with
-`+'.  Evaluation of `replace' happens outside of any productions
-and in general case, the return type of such a type of a function
-could be not a valid input for any parser production.
-
-It means that here we would like to make a clear cut between the
-match and the match-function.  We should keep in mind, that it
-is always possible to express any match-function using the 
-rewriting system of the matches, however first of all we would
-like to introduce the semantics and type system description for
-both matches and match-functions.
-
-\subsection{Type system}
-Obviously matches and match-functions have to share the notion
-of types they are operating with.  What kind of types the matched
-left-hand side of the match can produce?  If we consider that each
-pseudo-token represents a type, we may note that the regular 
-expression automatically generates an algebraic data type.  This
-is fairly easy to prove constructively:
-\begin{enumerate}
-    \item Each pseudo-token generates a type.
-    \item Each concatenation generates a tuple.
-    \item Each choice generates an alternative.  For instance 
-    \verb/\id|\expr/ can be represented with a type \verb/(id|expr)/.
-    \item Each asterisk generates a list of types generated by 
-    a sub-asterisk expression.  For example: \verb/\( a | b \) */
-    can be represented as \verb/[(a | b)]/.
-\end{enumerate}
-
-Finally, in order to express a bounded recursion, one has to operate
-with integer and boolean types. Supporting algebraic data types comes
-with several built-in function in order to traverse the lists and to
-find the type of the variable at runtime, for being able to branch
-depending on the type of the expression.  So we introduce the following
-built-in functions: 
-\begin{description}
-    \item[head]     Returns the first element of the list or \verb|nil|
-    \item[tail]     Returns the list without the first element.
-    \item[concat]   Construct a list from two lists.
-    \item[type]     Return a type of a given expression.
-\end{description}
-
-Finally we have to introduce the syntax of the match-functions and
-describe the way one can check that the type returned by an application
-of the match-functions is correct with respect to the grammar rule
-on the right hand side of the match.
-
-\subsection{Match-function syntax}
-The syntax of the match function can be derived from a functional
-language like ML, making sure that the types are properly recognized.
-
-\fixme{BLA-BLA-BLA}
-
-Now let's consider an example which replaces \verb|foo (expr, expr ...)|
-with \verb|bar (expr + expr + ...)|.
-
-\begin{verbatim}
-match-fun replace :: ([expr|\op[',']], \op[')']) \op \op 
-                     -> ([expr|\op['+']], \op[')'])
-replace lst r w = lst if len (lst) == 1
-                  |
-                  concat (head (lst), replace (tail (lst), r, w))
-                  if (type (head (lst)) == \expr)
-                  |
-                  tail (lst) otherwise
-
-match [\expr] foo ( \expr \(, \expr\) * )
-   -> [\expr] bar ( replace (tail (tail (res)), \,, + )
-\end{verbatim}
+Further down in this paper we are going to use an escaped syntax 
+for pseudo-tokens which represent grammar production names, like
+\verb|\expr|, \verb|function|, etc.  The 
