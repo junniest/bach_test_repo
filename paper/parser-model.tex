@@ -1,13 +1,13 @@
 \section{\label{sec:parser}Parser model}
 
-The parser which is a basis for building a preprocessor on is 
+The parser which serves as a basis for building a preprocessor is 
 based on recursive descent LL(k) or LL(*) algorithm.  Recursive
-descent is a natural human approach to write parsers, and in
+descent is a natural human approach to writing parsers, and in
 case if $k$ is small, the efficiency of parsing is linear with
 respect to the number of tokens on the input stream. 
 
 As a running example in this paper we are going to use a
-grammar of a language with C-like syntax described in
+grammar of a simple language with C-like syntax described in
 Fig.~\ref{fig:grammar}.
 
 \begin{figure}[h!]
@@ -29,65 +29,69 @@ prefix-op     ::=  '-' | '+' | '!' | '~' ;
 \caption{\label{fig:grammar}A grammar of a C-like language.}
 \end{figure}
 
-The preprocessor is build as an extension to the parser, so
-it expect a certain behaviour from the parser.  
+\noindent
+As the preprocessor is build as an extension to the parser, 
+it expects a certain behaviour of the parser.  Further down
+we list a set of properties we require to be present in the 
+implementation of the parser.
 
 \begin{description}
     \item[Token stream] The parser should conceptually represent
-    a stream of tokens as a doubly linked list, which is possible
-    to traverse in either direction and perform a substitution of
+    a stream of tokens as a doubly linked list, which allows
+    traversing in either direction, performing a substitution of
     a token group with another token group, and restarting a 
     stream from an arbitrary position.  The implementation details
     are left to the creators of the parser.
 
-    \item[Pseudo tokens] The parser normally reduces the grammar rule
+    \item[Pseudo-tokens] The parser normally reduces the grammar rule
     by reading tokens from the input stream.  We introduce a notion
     of pseudo-token, which conceptually is an atomic element of the 
-    input stream, but which represents a reduced grammar rule.  The 
+    input stream, but that represents a reduced grammar rule.  The 
     implementation details are left to the parser creator.  The most
     straight forward and inefficient way would be to convert the 
-    pseudo-token into the token stream and parse again.
+    pseudo-token back into the token stream and parse again.
     
-    \item[Handle functions] First of all we ask, that every production
-    is represented as a function\footnote{Note, that these functions
+    \item[Handle-functions] First of all, we ask that every production
+    is represented as a function\footnote{Note that these functions
     have side-effects, so the order of calling is important.} with a
     signature \verb/Parser -> (AST|Error)/, i.e. function gets a
     parser-object as an input and returns either an Abstract Syntax Tree
     node or an error.  We call those functions handle-functions. We
-    require that handle-functions structure mimic a formulation of the
-    grammar, i.e.  if a production A depends on a production B, we
+    require that handle-function structure mimics the formulation of the
+    grammar, i.e. if a production A depends on a production B, we
     require function handle-A to call function handle-B.
 
     Each handle-function implements error recovery (if needed) and takes
-    care about disambiguating productions according to the language
+    care of disambiguating productions according to the language
     specification, resolving operation priorities, syntax ambiguities
-    and so on.  Each handle function has an access to the parser, which
-    keeps has an internal state, which changes when a handle-function is
-    applied.  
+    and so on.  Each handle function has access to the parser, which
+    keeps record of an internal state, which changes when a 
+    handle-function is applied.  
     %In a some sense an application of a handle-function
     %is a reduce step of a shift-reducer.
     
-    \item[Is functions] Each handle-function is paired with a predicate
-    function which checks whether a sequence of tokens pointed by a
-    parser-state matches a given rule.  This type of functions we will
-    call is-functions.  Application of an is-function does not modify
+    \item[Is-functions] Each handle-function is paired with a predicate
+    function which checks whether a sequence of tokens pointed at by a
+    parser state matches a given rule.  We will call this type of
+    functions is-functions.  Application of an is-function does not modify
     the state of the parser.  Is-functions may require unbounded
     look-ahead in general case, however we leave the implementation
     decision to the parser creator.  One can always reuse matched AST
     nodes to perform subsequent matches.
 
-    \item[Match function] In the beginning of each handle-function, each
+    \item[Match-function] In the beginning of each handle-function, each
     production calls a function called \verb|match| with a signature
     \verb/(Parser, Production) -> Parser/.  A match-function is an
-    interface to the preprocessor which checks if a stream of tokens
-    pointed by the parser has a valid substitution in a given
-    production; if it does it performs a substitution and makes sure
-    that the parser token stream starts with that substitution.  In 
-    case \verb|match| simply returns a parser, then the preprocessor\
-    would not perform any substitutions.
+    interface to the preprocessor that checks if a stream of tokens
+    pointed at by the parser has a valid substitution in the given
+    production; if it does, it performs the substitution and makes sure
+    that the parser points to the beginning of the substitition in the
+    token stream.  In case if no matches were found, the preprocessor
+    does not perform any substitutions and returns the parser in its
+    original state.
 \end{description}
 
-Assuming that all the requirements are met, the grammar $G = (N, T, P,
-S)$ provides a full information required to build a support for
-user-defined matches.
+Assuming that all the described requirements are met, the grammar 
+$G = (N, T, P, S)$ provides complete information required to create 
+support for user-defined matches.
 
