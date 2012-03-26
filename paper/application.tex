@@ -4,8 +4,8 @@ With the help of macro extension it is possible to extend language's syntax.
 Assume, we would like to have a mathematical notation for absolute value, such
 as \verb/|5|/, accessible. Then our macros will look like:
 \begin{verbatim}
-\match [\expr] v = \| \expr \| -> [\num] abs-match (tail (reverse (head
-(reverse (v)))))
+\match [\expr] v = \| \expr \| 
+  -> [\num] abs-match (tail (reverse (head (reverse (v)))))
 
 abs-match :: \expr -> \expr
 abs-match x = abs(x)
@@ -18,8 +18,9 @@ lists routine.  Then we substitute matched expression with a function call. In
 this way, we can extend our basic language syntax.
 \subsection{Templates}
 The macroprocessor can be used as a metaprogramming techique similarly to
-templates in C++. This will allow us to evaluate constant expressions in compile-time.
-To illustrate this, let's consider factorial computation example.
+templates in C++\cite{koskinen}. This will allow us to evaluate
+constant expressions in compile-time.  To illustrate this, let's consider
+factorial computation example.
 \begin{verbatim}
 \match [\number] v = \number ! -> [\number] fact-match (v)
 \match [\expr] v = \expr ! -> [\expr] fact-match-expr (v)
