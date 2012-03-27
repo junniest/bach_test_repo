@@ -1,54 +1,108 @@
-\section{Application}
-\subsection{Syntax extension}
-With the help of macro extension it is possible to extend language's syntax.
-Assume, we would like to have a mathematical notation for absolute value, such
-as \verb/|5|/, accessible. Then our macros will look like:
-\begin{verbatim}
-\match [\expr] v = \| \expr \| -> [\num] abs-match (tail (reverse (head
-(reverse (v)))))
+\section{Evaluation and Conclusions}
 
-abs-match :: \expr -> \expr
-abs-match x = abs(x)
+In this section we are going to consider the typical cases for an
+application of the designed approach and evaluate the result.
+
+\subsection{Syntax extension}
+
+One of the typical examples of using the preprocessor is to extend the
+syntax of the language.  Assume, we would like to have a mathematical 
+notation for absolute value, such as $\left|5\right| \equiv abs(5)$. 
+It can be achieved using the following match:
+\begin{verbatim}
+match [\expr] v = | \expr | 
+   -> [\expr] cons (\id[abs]) (cons (head (head v)) nil)
 \end{verbatim}
-Here we define a new parser production to parse \verb|expr| rule. A matcher
-will return a list with matched tokens, which will look like 
-\verb/('|', ..., '|')/ From this list we need to remove the first and the last
-tokens. For this purpose we use language constructs head, tail and reverse for
-lists routine.  Then we substitute matched expression with a function call. In
-this way, we can extend our basic language syntax.
-\subsection{Templates}
-The macroprocessor can be used as a metaprogramming techique similarly to
-templates in C++. This will allow us to evaluate constant expressions in compile-time.
-To illustrate this, let's consider factorial computation example.
+
+Keep in mind, that we could also define the same match on a numbers
+and in that case we may use a partial evaluation capabilities of 
+the system.  Consider the following example:
+\begin{verbatim}
+match [\expr] v = | \num |  -> [\num] mabs (head (head v))
+mabs :: \num -> \num
+mabs x =  if value (x) > 0 then
+             \num[(value x)]
+          else
+             \num[0 - (value x)]
+\end{verbatim}
+
+The one thing that is left outside the scope of the paper and which 
+is directly connected with this example -- do we allow to parser 
+\verb/| a|b |/.  Currently it is going to be an error, as there is
+no way to express the fact that one should use an original pseudo-token
+without a applying matches.  It depends on the agreement of course,
+but currently one can overload a special case for 
+\verb/| \expr \| \expr \* |/ to allow the latter.  However, in the
+current model the following would work just fine: \verb/||A| + |B||/
+Even the following: \verb/|(a|b)|/.
+
+\subsection{C++ Templates}
+
+The preprocessor may be used in a similar way as template
+meta-progrmming technique.  The only difference is that templates
+may be instantiated when a certain optimization inferred that 
+something is a constant.  In our setting all the information 
+we have is the one that we can get from parser.  However, we
+are going to consider the way to express a factorial function
+in compile time.
+
 \begin{verbatim}
 \match [\number] v = \number ! -> [\number] fact-match (v)
-\match [\expr] v = \expr ! -> [\expr] fact-match-expr (v)
+\match   [\expr] v = \expr   ! ->   [\expr] fact-match-expr (v)
 
-match-fun fact-match :: \number -> \number
-fact-match x = 1 if value (x) == 0
-      | value (x) * fact-match (\number[value (x) - 1]) otherwise
+fact-match :: \number -> \number
+fact-match x = if (value x) == 0 then
+                   \number[1]
+               else
+                   \number[(value x) 
+                            * (value (fact-match 
+                                      \number[(value x) - 1]))]
 
-match-fun fact-match-expr :: \expr -> \expr
-fact-match-expr x = factorial (x)
+fact-match-expr :: \expr -> \expr
+fact-match-expr x = cons \id[factorial] cons \( cons x cons \) nil
 \end{verbatim}
-We provide here an extension of \verb|number| and \verb|expr| productions to
-allow user to use a classical notation for factorial using exclamation sign In
-case of occuring expression matched by \verb|expr| we simply call
-\verb|factorial| function. Moreover, we want to compute expression in
-compile-time if it is possible. In order to do this, we support match
-specialisarion and nested match unrolling. Using \verb|value| interface we
-evaluate an argument for recursive call. We have to make sure that resulting
-type will be \verb|number|. Otherwise, the wrong match will be called.  This
-example allows us to write \verb|3!| instead of an integer  number, and
-compiler will return substituted and evaluated during compilation phase
-expression \verb|6|.
+
+This example demonstrates a nice advantage over the C++ templates, which
+is the shared syntactical form of compile-time instance and run-time.
+It means that in C++ if a factorial is defined as a template, like:
+\begin{verbatim}
+template <int n> struct fact 
+{
+  static const int value = n * fact<n - 1>::value;
+};
+ 
+template <>
+struct fact<0> 
+{
+  static const int value = 1;
+};
+\end{verbatim}
+There is no way to call it with a non-static variable.  The only way 
+would be to create a wrapper function/macro, but in order to find out
+if something is a constant at compile time one has to have mechanisms
+similar to \verb|__builtin_constant_p| introduced in GCC v4.7.
+
 \subsection{Preprocessing}
-Using this approach macroprocessor doesn't allow us to parse some C
-preprocessor's constructs. We provide the macroprocessor which handle parser's
-context.  However, C preprocessor works out of scope. For example, we can use
-\verb|#if ... #endif| directives wherever in the source code. However, our
-macroprocessor works inside a context. This problem can be solved by
-introducing macro language inside lexer. Although it allows to define arbitrary
-macros out of any scope, we are to be careful with parser rules. If we define
-an `out of scope' macro \verb|< ... >|, then binary operations occured in
-parser \verb|<| and \verb|>| will be interpreted as parts of this directive.  
+We provide the preprocessor which operates in terms of a single
+production only.  C preprocessor on the other hand works out of 
+scope. For example, we can use \verb|#if ... #endif| directives
+wherever in the source code, for example starting in the middle
+of one production and finishing in the middle of another, which
+brings a lot of headache to verify.  Using the preprocessor 
+defined in this paper it is possible to create a match that
+would emulate C preprocessor macro-if.  It may look as follows:
+\begin{verbatim}
+match [\p1] v = # if expr  \. \* # endif  -> [\p2] ...
+\end{verbatim}
+The dot syntax is currently not allowed, but it is very well
+possible to emulate it using a disjunction over all the
+pseudo-tokens.  Now, depending on the fact what is written in
+the right hand side of the macro, it may be accepted by the type
+system or not.  In case the type-system can prove that the result
+of expression on the right-hand side of the match could be 
+recognized by \verb|\p2| it is allowed.  However, it is easy
+to understand, that there is always a way to make type-system 
+happy, i.e. generating a constant expression.  It means that
+the macro-if could be emulated.  Either it is good or bad we
+would leave for a discussion.  In order to avoid this happening
+one may declare more strict type-checking rules.

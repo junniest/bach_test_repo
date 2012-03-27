@@ -13,18 +13,18 @@ Fig.~\ref{fig:grammar}.
 \begin{figure}[h!]
 \centering
 \begin{verbatim}
-program       ::=  ( function ) * ;
-function      ::=  type_id  '(' arg_list ')' stmt_block ;
-arg_list      ::=  ( type_id  id ) * ;
-stmt_block    ::=  '{' ( expr | return ';' ) * '}' ;
-expr          ::=  fun_call | assign | cond_expr ;
-fun_call      ::=  id '('expr (',' expr ) * ')' ;
-assign        ::=  id '=' expr ;
-cond_expr     ::=  bin_expr '?' cond_expr ':' expr ;
-bin_expr      ::=  bin_expr binop primary_expr
-primary_expr  ::=  number | prefix_op expr | '(' expr ')' ;
-binop         ::=  '&&' | '||' | '==' | '!=' ... ;
-prefix_op     ::=  '-' | '+' | '!' | '~' ;
+program       ::=  ( function ) * 
+function      ::=  type_id  '(' arg_list ')' stmt_block 
+arg_list      ::=  ( type_id  id ) * 
+stmt_block    ::=  '{' ( expr | return ';' ) * '}' 
+expr          ::=  fun_call | assign | cond_expr 
+fun_call      ::=  id '('expr (',' expr ) * ')' 
+assign        ::=  id '=' expr 
+cond_expr     ::=  bin_expr ( '?' cond_expr ':' expr ) * 
+bin_expr      ::=  primary_expr ( binop primary_expr ) *
+primary_expr  ::=  number | prefix_op expr | '(' expr ')' 
+binop         ::=  '&&' | '||' | '==' | '!=' ... 
+prefix_op     ::=  '-' | '+' | '!' | '~' 
 \end{verbatim}
 \caption{\label{fig:grammar}A grammar of a C-like language.}
 \end{figure}

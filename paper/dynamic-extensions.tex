@@ -47,14 +47,54 @@ appears, we may change the escape symbol, or even the whole escaping
 mechanism, but it does not influence the matter.
 
 Now we can demonstrate a simple substitution example on the language
-defined in Fig.~\ref{fig:grammar}.  Assume that function \verb|reverse|
-is defined in $T$ and it reverses any list of pseudo-tokens, and what
-we need is to flip the arguments in a function called \verb|foo|.  In
-that case the following match would perform such a substitution.
+defined in Fig.~\ref{fig:grammar}.  Assume that function \verb|replace|
+is defined in $T$ with three arguments and it replaces in any list 
+of pseudo-tokens occurrence each of the second argument with the third, 
+and what we need is to call a function called \verb|bar| with an 
+argument being a summed-up arguments of function called \verb|foo|.
+In that case the following match would perform such a substitution.
 \begin{verbatim}
-match [\fun_call] v = \id ( \expr \( , \expr \) \*
-   -> [\fun_call] reverse (v)
+match [\fun_call] v = foo ( \expr \( , \expr \) \* )
+   -> [\fun_call] cons bar (replace (tail v) (,) (+))
 \end{verbatim}
+
+\subsection{Definition of matches}
+Match rules can be defined in the arbitrary places of a program
+and the rule activates immediately after the definition was parsed.
+We do however differentiate between the global matches and context
+matches.  In our case the context is created by a \verb|stmt_block|
+production.  In that case, all the matches declared within the 
+\verb|stmt_block| production are valid only within this particular
+production.  When the production is finished, the matches declared
+within the production would be removed.  Declaration of the context
+is up to the parser, it may define it in any which way by calling 
+two interface functions.  The context definition can be omitted in
+which case all the matches would be global.
+
+Both global and context matches depend on the order of definition
+and in both cases the first match has a stronger priority than the
+subsequent in case the token stream can be matched with more than
+one regular expression.  The priority helps to cover the following
+case:
+\begin{verbatim}
+match [\expr] v = f ( \num )            ...
+mathc [\expr] v = f ( \primary_expr )   ...
+match [\expr] v = f ( \expr )           ...
+\end{verbatim}
+Here we can see that the last regular expression includes the 
+previous as \verb|\primary_expr| is also an \verb|\expr| and
+so on.  But introducing priorities, one may still have a different
+behaviour in each case.
+
+Nested context matches overload the outer matches, in a same
+way as local variables have a first match, in case a variable
+of the same name exists in the outer context.
+
+%The match definition is rejected with an error in case the system
+%can prove an infinite loop there.  It may happen in case of left
+%recursion in the left-hand side of the match and in case when 
+%the left-hand side production and left-hand side regular expression
+%of the match 
 
 \subsection{$T$ language and correctness}
 In order to perform a transformation of the matched list we define a
@@ -64,14 +104,13 @@ the approach.  The core definition of $T$ is given by Fig.~\ref{fig:t}.
 \begin{figure}
 \begin{verbatim}
 program         ::= ( function ) *
-function        ::= id '::' fun_type id var-list '=' expr
+function        ::= id '::' fun_type id id * '=' expr
 fun_type        ::= (type | '(' fun_type ')') '->' fun_type
-var_list        ::= id ? | id (',' id ) *
 expr            ::= id | expr expr | let_expr | if_expr | builtin
 let_rec         ::= 'let' id '=' expr (',' id '=' expr) * 'in' expr
 if_expr         ::= 'if' cond_expr 'then' expr 'else' expr
 cond_expr       ::= 'type' expr '==' type | expr
-builtin         ::= 'cons' '(' expr ',' (expr | 'nil')')' 
+builtin         ::= 'cons' expr  (expr | 'nil') 
                     | 'head' expr | 'tail' expr | 'value' expr
                     | pseudo_token '[' expr ']' | number
                     | + | - | ...
