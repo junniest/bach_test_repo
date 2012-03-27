@@ -1,7 +1,7 @@
 \section{\label{sec:dynext}Transformation system}
 
 In this section we are going to describe a syntax of the rules of 
-the transformation system and demonstrate the way to prove a correctness
+the transformation system and demonstrate a way to prove the correctness
 of the transformation.
 
 \subsection{Match Syntax}
@@ -51,10 +51,10 @@ mechanism, but it does not influence the matter.
 
 Now we can demonstrate a simple substitution example on the language
 defined in Fig.~\ref{fig:grammar}.  Assume that function \verb|replace|
-is defined in $T$ with three arguments and it replaces in any list 
-of pseudo-tokens occurrence each of the second argument with the third, 
+is defined in $T$ with three arguments and in any list of pseudo-tokens
+it replaces each ocurrence of the second argument with the third, 
 and what we need is to call a function called \verb|bar| with an 
-argument being a summed-up arguments of function called \verb|foo|.
+argument being the summed-up arguments of function called \verb|foo|.
 In that case the following match would perform such a substitution.
 \begin{verbatim}
 match [\fun_call] v = foo ( \expr \( , \expr \) \* )
@@ -62,7 +62,7 @@ match [\fun_call] v = foo ( \expr \( , \expr \) \* )
 \end{verbatim}
 
 \subsection{Definition of matches}
-Match rules can be defined in the arbitrary places of a program
+Match rules can be defined in arbitrary places of a program
 and the rule activates immediately after the definition was parsed.
 We do however differentiate between the global matches and context
 matches.  In our case the context is created by a \verb|stmt_block|
@@ -70,7 +70,7 @@ production.  In that case, all the matches declared within the
 \verb|stmt_block| production are valid only within this particular
 production.  When the production is finished, the matches declared
 within the production would be removed.  Declaration of the context
-is up to the parser, it may define it in any which way by calling 
+is up to the parser, it may define it in any way by calling 
 two interface functions.  The context definition can be omitted in
 which case all the matches would be global.
 
@@ -86,7 +86,7 @@ match [\expr] v = f ( \expr )           ...
 \end{verbatim}
 Here we can see that the last regular expression includes the 
 previous as \verb|\primary_expr| is also an \verb|\expr| and
-so on.  But introducing priorities, one may still have a different
+so on.  But by introducing priorities one may still have a different
 behaviour in each case.
 
 Nested context matches overload the outer matches, in a same
@@ -101,7 +101,7 @@ of the same name exists in the outer context.
 
 \subsection{$T$ language and correctness}
 In order to perform a transformation of the matched list we define a
-minimalistic functional language called $T$ in order to demonstrate
+minimalistic functional language called $T$ to demonstrate
 the approach.  The core definition of $T$ is given by Fig.~\ref{fig:t}.
 
 \begin{figure}
@@ -126,13 +126,13 @@ The main use-case of the language is to traverse over the matched
 list of pseudo-tokens applying recursion, head, tail and cons
 constructs.  In order to stop the recursion we also introduce
 arithmetic operations on integers.  In order to perform partial
-evaluation, we need to have an interface to the value of the
+evaluation, we need to have an interface to get the value of a
 pseudo-token.  For that reason we introduce function \verb|value|
 which is applicable to the pseudo-tokens which have a constant
 integer value (in our example it is a \verb|\number| pseudo-token).
 In order to construct an object from integer, we are using
 \verb|\number[42]| syntax.  The \verb|value| function operates
-on integers only for the simplicity of the model only, the basic
+on integers only for the simplicity of the model, but the basic
 types can be extended in future.
 
 \subsubsection{Type system}
@@ -153,7 +153,7 @@ then the result of the match is a flat list of pseudo-tokens.
 However from the regular expression we have additional information
 about the structure of this list.  In order to perform a type 
 inference, we observe that regular languages, hence regular 
-expression bring a number of set operations, which is the key
+expressions, bring a number of set operations, which is the key
 driving force of the inference.  First of all, it is easy to
 define a subset relationship on two regular expressions
 $r_1 \sqsubseteq r_2$.  As we know, we can always build a DFA for
