@@ -195,8 +195,9 @@ respective DFA for subtracted types, all we have to do is to construct
 $C = T \times S$ and make the final states of $C$ be the pairs where $T$
 states are final and $S$ states are not. 
 
-The type inference procedure itself borrows the idea from SaC type
-system~\cite{} when we start with an abstract type \verb|regexp_t|
+The type inference procedure itself borrows the idea from inferring
+the shape of the array in SaC type system~\cite{sac2c} i.e. we will
+start with an abstract type \verb|regexp_t|
 which is $\top$ and recursively precise the type until we get to
 a fixed point.
 

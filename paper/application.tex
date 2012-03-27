@@ -5,9 +5,9 @@ application of the designed approach and evaluate the results.
 
 \subsection{Syntax extension}
 
-One of the typical examples of using a preprocessor is to extend the
+One of the typical examples of using the preprocessor is to extend the
 syntax of the language.  Assume that we would like to have a mathematical 
-notation for obtaining absolute value, such as $\left|5\right| \equiv abs(5)$. 
+notation for absolute value, such as $\left|5\right| \equiv abs(5)$. 
 It can be achieved using the following match:
 \begin{verbatim}
 match [\expr] v = | \expr | 
@@ -60,7 +60,7 @@ fact-match x = if (value x) == 0 then
                             * (value (fact-match 
                                       \number[(value x) - 1]))]
 
-fact-match-expr :: \expr -> \expr
+fact-match-expr :: \expr -> regexp_t
 fact-match-expr x = cons \id[factorial] cons \( cons x cons \) nil
 \end{verbatim}
 

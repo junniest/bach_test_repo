@@ -54,7 +54,7 @@ implementation of the parser.
     \item[Handle-functions] First of all, we ask that every production
     is represented as a function\footnote{Note that these functions
     have side-effects, so the order of calling is important.} with a
-    signature \verb/Parser -> (AST|Error)/, i.e. function gets a
+    signature \verb/Parser/ $\to$ \verb/(AST|Error)/, i.e. function gets a
     parser-object as an input and returns either an Abstract Syntax Tree
     node or an error.  We call those functions handle-functions. We
     require that handle-function structure mimics the formulation of the
@@ -81,8 +81,8 @@ implementation of the parser.
 
     \item[Match-function] In the beginning of each handle-function, each
     production calls a function called \verb|match| with a signature
-    \verb/(Parser, Production) -> Parser/.  A match-function is an
-    interface to the preprocessor that checks if a stream of tokens
+    \verb/(Parser, Production)/ $\to$ \verb/-> Parser/.  A match-function 
+    is an interface to the preprocessor that checks if a stream of tokens
     pointed at by the parser has a valid substitution in the given
     production; if it does, it performs the substitution and makes sure
     that the parser points to the beginning of the substitition in the
