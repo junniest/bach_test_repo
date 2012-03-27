@@ -81,7 +81,7 @@ implementation of the parser.
 
     \item[Match-function] In the beginning of each handle-function, each
     production calls a function called \verb|match| with a signature
-    \verb/(Parser, Production)/ $\to$ \verb/-> Parser/.  A match-function 
+    \verb/(Parser, Production)/ $\to$ \verb/Parser/.  A match-function 
     is an interface to the preprocessor that checks if a stream of tokens
     pointed at by the parser has a valid substitution in the given
     production; if it does, it performs the substitution and makes sure

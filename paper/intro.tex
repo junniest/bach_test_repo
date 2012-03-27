@@ -1,22 +1,50 @@
 \section{\label{sec:intro}Introduction}
 
-Very often expressiveness of a programming language introduces a number of
-ambiguities in its syntax.  The language specification clearly states how to
-resolve the conflict, however it may not be possible to formulate the
-resolution in terms of context free grammars.  In order to illustrate that we
-present the following examples.
+Very often the languages like C/C++ introduce a new constructs in its
+syntax.  Some of the constructs involve serious modifications of the
+compiler to get a proper support, but some of them may be pure syntactical,
+like for example user-defined literals in C++11.  In this paper we are
+concerned with a system that allows a class of modifications at the 
+level of the programming language itself, without modifying a compiler.
+
+The necessity to change a compiler in order to support syntactical 
+changes come from the fact that most of the programming languages 
+have a restricted capabilities for doing so.  Some of them do not
+provide any at all.  That is partially a reason why programming 
+languages use preprocessors.  However, the capabilities of those
+preprocessors are often very limited.  We believe that the key
+aspect to the proper self-modifying language is an ability to 
+change a grammar on the fly.  If so, then one can say that the
+reasonable approach might be to create a cross compiler which
+would transform a desired syntax into the syntax recognized by
+some compiler.  The problem with this approach is, that most of
+the base-line languages come with a syntax that is very difficult
+to parse using an automatic tool.  As an example consider the 
+following cases.
+
+
+%Very often expressiveness of a programming language introduces a number of
+%ambiguities in its syntax.  The language specification clearly states how to
+%resolve the conflict, however it may not be possible to formulate the
+%resolution in terms of context free grammars.  In order to illustrate that we
+%present the following examples.
 
 \begin{enumerate}
-    \item The classical example from C language is a type-cast 
-          syntax.  As a user can define an arbitrary type using
-          \verb|typedef| construct, evaluation of the expression
-          \verb|(x) + 5| is impossible, unless we know if
-          \verb|x| is a type or not.
-    \item Assume that we extend C syntax to allow array 
-          concatenation using infix binary \verb|++| operator and
-          constant-arrays to be written as \verb|[1, 2, 3]|.
-          We immediately run into the problem to disambiguate the 
-          following expression: \verb|a ++ [1]|, as it could mean
+    \item %The classical example from C language is a type-cast 
+          %syntax.  
+          In C, a user can define an arbitrary type using the
+          \verb|typedef| construct, which makes it impossible 
+          to disambiguate the expression \verb|(x) + 5|, unless
+          we know whether \verb|x| is a type or not. It could
+          be treated as a type-casting of an application of unary
+          plus to the \verb|5| to the type called \verb|x|,
+          or a sum of variable called \verb|x| with 5.
+    \item If we were allowed to extend C syntax with an infix 
+          binary array concatenation operation denoted \verb|++|, and
+          constant-arrays were allowed to be written as 
+          \verb|[1, 2, 3]|,
+          we  would immediately run into the problem of disambiguating
+          the following expression: \verb|a ++ [1]|.  It could mean
           an application of postfix \verb|++| indexed by \verb|1|
           or it could be an array concatenation of \verb|a| and 
           \verb|[1]|.
@@ -51,7 +79,7 @@ also lexing decisions.  Consider the following examples:
 \end{enumerate}
 
 \noindent
-In order to resolve the above ambiguities using table-based parser generator,
+In order to resolve the above ambiguities using a grammar-based parser generator,
 we have to make sure that one can annotate the grammar with correct choices for
 each shift/reduce or reduce/reduce conflict. This puts a number of requirements
 on the syntax of a parser generator and on the finite-state machine execution
@@ -68,6 +96,24 @@ front-ends use hand-written recursive descent parsers that specially
 treat cases that cause ambiguity.  For example the following languages do:
 C/C++/ObjectiveC in GNU GCC~\cite{gcc}, clang in LLVM~\cite{clang}, 
 JavaScript in Google V8~\cite{v8}.
+
+That indicates, that the first step of cross-compilation
+would be re-creation of the parser of the base-line language.
+As it requires a major undertake to create such a grammar, and
+afterwards one has to update the grammar with the changes made 
+in the original parser, we do not seriously consider this approach.
+Instead we are going to design a system, which uses an existing
+parser as a base-line and introduces a set of handles to modify
+a grammar on the fly.  Arbitrary changes of the grammar may lead
+to an uncontrolled language evolution which would be hard to verify.
+In our approach we allow a restrictive set of changes to the grammar
+and use a specially designed type-system to control a correctness
+of transformations.
+
+Very similar tasks, except may be correctness verification, are
+performed by generic macro-processors.  Now, is it possible to
+build our system on one of the existing preprocessing engines,
+preferably providing some correctness guarantees.
 
 The main goal of any preprocessor is to perform a substitution of
 one element sequence with another.  The unit of the sequence may 
@@ -88,7 +134,7 @@ a C macro:
 \end{verbatim}
 First of all, it is really hard to say anything about the result
 of this macro, as \verb|foo (5,6)| expands to \verb|5 6|, but
-both \verb|foo (,5)| and \verb|foo (5,)| expands to \verb|5|.
+both \verb|foo (,5)| and \verb|foo (5,)| expand to \verb|5|.
 Secondly, as comma is a part of syntax definition of the macro
 then one cannot just pass a token sequence \verb|5, 6| as a
 first argument of \verb|foo|.  In order to resolve this one
@@ -100,7 +146,7 @@ of another macro.  For example:
 #define first(x, y) x
 #define bar(x, y) first x y
 \end{verbatim}
-So we have higher-order macro here, but it would work only if
+So we have a higher-order macro here, but it would work only if
 arguments have a right type and the application of 
 \verb|bar ((5,6), x)| would expand to \verb|5, x|, however
 application of \verb|bar (5, 6)| would not provide an error
@@ -123,14 +169,17 @@ expressions treating one and the same symbol differently still might be
 confusing.  For example, would it be possible for some macro system to
 transform an expression \verb/| a|b |/ into \verb/abs (a|b)/?
 
-The proper way of doing macro-substitutions is to allow an
-extension to the grammar.  However, providing a handle for
-arbitrary changes of the grammar may lead to uncontrolled 
-changes in the semantics of the language, which again would
-make the proof of program corectness hard to create.
 
-As a solution to the given problem we introduce a preprocessor
-which works on the sequence of pseudo-tokens which is a combination
+%The proper way of doing macro-substitutions is to allow an
+%extension to the grammar.  However, providing a handle for
+%arbitrary changes of the grammar may lead to uncontrolled 
+%changes in the semantics of the language, which again would
+%make the proof of program corectness hard to create.
+
+So we just saw that using a preprocessor for the desired task is
+not really an option. As a solution to the given problem we introduce
+a transformation system
+which works on the sequence of pseudo-tokens, which is a combination
 of tokens recognized by parser and productions of the grammar
 used by parser.  To make it even more powerful we allow a 
 regular expression on pseudo-tokens, still being able to 
@@ -138,10 +187,10 @@ guarantee the correctness of the transformation.
 
 The rest of the paper is organized as follows: we are going to 
 introduce a basic model of the parser which we use to build a
-preprocessor on in section 2.  Then we describe the syntax of
-the preprocessing rules and the way we intend to prove correctness
+transformation system on in section 2.  Then we describe the syntax of
+the transformation rules and the way we intend to prove correctness
 in section 3.  Section 4 describes the way we deal with a number
-of preprocessor definitions and finally we evaluate the work
+of transformation rule definitions and finally we evaluate the work
 and conclude in sections 5 and 6.
 
 
