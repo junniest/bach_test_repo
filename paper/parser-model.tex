@@ -1,6 +1,7 @@
 \section{\label{sec:parser}Parser model}
 
-The parser which serves as a basis for building a preprocessor is 
+The parser which serves as a basis for building a transformation 
+system is 
 based on recursive descent LL(k) or LL(*) algorithm.  Recursive
 descent is a natural human approach to writing parsers, and in
 case if $k$ is small, the efficiency of parsing is linear with
@@ -30,7 +31,7 @@ prefix_op     ::=  '-' | '+' | '!' | '~'
 \end{figure}
 
 \noindent
-As the preprocessor is build as an extension to the parser, 
+As the transformation system is build as an extension to the parser, 
 it expects a certain behaviour of the parser.  Further down
 we list a set of properties we require to be present in the 
 implementation of the parser.
@@ -82,11 +83,13 @@ implementation of the parser.
     \item[Match-function] In the beginning of each handle-function, each
     production calls a function called \verb|match| with a signature
     \verb/(Parser, Production)/ $\to$ \verb/Parser/.  A match-function 
-    is an interface to the preprocessor that checks if a stream of tokens
+    is an interface to the transformation system that checks if a 
+    stream of tokens
     pointed at by the parser has a valid substitution in the given
     production; if it does, it performs the substitution and makes sure
-    that the parser points to the beginning of the substitition in the
-    token stream.  In case if no matches were found, the preprocessor
+    that the parser points to the beginning of the substitution in the
+    token stream.  In case if no matches were found, the transformation
+    system
     does not perform any substitutions and returns the parser in its
     original state.
 \end{description}

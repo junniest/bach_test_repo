@@ -1,12 +1,15 @@
-\section{\label{sec:dynext}Dynamic extensions}
+\section{\label{sec:dynext}Transformation system}
 
-In this section we are going to describe a syntax of the preprocessing
-rules and demonstrate the way to prove a correctness of the
-transformation.
+In this section we are going to describe a syntax of the rules of 
+the transformation system and demonstrate the way to prove a correctness
+of the transformation.
 
 \subsection{Match Syntax}
 
-The preprocessing rules are defined using the following syntax:
+The transformation system consists of the \textit{match} rules and
+token-transformation functions.  First of all we would consider the
+match rule, which modifies a behaviour of a given production.  The
+syntax of the rule can be learned from the following example.
 \begin{verbatim}
 match [\prod1] v = regexp   ->   [\prod2] f (v)
 \end{verbatim}
@@ -17,8 +20,8 @@ right hand side of the match, then the matched tokens will be replaced
 with a reduction of \verb|prod2| production applied on a list of 
 pseudo-tokens that is being returned by \verb|f (v)|.  Function \verb|f|
 is a function which is defined in functional language $T$ and which
-is used to perform a preprocessing transformation on the list of 
-tokens.  
+is used to perform a transformation on the list of tokens matched by
+the left hand side of the match.  
 
 The \verb|regexp| regular expression is a box standard regular
 expression which is defined by the grammar at Fig.~\ref{fig:reggram}.
@@ -55,7 +58,7 @@ argument being a summed-up arguments of function called \verb|foo|.
 In that case the following match would perform such a substitution.
 \begin{verbatim}
 match [\fun_call] v = foo ( \expr \( , \expr \) \* )
-   -> [\fun_call] cons bar (replace (tail v) (,) (+))
+   -> [\fun_call] cons bar (replace (tail v) \, \+)
 \end{verbatim}
 
 \subsection{Definition of matches}

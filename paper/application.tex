@@ -5,13 +5,14 @@ application of the designed approach and evaluate the results.
 
 \subsection{Syntax extension}
 
-One of the typical examples of using the preprocessor is to extend the
+One of the typical examples of using the transformation system is to 
+extend the
 syntax of the language.  Assume that we would like to have a mathematical 
 notation for absolute value, such as $\left|5\right| \equiv abs(5)$. 
 It can be achieved using the following match:
 \begin{verbatim}
 match [\expr] v = | \expr | 
-   -> [\expr] cons (\id[abs]) (cons (head (head v)) nil)
+   -> [\expr] cons (\id[abs]) cons \( cons (head (head v)) cons \) cons nil
 \end{verbatim}
 
 Keep in mind that we could also define the same match on numbers
@@ -39,7 +40,7 @@ as well as this: \verb/|(a|b)|/.
 
 \subsection{C++ Templates}
 
-The described preprocessor may be used in a similar way as template
+The described transformation system may be used in a similar way as template
 meta-programming technique.  In the case of templates, instantiation process
 may be delayed until some compiler optimisation finds out that certain template
 parameter is a constant.  In our setting the instantiation happens during the
@@ -85,12 +86,14 @@ if something is a constant at compile time one has to have mechanisms
 similar to \verb|__builtin_constant_p| introduced in GCC v4.7.
 
 \subsection{Preprocessing}
-We describe a method of building a preprocessor, which operates in terms of a
+We describe a method of building a transformation system, which operates 
+in terms of a
 single production only.  C preprocessor, on the other hand, works out of scope.
 For example, we can use \verb|#if ... #endif| directives wherever in the
 source code, for example, starting in the middle of one production and
 finishing in the middle of another, which makes static verification difficult.
-Using the preprocessor defined in this paper it is possible to create a match
+Using the transformation system defined in this paper it is possible to 
+create a match
 that would emulate C preprocessor macro-if.  It might look as follows:
 \begin{verbatim}
 match [\p1] v = # if expr  \. \* # endif  -> [\p2] ...

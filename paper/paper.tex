@@ -1,6 +1,6 @@
 \documentclass[a4paper]{llncs}
 
-\usepackage[T2A]{fontenc}
+%\usepackage[T2A]{fontenc}
 \usepackage[utf8x]{inputenc}
 \usepackage[russian, english]{babel}
 \usepackage{color}
@@ -53,8 +53,8 @@ using context free grammars.  This problem is well known, and as a solution
 there are parser generators like ANTLR, which generates LL(*) parsers rather
 than LALR/LR.  Nevertheless, a lot of real-world parsers are implemented by
 hand.  A great difficulty arises when there appears a need to introduce some
-changes to the grammar of the language.  This implies that the programmer has
-to rewrite the parser itself to include new rules and resolve the created
+changes to the grammar of the language.  This implies that the parser
+has to be rewritten to include new rules and resolve the created
 ambiguities manually.
 
 Whenever radical changes to the language are required, it is understood that
