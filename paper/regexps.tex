@@ -1,7 +1,7 @@
 \section{\label{sec:regexps}Regular expressions}
 
 We have devised a method of implementing match syntax that will be time
-effective during pre-processing. We have also created a prototype that
+effective during the transformation. We have also created a prototype that
 ilustrates some of the features described in this article. This section will,
 in short, describe the approach we selected, for the full description, however,
 turn to the full paper.
@@ -13,8 +13,8 @@ to minimize the effort needed to execute the match. This task is performed
 using the subset construction algorithm.
 
 In order to minimise execution time even further, we minimise the created DFA.
-The minimisation algorithm is described in detail in the "Dragon
-Book"\cite{dragon-book}. The algorithm creates sets of states that cannot be
+The minimisation algorithm is described in detail in the ``Dragon
+Book''\cite{dragon-book}. The algorithm creates sets of states that cannot be
 distinguished by any input token sequence. Once the algorithm fails to break
 the sets into smaller ones it stops. These sets of states then become new
 states of the minimal automaton.
@@ -57,7 +57,7 @@ and will not be described here extensively.
 
 The second option is more complex. In this case we combine the automata created
 for each of the matches together into a single DFA. This is done in order to
-reduce matching time, the automata megring algorithm is described in the full
+reduce matching time, the automata merging algorithm is described in the full
 article.  The second option is more interesting, as it allows matching of
 \verb/n/ independent patterns in $O(l)$ steps, where \verb/l/ is the amount
 of tokens to be matched. It is important to note as well that our method of

@@ -24,7 +24,8 @@ is used to perform a transformation on the list of tokens matched by
 the left hand side of the match.  
 
 The \verb|regexp| regular expression is a box standard regular
-expression which is defined by the grammar at Fig.~\ref{fig:reggram}.
+expression~\cite{regexp} which is defined by the grammar at 
+Fig.~\ref{fig:reggram}.
 \begin{figure}[h!]
 \begin{verbatim}
 regexp          ::= concat-regexp '|' regexp
@@ -157,7 +158,7 @@ expression bring a number of set operations, which is the key
 driving force of the inference.  First of all, it is easy to
 define a subset relationship on two regular expressions
 $r_1 \sqsubseteq r_2$.  As we know, we can always build a DFA for
-a regular expression and minimize it, which gives us a minimal
+a regular expression and minimize it~\cite{dragon-book}, which gives us a minimal
 possible automaton for the language recognized by a given regular
 expression.  It means that $r_1 \sqsubseteq r_2 \Rightarrow 
 min (det (r_1)) \sqsubseteq min (det (r_2))$.  For two minimized 
@@ -193,7 +194,8 @@ the reversed automaton in case of backward.
 
 In order to propagate type information in the branches obtained from the
 application of \verb|type| construct, we have to know how to subtract
-two regular expressions, which is, again, simple.  If $T$ and $S$  are
+two regular expressions~\cite{reglang}, which is, again, simple.  
+If $T$ and $S$  are
 respective DFA for subtracted types, all we have to do is to construct
 $C = T \times S$ and make the final states of $C$ be the pairs where $T$
 states are final and $S$ states are not. 

@@ -3,7 +3,8 @@
 Very often languages like C/C++ introduce new constructs in their
 syntax.  Some of the constructs require serious modifications of the
 compiler to be supported properly, but some of them may be purely syntactical,
-like, for example, user-defined literals in C++11.  In this paper we are
+like, for example, user-defined literals in C++11~\cite{cpp11}.  In this 
+paper we are
 concerned with a system that allows a class of modifications at the 
 level of the programming language itself, without the necessity to
 modify the compiler.
@@ -32,7 +33,7 @@ following cases.
     \item %The classical example from C language is a type-cast 
           %syntax.  
           In C, a user can define an arbitrary type using the
-          \verb|typedef| construct, which makes it impossible 
+          \verb|typedef| construct~\cite{c99}, which makes it impossible 
           to disambiguate the expression \verb|(x) + 5|, unless
           we know whether \verb|x| is a type or not. It could
           be treated as a type-casting of an application of unary
@@ -119,7 +120,8 @@ one element sequence with another.  The unit of the sequence may
 be different depending on the agreement, however the common
 case is to say that the unit is a sequence of characters of the
 same class.  The number of classes is normally fixed, however 
-character belonging to the class may be static as in C preprocessor,
+character belonging to the class may be static as in 
+C preprocessor~\cite{prepr},
 where, for example, notion of space cannot be changed, or dynamic as
 in \TeX, where one could specify that a certain character is a 
 delimiter.  Then the substitution itself is a replacement of 
