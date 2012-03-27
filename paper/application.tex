@@ -50,8 +50,8 @@ way to express the factorial function in match syntax that will be evaluated in
 compile time.
 
 \begin{verbatim}
-\match [\number] v = \number ! -> [\number] fact-match (v)
-\match   [\expr] v = \expr   ! ->   [\expr] fact-match-expr (v)
+match [\number] v = \number ! -> [\number] fact-match (v)
+match   [\expr] v = \expr   ! ->   [\expr] fact-match-expr (v)
 
 fact-match :: \number -> \number
 fact-match x = if (value x) == 0 then
