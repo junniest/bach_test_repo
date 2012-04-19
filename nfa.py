@@ -164,9 +164,6 @@ def get_epsilon_closure_single (automata, closure):
             closure.append (automata)
             get_epsilon_closure_single (automata.alternative[0], closure)
             get_epsilon_closure_single (automata.alternative[1], closure)
-        
-        if isinstance (automata.parent, asterix_nfa):
-            get_epsilon_closure_single (automata.parent, closure)
 
 
 def rearrange (dfa_state_list):
