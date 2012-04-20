@@ -59,9 +59,6 @@ regexp9 = '(a|b)*abb'
 
 regexp10 = '(ab|a)*'
 
-merge([det(parse("a*"), letters), det(parse("aa"), letters), det(parse("a"), letters), det(parse("ab"), letters)])
-quit()
-
 regexp_list = [regexp0, regexp1, regexp2, regexp3, regexp4, regexp5, regexp6, regexp7, regexp8, regexp9]
 execute ("aaabb", regexp_list)
 

@@ -89,6 +89,7 @@ class node_dfa (object):
         self.states = nfa_lst
         self.paths = {}
         self.accepting = False
+        self.regexp_id = None
   
     def __repr__ (self):
 #        state_list = map(lambda (x,y): x + ' -> ' + repr(y.id), self.paths.iteritems())
@@ -361,28 +362,47 @@ def parse (string):
     stack[0].add_next_state (done_nfa ())
     return stack[0]
 
+
 def execute (string, regexp_list):
     automata_list = [det(parse(x), ''.join([c for c in set(x) if c not in '*|()'])) for x in regexp_list]
-    auto_dict = dict (zip (xrange (len(automata_list)),\
-			   [auto[0] for auto in automata_list]))
+    for i in xrange (len (automata_list)):
+        for state in automata_list[i]:
+            state.regexp_id = i
+    automata = merge (automata_list)
+    current_state = automata[0]
+    fail = False
     for char in string:
-        to_throw_out = []
-        for key in auto_dict.iterkeys ():
-            if auto_dict.get (key).paths.has_key (char):
-                auto_dict[key] = auto_dict.get (key).paths.get (char)
-            else:
-                to_throw_out.append (key)
-	pred = lambda (key, item): not key in to_throw_out
-        auto_dict = dict (filter (pred, auto_dict.iteritems()))
+        if current_state.paths.has_key (char):
+            current_state = current_state.paths.get (char)
+        else:
+            fail = True
+            break
+    if fail:
+        print "Nothing accepted."
+    else:
+        accepted = filter(lambda x: x.accepting, current_state.state_list)
+        if not accepted:
+            print "Nothing accepted."
+        else:
+            print "Accepted", regexp_list[accepted[0].regexp_id]
 
-    pred = lambda (key, item): item.accepting
-    auto_dict = dict (filter (pred, auto_dict.iteritems()))
-    
-    return not not auto_dict
-    #for i in auto_dict.iterkeys ():
-    #    print "Accepted regexp ", regexp_list [i]
-    #if not auto_dict:
-    #    print "No accepted regexps"
+
+#    auto_dict = dict (zip (xrange (len(automata_list)),\
+#			   [auto[0] for auto in automata_list]))
+#    for char in string:
+#        to_throw_out = []
+#        for key in auto_dict.iterkeys ():
+#            if auto_dict.get (key).paths.has_key (char):
+#                auto_dict[key] = auto_dict.get (key).paths.get (char)
+#            else:
+#                to_throw_out.append (key)
+#	pred = lambda (key, item): not key in to_throw_out
+#        auto_dict = dict (filter (pred, auto_dict.iteritems()))
+#
+#    pred = lambda (key, item): item.accepting
+#    auto_dict = dict (filter (pred, auto_dict.iteritems()))
+#    
+#    return not not auto_dict
 
 
 # Class for Determinate Finate Automaton merge
@@ -402,8 +422,6 @@ class node_dfa_m (object):
     def __repr__ (self):
         state_list = map(lambda (x,y): x + ' -> ' + repr(y.state_list), self.paths.iteritems())
         return "State %r %r" % (self.state_list, state_list)
-#        state_list = map(lambda (x,y): x + ' -> ' + repr(y.id), self.paths.iteritems())
-#        return "<id:%s, accept:%r> %r\n" % (self.id, self.accepting, state_list)#, self.states)
         pass
 
 
@@ -421,11 +439,9 @@ def add_to_state_list_merge (state_list, merge_automata):
 
 def merge_paths (merge_list):
     rv = collections.defaultdict(list)
-#    print merge_list
     for merge in merge_list:
         for k, v in merge.paths.iteritems():
             rv[k].append(v)
-#    print rv
     return rv
 
 def merge (automata_list):
@@ -435,15 +451,11 @@ def merge (automata_list):
         first_state = node_dfa_m([merge0[0], merge1[0]])
         new_automata = [first_state]
         for state in new_automata:
-#            print state
             rv = merge_paths(state.state_list)
             for (symbol, state_list) in rv.iteritems():
                 state.paths[symbol] = add_to_state_list_merge (state_list, new_automata)
         merge0 = new_automata
-    
-    for auto in new_automata: 
-        print auto
-    pass
+    return new_automata
 
 
 # vim: set ts=4 sw=4 sts=4 et
