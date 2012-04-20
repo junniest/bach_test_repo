@@ -71,9 +71,7 @@ def test_nfa_rexp (num):
 	if m is not None:
 	    pytest = m.group (0) == string
 
-    letters = "".join ([chr (ord ('a') + c) for c in xrange (26)])
-
-    res = nfa.execute (string, [nfa.det (nfa.parse (rexp), letters)], [rexp])
+    res = nfa.execute (string, [rexp])
     #print "\tpython:%r\t\tpechka-nfa:%r" % (pytest, res)
     if pytest == res:
 	print "Test %i: passed!" % num

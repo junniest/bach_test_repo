@@ -1,6 +1,7 @@
 __author__ = "Artem Shinkarov, June Pecherskaya"
 __date__ = "2012-02-09"
 
+import collections
 
 # Abstract class for Nondeterminate Finite Automaton
 class nfa (object):
@@ -90,8 +91,8 @@ class node_dfa (object):
         self.accepting = False
   
     def __repr__ (self):
-        state_list = [repr (s) for s in self.states]
-        return "<id:%s, accept:%r>" % (self.id, self.accepting)
+#        state_list = map(lambda (x,y): x + ' -> ' + repr(y.id), self.paths.iteritems())
+        return "<id:%s, accept:%r>" % (self.id, self.accepting)#, state_list)
 
 
 def add_to_state_list (lst, dfa_lst):
@@ -175,13 +176,9 @@ def rearrange (dfa_state_list):
         dfa_state_list[i].id = i
     return dfa_state_list
 
-
-# FIXME The symbol_list is bullshit.  You can build a symbol list 
-# from the nfa itself.  Please remove.
 def det (automata, symbol_list):
     dfa_state_list = []
     nfa_state_list = get_epsilon_closure ([automata])
-    
     if not nfa_state_list:
         raise Exception ("No states were found for %s" % automata)
         
@@ -192,7 +189,6 @@ def det (automata, symbol_list):
             nl = get_epsilon_closure (get_moves (dfa, symbol))
             if nl:
                dfa.paths[symbol] = add_to_state_list (nl, dfa_state_list)
-    
     return minimize (rearrange (dfa_state_list))
 
 
@@ -208,7 +204,8 @@ def break_to_groups (group, group_list):
     "Breaks the given group into smaller groups according to the paths they have"
     result = []
     state_path_list = []
-    # the cycle creates pairs of states and their paths encoded as paths to a particular group number in the given group_list
+    # the cycle creates pairs of states and their paths encoded as paths to a 
+    # particular group number in the given group_list
     for state in group:
         paths = {}
         for char, path in state.paths.iteritems ():
@@ -239,7 +236,6 @@ def minimize (automata):
         else:
             group_list[1].append (state)
     old_group_list = []
-    
     # if old and new group lists are equal, we're done minimizing
     while not group_list == old_group_list:
         old_group_list = group_list[:]
@@ -264,7 +260,8 @@ def make_automata_from_groups (group_list):
             start_state = new_state
         if len (group) == 1: # if group length is 1 it's just a state, nothing to do
             continue
-        # if s group has several states, we have to replace these states in all paths so that the paths are correct 
+        # if s group has several states, we have to replace these states in all 
+        # paths so that the paths are correct 
         for i in xrange(1, len (group)):
             old_state = group [i]
             if old_state.id == 0:
@@ -364,10 +361,8 @@ def parse (string):
     stack[0].add_next_state (done_nfa ())
     return stack[0]
 
-# FIXME Why the function takes automata_list and regexp_list, which
-# eventually must be connected.  Can't it get aotomata-list by
-# parsing and determinating each element of regex_list?
-def execute (string, automata_list, regexp_list):
+def execute (string, regexp_list):
+    automata_list = [det(parse(x), ''.join([c for c in set(x) if c not in '*|()'])) for x in regexp_list]
     auto_dict = dict (zip (xrange (len(automata_list)),\
 			   [auto[0] for auto in automata_list]))
     for char in string:
@@ -389,6 +384,66 @@ def execute (string, automata_list, regexp_list):
     #if not auto_dict:
     #    print "No accepted regexps"
 
+
+# Class for Determinate Finate Automaton merge
+class node_dfa_m (object):
+    "DFA node class"
+    def __init__ (self, state_list):
+        self.paths = {}
+        if isinstance(state_list[0], node_dfa_m):
+            new_list = state_list[0].state_list
+            new_list.append(state_list[1])
+            self.state_list = new_list
+        else:
+            self.state_list = state_list
+        self.accepting_id_list = []
+
+    
+    def __repr__ (self):
+        state_list = map(lambda (x,y): x + ' -> ' + repr(y.state_list), self.paths.iteritems())
+        return "State %r %r" % (self.state_list, state_list)
+#        state_list = map(lambda (x,y): x + ' -> ' + repr(y.id), self.paths.iteritems())
+#        return "<id:%s, accept:%r> %r\n" % (self.id, self.accepting, state_list)#, self.states)
+        pass
+
+
+def add_to_state_list_merge (state_list, merge_automata):
+    state = None
+    l = filter (lambda x: x.state_list == state_list, merge_automata)
+    if len (l) == 1:
+        state = l[0];
+    elif len (l) == 0:
+        state = node_dfa_m (state_list)
+        merge_automata.append (state)
+    else:
+        raise Exception ("Duplicate state found during merge")
+    return state
+
+def merge_paths (merge_list):
+    rv = collections.defaultdict(list)
+#    print merge_list
+    for merge in merge_list:
+        for k, v in merge.paths.iteritems():
+            rv[k].append(v)
+#    print rv
+    return rv
+
+def merge (automata_list):
+    merge0 = automata_list[0]
+    
+    for merge1 in automata_list[1:]:
+        first_state = node_dfa_m([merge0[0], merge1[0]])
+        new_automata = [first_state]
+        for state in new_automata:
+#            print state
+            rv = merge_paths(state.state_list)
+            for (symbol, state_list) in rv.iteritems():
+                state.paths[symbol] = add_to_state_list_merge (state_list, new_automata)
+        merge0 = new_automata
+    
+    for auto in new_automata: 
+        print auto
+    pass
 
 
 # vim: set ts=4 sw=4 sts=4 et

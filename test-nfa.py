@@ -57,12 +57,13 @@ regexp8 = 'abb|aab'
 
 regexp9 = '(a|b)*abb'
 
-automata_list = [det (parse (regexp0), letters), det (parse (regexp1), letters), det (parse (regexp2), letters), \
-                 det (parse (regexp3), letters), det (parse (regexp4), letters), det (parse (regexp5), letters), \
-                 det (parse (regexp6), letters), det (parse (regexp7), letters), det (parse (regexp8), letters), \
-                 det (parse (regexp9), letters)]
+regexp10 = '(ab|a)*'
+
+merge([det(parse("a*"), letters), det(parse("aa"), letters), det(parse("a"), letters), det(parse("ab"), letters)])
+quit()
+
 regexp_list = [regexp0, regexp1, regexp2, regexp3, regexp4, regexp5, regexp6, regexp7, regexp8, regexp9]
-execute ("aaabb", automata_list, regexp_list)
+execute ("aaabb", regexp_list)
 
 #reg = regexp7
 #print reg
