@@ -71,14 +71,21 @@ def test_nfa_rexp (num):
 	if m is not None:
 	    pytest = m.group (0) == string
 
-    res = nfa.execute (string, [rexp])
+    (res, auto, time) = nfa.execute (string, [rexp])
     #print "\tpython:%r\t\tpechka-nfa:%r" % (pytest, res)
-    if pytest == res:
-	print "Test %i: passed!" % num
+    if pytest and res == 0:
+        print "Test %i: passed!" % num
+        return True
     else:
-	print "Test %i: failed!" % num
-	print "\t`%s' against `%s'" % (rexp, string)
-	print "\tpython:%r\t\tpechka-nfa:%r" % (pytest, res)
+        print "Test %i: failed!" % num
+        print "\t`%s' against `%s'" % (rexp, string)
+        print "\tpython:%r\t\tpechka-nfa:%r" % (pytest, res is not None)
+        return False
 
+passed = 0
 for i in xrange (500):
-    test_nfa_rexp (i+1)
+    if test_nfa_rexp (i+1):
+        passed += 1
+print "Tests passed", passed
+if passed != 500:
+    print "Tests not passed", 500 - passed

@@ -107,7 +107,8 @@ class or_nfa (nfa):
             self.alternative[1].get_epsilon_closure (closure)
     
     def __repr__ (self):
-        str = "( %s | %s )" % (repr (self.alternative[0]), repr (self.alternative[1]))
+        str = "( %s | %s )" % (repr (self.alternative[0]), 
+                               repr (self.alternative[1]))
         if self.nxt is not None:
             str = str + " -> " + repr (self.nxt)
         return str
@@ -132,8 +133,6 @@ class done_nfa (nfa):
 
 
 """ ==== Determinate Finite Automaton logic ==== """
-
-""" ---- DFA node class ---- """
 
 class node_dfa (object):
     """ DFA node class. """
@@ -164,9 +163,10 @@ def add_to_state_list (nfa_lst, dfa_lst):
         If such a DFA state is present, return it. If it is not present, create
         a new state, add it to the DFA state list and return it. If two or more
         such states are present in the list - raise an exception. """
+    dfa = None
     l = filter (lambda x: set (x.states) == set (nfa_lst), dfa_lst)
     if len (l) == 1:
-        dfa = l[0];
+        dfa = l[0]
     elif len (l) == 0:
         dfa = node_dfa (nfa_lst)
         dfa_lst.append (dfa)
@@ -272,13 +272,15 @@ def minimize (automata):
             if len(group) == 1:
                 new_group_list.append(group)
             else:
-                new_group_list = new_group_list + break_to_groups(group[:], group_list)
+                new_group_list = new_group_list + break_to_groups(group[:], 
+                                                                  group_list)
         group_list = new_group_list
     return make_automata_from_groups (group_list)
 
 
 def make_automata_from_groups (group_list):
-    "This method reforms a list of groups (after minimization) into an automata"
+    """ This method reforms a list of groups (after minimization) into an 
+        automaton. """
     start_state = None
     # All the first elements of a group are a new state
     automata = [group[0] for group in group_list]
@@ -286,7 +288,8 @@ def make_automata_from_groups (group_list):
         new_state = group [0]
         if new_state.id == 0:
             start_state = new_state
-        if len (group) == 1: # if group length is 1 it's just a state, nothing to do
+        if len (group) == 1: 
+            # if group length is 1 it's just a state, nothing to do
             continue
         # if s group has several states, we have to replace these states in all 
         # paths so that the paths are correct 
@@ -396,9 +399,10 @@ class parser (object):
         return self.stack[0]
 
 
-# Class for Determinate Finate Automaton merge
+""" ==== DFA merge logic ==== """
+
 class node_dfa_m (object):
-    "DFA node class"
+    """ Merged DFA node class. """
     def __init__ (self, state_list):
         self.paths = {}
         if isinstance(state_list[0], node_dfa_m):
@@ -412,25 +416,33 @@ class node_dfa_m (object):
         self.accepting_id_list = []
     
     def __repr__ (self):
-        state_list = map(lambda (x,y): x + ' -> ' + repr(y.state_list), self.paths.iteritems())
+        state_list = map(lambda (x,y): x + ' -> ' + repr(y.state_list),
+                         self.paths.iteritems())
         return "State %r %r" % (self.state_list, state_list)
         pass
 
 
-def add_to_state_list_merge (state_list, merge_automata):
+def add_to_state_list_m (dfa_state_list, merge_dfa_state_list):
+    """ Locate a merged DFA state in the list using the given the list of
+        unmerged DFA states. If such a state is present, return it. If it is not
+        present, create a new state, add it to the state list and return it. If
+        two or more such states are present in the list - raise an 
+        exception. """
     state = None
-    l = filter (lambda x: x.state_list == state_list, merge_automata)
+    l = filter (lambda x: x.state_list == dfa_state_list, merge_dfa_state_list)
     if len (l) == 1:
-        state = l[0];
+        state = l[0]
     elif len (l) == 0:
-        state = node_dfa_m (state_list)
-        merge_automata.append (state)
+        state = node_dfa_m (dfa_state_list)
+        merge_dfa_state_list.append (state)
     else:
         raise Exception ("Duplicate state found during merge")
     return state
 
 
 def merge_paths (merge_list):
+    """ For a list of states from unmerged DFA creates a dictionary with paths
+        by a symbol to different lists of states. """
     rv = collections.defaultdict(list)
     for merge in merge_list:
         for k, v in merge.paths.iteritems():
@@ -439,6 +451,8 @@ def merge_paths (merge_list):
 
 
 def merge (automata_list):
+    """ Merges a list of automata into a single one to improve execution 
+        time. """
     merge0 = [None]
     for merge1 in automata_list[0:]:
         first_state = node_dfa_m([merge0[0], merge1[0]])
@@ -446,17 +460,23 @@ def merge (automata_list):
         for state in new_automata:
             rv = merge_paths(state.state_list)
             for (symbol, state_list) in rv.iteritems():
-                state.paths[symbol] = add_to_state_list_merge (state_list, new_automata)
+                state.paths[symbol] = add_to_state_list_m (state_list, 
+                                                           new_automata)
         merge0 = new_automata
     return new_automata
 
 
-""" ==== Determinate automaton execution logic ==== """
+""" ==== Merged DFA execution logic ==== """
 
 def execute (string, regexp_list):
+    """ Methods parses the given regular expressions, then creates a single DFA
+        from all of the expressions and matches the given string with the 
+        created DFA. """
     start_time = time.time()
     prs = parser ()
-    automata_list = [det(prs.parse(x), ''.join([c for c in set(x) if c not in '*|()'])) for x in regexp_list]
+    automata_list = [det(prs.parse(x), 
+                         ''.join([c for c in set(x) if c not in '*|()'])) \
+                     for x in regexp_list]
     for i in xrange (len (automata_list)):
         for state in automata_list[i]:
             state.regexp_id = i
@@ -470,19 +490,13 @@ def execute (string, regexp_list):
             fail = True
             break
     if fail:
-        print "Nothing accepted."
-#        return False
-        return (False, time.time() - start_time)
+        return (None, automata, time.time() - start_time)
     else:
         accepted = filter(lambda x: x.accepting, current_state.state_list)
         if not accepted:
-            print "Nothing accepted."
-#            return False
-            return (False, time.time() - start_time)
+            return (None, automata, time.time() - start_time)
         else:
-            print "Accepted", regexp_list[accepted[0].regexp_id]
-#            return True
-            return (True, time.time() - start_time)
+            return (accepted[0].regexp_id, automata, time.time() - start_time)
 
 
 # vim: set ts=4 sw=4 sts=4 et
