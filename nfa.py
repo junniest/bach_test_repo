@@ -46,21 +46,22 @@ class nfa (object):
 
 """ ---- Subclasses of NFA ---- """
 
-class char_nfa (nfa):
-    """ NFA class for matching a single charachter. """
-    def __init__ (self, c):
+
+class token_nfa (nfa):
+    """ NFA class for matching a single token. """
+    def __init__ (self, token):
         nfa.__init__ (self)
-        self.character = c
+        self.token = token
         self.start = self
         self.end = self
-
+    
     def get_epsilon_closure (self, closure):
         """ Epsilon closure for a single state. """
         if not self in closure:
             closure.add (self)
     
     def __repr__ (self):
-        str = "char[%s]" % (self.character) 
+        str = "%s" % (self.token) 
         if self.nxt is not None:
             str = str + " -> " + repr (self.nxt)
         return str
@@ -142,18 +143,25 @@ class node_dfa (object):
         self.accepting = False
         self.regexp_id = None
   
-    def get_moves (self, symbol):
+    def get_moves (self, token):
         """ Returns moves possible from the given DFA state (NFA state list)
             by a specific symbol. """
-        moves = []
+        moves = set()
         for nfa_state in self.states:
-            if isinstance (nfa_state, char_nfa):
-                if nfa_state.character == symbol:
-                    moves.append (nfa_state.get_next_state ())
+            if isinstance (nfa_state, token_nfa) and \
+               token.eq(nfa_state.token):
+                moves.add (nfa_state.get_next_state ())
         return moves
     
+    def get_token_list (self):
+        token_list = set ()
+        for nfa_state in self.states:
+            if isinstance (nfa_state, token_nfa):
+                token_list.add(nfa_state.token)
+        return token_list
+    
     def __repr__ (self):
-#        state_list = map(lambda (x,y): x + ' -> ' + repr(y.id), self.paths.iteritems())
+        state_list = map(lambda (x,y): str(x) + ' -> ' + repr(y.id), self.paths.iteritems())
         return "<id:%s, accept:%r>" % (self.id, self.accepting)#, state_list)
 
 """ ---- Logic for DFA creation from an NFA ---- """
@@ -198,21 +206,22 @@ def rearrange (dfa_state_list):
     return dfa_state_list
 
 
-def det (automaton, symbol_list):
+def det (automaton):
     """ Method creates a DFA for the given NFA using its starting state and a 
         list of symbols that are used in it for traversing the automaton. """
     dfa_state_list = []
     nfa_state_list = get_epsilon_closure ([automaton])
     if not nfa_state_list:
         raise Exception ("No states were found for %s" % automaton)
-        
+
     add_to_state_list (nfa_state_list, dfa_state_list)
     
     for dfa in dfa_state_list:
-        for symbol in symbol_list:
-            nl = get_epsilon_closure (dfa.get_moves (symbol))
+        token_list = dfa.get_token_list ()
+        for token in token_list:
+            nl = get_epsilon_closure (dfa.get_moves (token))
             if nl:
-               dfa.paths[symbol] = add_to_state_list (nl, dfa_state_list)
+               dfa.paths[token] = add_to_state_list (nl, dfa_state_list)
     return minimize (rearrange (dfa_state_list))
 
 
@@ -272,8 +281,7 @@ def minimize (automata):
             if len(group) == 1:
                 new_group_list.append(group)
             else:
-                new_group_list = new_group_list + break_to_groups(group[:], 
-                                                                  group_list)
+                new_group_list += break_to_groups(group[:], group_list)
         group_list = new_group_list
     return make_automata_from_groups (group_list)
 
@@ -283,7 +291,7 @@ def make_automata_from_groups (group_list):
         automaton. """
     start_state = None
     # All the first elements of a group are a new state
-    automata = [group[0] for group in group_list]
+    automaton = [group[0] for group in group_list]
     for group in group_list:
         new_state = group [0]
         if new_state.id == 0:
@@ -301,24 +309,23 @@ def make_automata_from_groups (group_list):
                 for (key, path) in state.paths.iteritems ():
                     if path == old_state:
                         state.paths[key] = new_state
-    automata.remove (start_state)
-    automata = sorted (automata)
-    automata.insert (0, start_state)
-    return automata
+    automaton.remove (start_state)
+    automaton = sorted (automaton)
+    automaton.insert (0, start_state)
+    return automaton
 
-
-""" ==== Regular expression parse logic ==== """
+""" ==== Regular expression parse logic on tokens ==== """
 
 class getter (object):
-    """ Character getter class for regular expression. """
-    def __init__ (self, string):
-        self.string = string
+    """ Token getter class for regular expression. """
+    def __init__ (self, stream = None):
+        self.stream = stream
         self.ind = 0
-
-    def get_char (self):
-        if self.ind < len(self.string):
+    
+    def get_token (self):
+        if self.ind < len(self.stream) and not isinstance(self.stream [self.ind], t_m_end):
             self.ind = self.ind + 1
-            return self.string [self.ind - 1]
+            return self.stream [self.ind - 1]
         else:
             return None
     
@@ -330,7 +337,7 @@ class parser (object):
     def __init__ (self):
         self.gtr = None
         self.stack = None
-
+    
     def concat (self, seq_len):
         """ If possible, concatenates the last seq_len states of the stack. """
         i = 1
@@ -339,55 +346,56 @@ class parser (object):
             state0 = self.stack.pop()
             self.stack.append (state0.add_next_state (state1))
             i = i + 1
-
+    
     def handle_primary (self):
         """ Handles the primary matches - characters and *, calls handle_or for
             brace content. """
-        c = self.gtr.get_char ();
-        if c is None:
+        token = self.gtr.get_token ();
+        if token is None:
             return
-        if c.isalnum ():
-            self.stack.append (char_nfa (c))
+        if not isinstance (token, t_m_token):
+            self.stack.append (token_nfa (token))
             return
-        if c == '*':
+        if isinstance (token, t_m_asterisk):
             self.stack.append (asterisk_nfa (self.stack.pop ()))
             return
-        if c == '(':
+        if isinstance (token, t_m_lbrace):
             self.handle_or ()
-            c = self.gtr.get_char ()
-            if c != ')':
-                raise Exception ('Closing brace expected, got %s instead.' % c)
+            token = self.gtr.get_token ()
+            if not isinstance (token, t_m_rbrace):
+                raise Exception ('Closing brace expected, got %s instead.' % token)
             return
         self.gtr.unget ()
         return
-
+    
     def handle_seq (self):
         """ Handles primary match sequenes. """
         self.handle_primary ()
         seq_len = 1
-        char = self.gtr.get_char ()
-        while char is not None and char != '|' and char != ')':
-            self.gtr.unget ()
-            old_len = len (self.stack)
-            self.handle_primary ()
-            if (old_len != len (self.stack)):
-                seq_len = seq_len + 1
-            char = self.gtr.get_char ()
+        token = self.gtr.get_token ()
+        while token is not None and not isinstance (token, t_m_pipe) \
+            and not isinstance (token, t_m_rbrace):
+                self.gtr.unget ()
+                old_len = len (self.stack)
+                self.handle_primary ()
+                if (old_len != len (self.stack)):
+                    seq_len = seq_len + 1
+                token = self.gtr.get_token ()
         self.concat (seq_len)
         self.gtr.unget ()
         return
-
+    
     def handle_or (self):
         """ Handles or's. """
         self.handle_seq ()
-        if self.gtr.get_char () == "|":
+        if isinstance (self.gtr.get_token (), t_m_pipe):
             self.handle_seq ()
             state0 = self.stack.pop ()
             state1 = self.stack.pop ()
             self.stack.append (or_nfa (state1, state0))
         else:
             self.gtr.unget ()
-
+    
     def parse (self, regexp):
         """ Parses the giver regular expression and creates an NFA. """
         self.gtr = getter (regexp)
@@ -416,7 +424,7 @@ class node_dfa_m (object):
         self.accepting_id_list = []
     
     def __repr__ (self):
-        state_list = map(lambda (x,y): x + ' -> ' + repr(y.state_list),
+        state_list = map(lambda (x,y): str(x) + ' -> ' + repr(y.state_list),
                          self.paths.iteritems())
         return "State %r %r" % (self.state_list, state_list)
         pass
@@ -468,24 +476,24 @@ def merge (automata_list):
 
 """ ==== Merged DFA execution logic ==== """
 
-def execute (string, regexp_list):
+def execute (token_list, regexp_list):
     """ Methods parses the given regular expressions, then creates a single DFA
         from all of the expressions and matches the given string with the 
         created DFA. """
     start_time = time.time()
     prs = parser ()
-    automata_list = [det(prs.parse(x), 
-                         ''.join([c for c in set(x) if c not in '*|()'])) \
-                     for x in regexp_list]
+    automata_list = [det(prs.parse(x)) for x in regexp_list]
     for i in xrange (len (automata_list)):
         for state in automata_list[i]:
             state.regexp_id = i
     automata = merge (automata_list)
     current_state = automata[0]
     fail = False
-    for char in string:
-        if current_state.paths.has_key (char):
-            current_state = current_state.paths.get (char)
+    for token in token_list:
+        l = filter (lambda (x, y): x.eq(token),
+                    current_state.paths.iteritems ())
+        if l:
+            current_state = l[0][1]
         else:
             fail = True
             break
@@ -497,6 +505,103 @@ def execute (string, regexp_list):
             return (None, automata, time.time() - start_time)
         else:
             return (accepted[0].regexp_id, automata, time.time() - start_time)
+
+
+""" ==== Test token classes === """
+
+class t_token (object):
+    def __init__ (self, value = None):
+        self.value = value
+
+    def __repr__ (self):
+        if self.value is not None:
+            return "[" + self.__class__.__name__[2:] + ":" + str(self.value) + "]"
+        else:
+            return "[" + self.__class__.__name__[2:] + "]"
+
+    def eq (self, token):
+        if isinstance(token, self.__class__):
+            if self.value is None:
+                return True
+            elif self.value == token.value:
+                return True
+        return False
+
+class t_id (t_token):
+    pass
+
+class t_expr (t_token):
+    pass
+
+class t_real (t_expr):
+    pass
+
+class t_int (t_real):
+    pass
+
+class t_short (t_int):
+    pass
+
+class t_bool (t_short):
+    def __init__ (self, value = None):
+        if value:
+            self.value = True
+        else:
+            self.value = False
+
+class t_context_start (t_token):
+    def __repr__ (self):
+        return "[{]"
+
+class t_context_end (t_token):
+    def __repr__ (self):
+        return "[}]"
+
+class t_delim_col (t_token):
+    def __repr__ (self):
+        return "[;]"
+
+class t_delim_com (t_token):
+    def __repr__ (self):
+        return "[,]"
+
+class t_lbrace (t_token):
+    def __repr__ (self):
+        return "[(]"
+
+class t_rbrace (t_token):
+    def __repr__ (self):
+        return "[)]"
+
+""" Match tokens """
+
+class t_m_token (t_token):
+    def __repr__ (self):
+        return ""
+
+class t_m_lbrace (t_m_token):
+    def __repr__ (self):
+        return "("
+
+class t_m_rbrace (t_m_token):
+    def __repr__ (self):
+        return ")"
+
+class t_m_asterisk (t_m_token):
+    def __repr__ (self):
+        return "*"
+
+class t_m_pipe (t_m_token):
+    def __repr__ (self):
+        return "*"
+
+class t_m_start (t_m_token):
+    def __repr__ (self):
+        return "[match]"
+
+class t_m_end (t_m_token):
+    def __repr__ (self):
+        return "[\match]"
 
 
 # vim: set ts=4 sw=4 sts=4 et

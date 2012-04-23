@@ -1,58 +1,16 @@
 from nfa import *
 
-def print_res(result, regexp_list):
-    if result is None:
-        print "Nothing accepted"
-    else:
-        print "Accepted regexp", regexp_list[result]
+token_regexp_1 = [t_id('f'), t_lbrace(), t_m_lbrace(), t_expr(), 
+                t_delim_com(), t_m_lbrace(), t_int(), t_m_pipe(), t_real(), t_m_rbrace(), t_m_rbrace(), 
+                t_m_asterisk(), t_rbrace(), t_m_end(), t_id()]
+# equivalent to {match} {id} \( ( {expr} \, ( {int} | {real} ) ) * \) {/match}
 
-regexp0 = 'a(a|b)x*' 
+token_list_1 = [t_id('f'), t_lbrace(), t_real(), t_delim_com(), t_int(), t_rbrace()]
 
-regexp1 = '(a|b)*'
+(result, auto, time) = execute(token_list_1, [token_regexp_1])
+print result, time
 
-regexp2 = '(ab*|bb)'
-
-regexp3 = '((c*)*)*'
-
-regexp4 = '((c|a)|(b|xxb*))'
-
-regexp5 = '(((a|b)|c)|x)'
-
-regexp6 = '(x|(a|(b|c*)*)*)'
-
-regexp7 = 'x*(a|c)'
-
-regexp8 = 'abb|aab'
-
-regexp9 = '(a|b)*abb'
-
-regexp10 = '(ab|a)*'
-
-time = [0,0,0,0,0,0,0,0,0,0,0,0]
-
-regexp_list = [regexp0, regexp1, regexp2, regexp3, regexp4, regexp5, regexp6, regexp7, regexp8, regexp9]
-(result, auto, time[0]) = execute ("abb", regexp_list)
-print_res(result, regexp_list)
-(result, auto, time[1]) = execute ("ccc", regexp_list)
-print_res(result, regexp_list)
-(result, auto, time[2]) = execute ("abcbcbcbcbcbcxxxxxx", regexp_list)
-print_res(result, regexp_list)
-(result, auto, time[3]) = execute ("aaaaaaad", regexp_list)
-print_res(result, regexp_list)
-(result, auto, time[4]) = execute ("abcbbbbbbb", regexp_list)
-print_res(result, regexp_list)
-(result, auto, time[5]) = execute ("xxxxxxc", regexp_list)
-print_res(result, regexp_list)
-(result, auto, time[6]) = execute ("aabbabb", regexp_list)
-print_res(result, regexp_list)
-(result, auto, time[7]) = execute ("xxbbbbb", regexp_list)
-print_res(result, regexp_list)
-(result, auto, time[8]) = execute ("ab", regexp_list)
-print_res(result, regexp_list)
-(result, auto, time[9]) = execute ("cx", regexp_list)
-print_res(result, regexp_list)
-
-time_all = sum(time)
-print "Execution time", time_all
+for i in auto:
+    print i
 
 # vim: set ts=4 sw=4 sts=4 et
