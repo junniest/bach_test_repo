@@ -149,16 +149,19 @@ class node_dfa (object):
         moves = set()
         for nfa_state in self.states:
             if isinstance (nfa_state, token_nfa) and \
-               token.eq(nfa_state.token):
+                    token.eq (nfa_state.token):
                 moves.add (nfa_state.get_next_state ())
         return moves
     
-    def get_token_list (self):
+    def get_tokens (self):
         token_list = set ()
         for nfa_state in self.states:
             if isinstance (nfa_state, token_nfa):
                 token_list.add(nfa_state.token)
         return token_list
+    
+    def set_regexp_id (self, regexp_id):
+        self.regexp_id = regexp_id
     
     def __repr__ (self):
         state_list = map(lambda (x,y): str(x) + ' -> ' + repr(y.id), self.paths.iteritems())
@@ -206,7 +209,7 @@ def rearrange (dfa_state_list):
     return dfa_state_list
 
 
-def det (automaton):
+def det (automaton, regexp_id):
     """ Method creates a DFA for the given NFA using its starting state and a 
         list of symbols that are used in it for traversing the automaton. """
     dfa_state_list = []
@@ -217,8 +220,8 @@ def det (automaton):
     add_to_state_list (nfa_state_list, dfa_state_list)
     
     for dfa in dfa_state_list:
-        token_list = dfa.get_token_list ()
-        for token in token_list:
+        dfa.set_regexp_id (regexp_id)
+        for token in dfa.get_tokens ():
             nl = get_epsilon_closure (dfa.get_moves (token))
             if nl:
                dfa.paths[token] = add_to_state_list (nl, dfa_state_list)
@@ -272,18 +275,17 @@ def minimize (automata):
             group_list[0].append (state)
         else:
             group_list[1].append (state)
-    old_group_list = []
-    # if old and new group lists are equal, we're done minimizing
-    while not group_list == old_group_list:
-        old_group_list = group_list[:]
+
+    while True:
         new_group_list = []
         for group in group_list:
             if len(group) == 1:
                 new_group_list.append(group)
             else:
-                new_group_list += break_to_groups(group[:], group_list)
+                new_group_list += break_to_groups(group, group_list)
+        if group_list == new_group_list:
+            return make_automata_from_groups (group_list)
         group_list = new_group_list
-    return make_automata_from_groups (group_list)
 
 
 def make_automata_from_groups (group_list):
@@ -323,7 +325,7 @@ class getter (object):
         self.ind = 0
     
     def get_token (self):
-        if self.ind < len(self.stream) and not isinstance(self.stream [self.ind], t_m_end):
+        if self.ind < len(self.stream):
             self.ind = self.ind + 1
             return self.stream [self.ind - 1]
         else:
@@ -332,10 +334,10 @@ class getter (object):
     def unget (self):
         self.ind = self.ind - 1
 
-class parser (object):
+class regexp_parser (object):
     """ Regular expression parser class. """
-    def __init__ (self):
-        self.gtr = None
+    def __init__ (self, gtr = None):
+        self.gtr = gtr
         self.stack = None
     
     def concat (self, seq_len):
@@ -373,14 +375,14 @@ class parser (object):
         self.handle_primary ()
         seq_len = 1
         token = self.gtr.get_token ()
-        while token is not None and not isinstance (token, t_m_pipe) \
-            and not isinstance (token, t_m_rbrace):
-                self.gtr.unget ()
-                old_len = len (self.stack)
-                self.handle_primary ()
-                if (old_len != len (self.stack)):
-                    seq_len = seq_len + 1
-                token = self.gtr.get_token ()
+        while token is not None and not \
+                isinstance (token, (t_m_pipe, t_m_rbrace, t_m_end)):
+            self.gtr.unget ()
+            old_len = len (self.stack)
+            self.handle_primary ()
+            if (old_len != len (self.stack)):
+                seq_len = seq_len + 1
+            token = self.gtr.get_token ()
         self.concat (seq_len)
         self.gtr.unget ()
         return
@@ -396,15 +398,14 @@ class parser (object):
         else:
             self.gtr.unget ()
     
-    def parse (self, regexp):
+    def parse (self, regexp_id):
         """ Parses the giver regular expression and creates an NFA. """
-        self.gtr = getter (regexp)
         self.stack = []
         self.handle_or ()
         if not self.stack:
             raise Exception ('Empty regexp!')
         self.stack[0].add_next_state (done_nfa ())
-        return self.stack[0]
+        return det (self.stack[0], regexp_id)
 
 
 """ ==== DFA merge logic ==== """
@@ -415,19 +416,24 @@ class node_dfa_m (object):
         self.paths = {}
         if isinstance(state_list[0], node_dfa_m):
             new_list = state_list[0].state_list
-            new_list.append(state_list[1])
+            if len (state_list) > 1:
+                new_list.append(state_list[1])
             self.state_list = new_list
         elif state_list[0] is None:
             self.state_list = [state_list[1]]
         else:
             self.state_list = state_list
-        self.accepting_id_list = []
+
+    def get_accepting(self):
+        for state in self.state_list:
+            if state.accepting:
+                return state.regexp_id
+        return None
     
     def __repr__ (self):
         state_list = map(lambda (x,y): str(x) + ' -> ' + repr(y.state_list),
                          self.paths.iteritems())
         return "State %r %r" % (self.state_list, state_list)
-        pass
 
 
 def add_to_state_list_m (dfa_state_list, merge_dfa_state_list):
@@ -473,59 +479,26 @@ def merge (automata_list):
         merge0 = new_automata
     return new_automata
 
-
-""" ==== Merged DFA execution logic ==== """
-
-def execute (token_list, regexp_list):
-    """ Methods parses the given regular expressions, then creates a single DFA
-        from all of the expressions and matches the given string with the 
-        created DFA. """
-    start_time = time.time()
-    prs = parser ()
-    automata_list = [det(prs.parse(x)) for x in regexp_list]
-    for i in xrange (len (automata_list)):
-        for state in automata_list[i]:
-            state.regexp_id = i
-    automata = merge (automata_list)
-    current_state = automata[0]
-    fail = False
-    for token in token_list:
-        l = filter (lambda (x, y): x.eq(token),
-                    current_state.paths.iteritems ())
-        if l:
-            current_state = l[0][1]
-        else:
-            fail = True
-            break
-    if fail:
-        return (None, automata, time.time() - start_time)
-    else:
-        accepted = filter(lambda x: x.accepting, current_state.state_list)
-        if not accepted:
-            return (None, automata, time.time() - start_time)
-        else:
-            return (accepted[0].regexp_id, automata, time.time() - start_time)
-
-
 """ ==== Test token classes === """
 
 class t_token (object):
+    """ Default token """
     def __init__ (self, value = None):
         self.value = value
 
     def __repr__ (self):
-        if self.value is not None:
-            return "[" + self.__class__.__name__[2:] + ":" + str(self.value) + "]"
+        if self.value is None:
+            return "[" + type(self).__name__[2:] + "]"
         else:
-            return "[" + self.__class__.__name__[2:] + "]"
+            return "[" + type(self).__name__[2:] + ":" + str(self.value) + "]"
 
     def eq (self, token):
-        if isinstance(token, self.__class__):
-            if self.value is None:
-                return True
-            elif self.value == token.value:
-                return True
-        return False
+        assert type(token) != type
+
+        return isinstance(token, type(self)) and (self.value is None or
+                                                  self.value == token.value)
+
+""" ---- Specific tokens ---- """
 
 class t_id (t_token):
     pass
@@ -602,6 +575,44 @@ class t_m_start (t_m_token):
 class t_m_end (t_m_token):
     def __repr__ (self):
         return "[\match]"
+
+""" ==== Execution logic ==== """
+
+def execute (stream):
+    """ Parses a stream of tokens. Creates automata when encounters a regular
+        expression. """
+    get = getter (stream)
+    token = get.get_token ()
+    r_prs = regexp_parser (get)
+    regexp_id = 0
+    automaton = None
+    current_state_list = []
+    while token is not None:
+        if isinstance (token, t_m_start):
+            auto = r_prs.parse (regexp_id)
+            regexp_id += 1
+            if automaton is None:
+                automaton = merge ([auto])
+            else:
+                automaton = merge ([automaton, auto])
+        else:
+            if automaton is not None:
+                current_state_list.append((automaton [0], []))
+            new_state_list = []
+            for (state, processed_token_list) in current_state_list:
+                l = filter (lambda (x, y): x.eq(token),
+                            state.paths.iteritems ())
+                if l:
+                    processed_token_list.append (token)
+                    new_state = l[0][1]
+                    i = new_state.get_accepting()
+                    if i is not None:
+                        print "Accepted regexp", i, processed_token_list
+                    else:
+                        new_state_list.append((new_state, processed_token_list))
+            current_state_list = new_state_list
+
+        token = get.get_token ()
 
 
 # vim: set ts=4 sw=4 sts=4 et
