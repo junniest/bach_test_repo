@@ -20,11 +20,9 @@ class nfa (object):
 
     def add_next_state (self, state):
         """ Adds a next state. """
-        if self.start is None or self.end is None:
-            raise Exception ("Abstract nfa instantiated")
-        else:
-            self.end.nxt = state.start
-            self.end = state.end
+        assert None not in (self.start, self.end), "Abstract nfa instantiated"
+        self.end.nxt = state.start
+        self.end = state.end
         return self
 
     def get_next_state(self):
@@ -57,13 +55,13 @@ class token_nfa (nfa):
     
     def get_epsilon_closure (self, closure):
         """ Epsilon closure for a single state. """
-        if not self in closure:
+        if self not in closure:
             closure.add (self)
     
     def __repr__ (self):
-        str = "%s" % (self.token) 
+        str = "%s" % (self.token)
         if self.nxt is not None:
-            str = str + " -> " + repr (self.nxt)
+            str += " -> " + repr (self.nxt)
         return str
 
 
@@ -86,7 +84,7 @@ class asterisk_nfa (nfa):
     def __repr__ (self):
         str = "( %s )*" % repr (self.content)
         if self.nxt is not None:
-            str = str + " -> " + repr (self.nxt)
+            str += " -> " + repr (self.nxt)
         return str
 
 
@@ -102,7 +100,7 @@ class or_nfa (nfa):
 
     def get_epsilon_closure (self, closure):
         """ Epsilon closure for a single state. """
-        if not self in closure:
+        if self not in closure:
             closure.add (self)
             self.alternative[0].get_epsilon_closure (closure)
             self.alternative[1].get_epsilon_closure (closure)
@@ -124,7 +122,7 @@ class done_nfa (nfa):
 
     def get_epsilon_closure (self, closure):
         """ Epsilon closure for a single state. """
-        if not self in closure:
+        if self not in closure:
             closure.add (self)
 
     def __repr__ (self):
@@ -175,7 +173,8 @@ def add_to_state_list (nfa_lst, dfa_lst):
         a new state, add it to the DFA state list and return it. If two or more
         such states are present in the list - raise an exception. """
     dfa = None
-    l = filter (lambda x: set (x.states) == set (nfa_lst), dfa_lst)
+    nfa_set = set (nfa_lst)
+    l = filter (lambda x: set (x.states) == nfa_set, dfa_lst)
     if len (l) == 1:
         dfa = l[0]
     elif len (l) == 0:
@@ -191,9 +190,7 @@ def get_epsilon_closure (nfa_state_list):
     closure = set()
     for state in nfa_state_list:
         state.get_epsilon_closure (closure)
-    if closure:
-        return closure
-    return None
+    return closure or None
 
 
 def rearrange (dfa_state_list):
@@ -212,10 +209,10 @@ def rearrange (dfa_state_list):
 def det (automaton, regexp_id):
     """ Method creates a DFA for the given NFA using its starting state and a 
         list of symbols that are used in it for traversing the automaton. """
-    dfa_state_list = []
     nfa_state_list = get_epsilon_closure ([automaton])
     if not nfa_state_list:
         raise Exception ("No states were found for %s" % automaton)
+    dfa_state_list = []
 
     add_to_state_list (nfa_state_list, dfa_state_list)
     
@@ -308,11 +305,11 @@ def make_automata_from_groups (group_list):
             if old_state.id == 0:
                 start_state = new_state
             for state in automata:
-                for (key, path) in state.paths.iteritems ():
+                for key, path in state.paths.iteritems ():
                     if path == old_state:
                         state.paths[key] = new_state
     automaton.remove (start_state)
-    automaton = sorted (automaton)
+    automaton.sort ()
     automaton.insert (0, start_state)
     return automaton
 
@@ -326,13 +323,13 @@ class getter (object):
     
     def get_token (self):
         if self.ind < len(self.stream):
-            self.ind = self.ind + 1
+            self.ind += 1
             return self.stream [self.ind - 1]
         else:
             return None
     
     def unget (self):
-        self.ind = self.ind - 1
+        self.ind -= 1
 
 class regexp_parser (object):
     """ Regular expression parser class. """
@@ -347,7 +344,7 @@ class regexp_parser (object):
             state1 = self.stack.pop()
             state0 = self.stack.pop()
             self.stack.append (state0.add_next_state (state1))
-            i = i + 1
+            i += 1
     
     def handle_primary (self):
         """ Handles the primary matches - characters and *, calls handle_or for
@@ -365,10 +362,9 @@ class regexp_parser (object):
             self.handle_or ()
             token = self.gtr.get_token ()
             if not isinstance (token, t_m_rbrace):
-                raise Exception ('Closing brace expected, got %s instead.' % token)
+                raise Exception ("Closing brace expected, got %s instead." % token)
             return
         self.gtr.unget ()
-        return
     
     def handle_seq (self):
         """ Handles primary match sequenes. """
@@ -385,7 +381,6 @@ class regexp_parser (object):
             token = self.gtr.get_token ()
         self.concat (seq_len)
         self.gtr.unget ()
-        return
     
     def handle_or (self):
         """ Handles or's. """
@@ -599,17 +594,16 @@ def execute (stream):
             if automaton is not None:
                 current_state_list.append((automaton [0], []))
             new_state_list = []
-            for (state, processed_token_list) in current_state_list:
-                l = filter (lambda (x, y): x.eq(token),
-                            state.paths.iteritems ())
+            for state, processed_token_list in current_state_list:
+                l = filter (lambda (x, y): x.eq(token), state.paths.iteritems ())
                 if l:
                     processed_token_list.append (token)
                     new_state = l[0][1]
                     i = new_state.get_accepting()
-                    if i is not None:
-                        print "Accepted regexp", i, processed_token_list
-                    else:
+                    if i is None:
                         new_state_list.append((new_state, processed_token_list))
+                    else:
+                        print "Accepted regexp", i, processed_token_list
             current_state_list = new_state_list
 
         token = get.get_token ()
