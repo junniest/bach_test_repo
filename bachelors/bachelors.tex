@@ -1,0 +1,193 @@
+\documentclass[12pt]{report}
+
+% Valodu atbalsts
+\usepackage{polyglossia}
+\setdefaultlanguage{latvian}
+%\setotherlanguages{english,russian}
+\usepackage{bacdarbs}
+\usepackage{mathtools}
+
+\newcommand{\fixme}[1]{\vskip 5mm\noindent{\bf FIXME}: {\it #1}}
+
+\nosaukums{Ar regulārām izteiksmēm paplašinātu gramatiku dinamiska parsēšana.}
+\darbatips{Bakalaura}
+\autors{Jūlija Pečerska}
+\vadvards{Guntis Arnicāns}
+\vadinfo{LU docents}
+\gads{2012}
+\univer{Latvijas Universitāte}
+\fakul{Datorikas}
+\nod{Profesors}
+\begin{document}
+\titullapa
+
+\annovirsraksts{Anotācija}
+        \begin{abstract}
+        Anotācijas teksts latviešu valoda.
+        \end{abstract}
+\annovirsraksts{Abstract}
+        \begin{abstract}
+        The text of the abstract in English.
+        \end{abstract}
+
+\section {Termini un apzīmējumi}
+Šeit būs visādi termini, kas ir lietoti darbā un kurus vajag paskaidrot.
+Šeit arī (ja būs nepieciešamība) būs aprakstīti apzīmējumi, kas lietoti darbā.
+
+\section{Ievads}
+%\inlude{ievads}
+%\section{Ievads}
+
+Mūsdienīgo programmēšanas valodu sintaksi nevar aprakstīt ar viennozīmīgām bezkonteksta gramatikām. Tāpēc vairākumam valodu parsētāji ir rakstīti ar rokām, uzmanīgi risinot gramatikas konfliktus. Un kaut arī eksistē parsētāju ģeneratori (piem. ANTLR), kas ar neierobežotu ieskatu kodā var atrisināt gramatikas likumu konfliktus, bieži vien to lietošanas sarežģītība ir salīdzināma ar paša parsētāja rakstīšanu.
+
+Tomēr ievērojamas problēmas parādās tad, kad ir nepieciešams pievienot valodai jaunas konstrukcijas. Tas nozīmē, ka parsētāji ir jāparaksta tā, lai iekļautu jaunos likumus un atrisināt jaunus konfliktus. Ir pašsaprotami, ka gadījumos, kad valoda mainās radikāli, tas būs nepieciešams. Tomēr nelielu izmaiņu gadījumā, it īpaši tādu, kas atvieglo programmētāja darbu, varētu iztikt arī bez tā, atļaujot programmētajam pašam pielāgot valodas sintaksi savam vajadzībām.
+
+Dotais darbs apskata sistēmu, kas ļauj dinamiski paplašināt programmēšanas valodu sintaksi un par pamata principu šīs sistēmas izstrādē ir ņemts pašmodificējamo gramatiku jēdziens. Dinamiski modificējamo gramatiku realizējamība ir aprakstīta dažādos rakstos, tomēr vispārīgā gadījumā šāda tipa gramatikas var nekontrolējami mainīties, izveidojot pavisam citu gramatiku sākotnējās gramatikas vietā. Līdz ar to neierobežotas modifikācijas var izraisīt neprognozējamas sekas.
+Piedāvātā sistēma ir balstīta uz sakarīgu gramatikas modifikāciju iespēju ierobežojumu, kā arī uz tipu sistēmas, kas ļaus pārliecināties, ka modifikācijas ir korektas. Lai kontrolēt modifikāciju procesu sintaktiskās izmaiņas tiks apskatītas ka dinamisks priekšprocesēšanas variants. Sistēmas galvenā īpašība ir tas, ka pēc gramatikas transformācijas izpildes modificētais izejas kods būs garantēti atpazīstams ar sākotnējo gramatiku.
+
+Aprakstāmās sistēmas ideja ir radusies programmēšanas valodas Eq kompilatora izstrādes laikā bet tā nav piesaistīta pie kādas programmēšanas valodas, bet gan pie konkrēta parsētāju tipa. Perspektīvā tā var tikt lietota jebkurai valodai, kuras parserim piemīt noteiktas īpašības un piedāvāt šai valodai pašmodificēšanas iespējas.
+
+Lietojot nelielu funkcionālu valodu šī sistēma ļaus izveidot jaunas gramatiskas konstrukcijas no jau eksistējošās programmēšanas valodas bāzes funkcionalitātes.
+\fixme{Šeit būs paša prototipa apraksts, kad prototips būs tomēr gatavs.}
+
+
+Šī dokumenta organizācija ir sekojoša. Nodaļa 2 ievieš un paskaidro galvenos jēdzienus, kas vajadzīgi, lai aprakstīt sistēmu. Nodaļa 3 pamato, kāpēc šī problēma ir aktuāla un piedāvā citus risinājuma piemērus ar pamatojumiem, kāpēc tomēr ir vajadzīga cita pieeja. Nodaļa 4 vispārīgi apraksta izstrādājamo sistēmu un tās galvenās īpašības. Nodara 5, savukārt, apraksta prototipu, rīkus un algoritmus, kas tika lietoti izstrādē. Tā arī pamato, kāpēc daži jau gatavie risinājumi nav lietojami šajā gadījumā. 6. nodaļā ir aprakstītas prototipa iespējas un darba izstrādes rezultēti, bet 7. nodaļa apraksta darba secinājumus. Tālāk darbā ir literatūras saraksts, atzinības un pielikumi (prototipa koda gabali un darba piemēri).
+
+\section{Problēmas pamatojums}
+Bieži valodas tādas ka C un C++ ievieš jaunas sintaktiskas konstrukcijas. Dažreiz tas tiešām ievērojami modificē pašu valodu, bet ļoti bieži tēs ir tikai sintaktiskas. Bet tik un tā tās izraisa nepieciešamību pārrakstīt kompilatoru, jo parasti valodām ir ierobežots sintakses modifikāciju atbalsts, vai arī tas vispār neeksistē.
+
+
+Problēmas no valodas C
+
+\section{Iepriekšējās zināšanas (ievads \#2)}
+Šajā nodaļā ir aprakstīti galvenie jēdzieni, kas nepieciešami darba izpratnei un kas lietoti darba izstrādes gaitā. 
+
+\subsection{Bezkonteksta gramatikas}
+Bezkonteksta gramatika satur vārdnīcu no simboliem un pārrakstīšanas likumu kopu. Vārdnīca sastāv no termināliem un neterminālem simboliem, un viens no netermināļem ir gramatikas sākuma simbols. Pārrakstītājas likumi ir izskatā A  b, kur A ir viens no netermināliem simboliem, bet b ir neterminālu un terminālu simbolu virkne. Kad kāda likuma kreisē puse parādās apstādāmo simbolu rindā, rinda var tikt pārrakstīta aizvietojot kreisēs puses netermināli ar labo likuma daļu. A b parāda, ka A var tikt pārveidots virknē b atkārtoti pārrakstot to lietojot gramatikas likumus. Visu terminālu simbolu virkņu kopa ir saukta par gramatikas ģenerēto valodu. [1]
+Programmēšanas valodas ir jēdzienu sistēma, kas ļauj aprakstīt algoritmus. Šai sistēmai jābūt viennozīmīgi aprakstāmai un saprotamai programmētajam. Tātad ir nepieciešams apraksts, kas ļauj saprotami un pārskatāmi izveidot bāzes struktūras valodai.
+Bezkonteksta gramatikas izgudroja N. Homskis, kas plānoja lietot tos lai aprakstītu reālās cilvēku valodas. Šinī jomā bezkonteksta gramatikas netiek lietotas, jo dabiskās valodas ir pārāk sarežģītas, tomēr šīs gramatikas tiek lietotas lai aprakstītu programmēšanas valodu sintaksi. Programmēšanas valodas globālā līmenī nav kontekst-neatkarīgas, bet tomēr tēs ir neatkarīgas lokāli, un kaut arī ne visas programmēšanas valodu īpašības var aprakstīt ar bezkonteksta gramatikām, tos ir ērti lietot lai parādīt valodas konstrukciju struktūru.
+Svarīgāka bezkonteksta gramatiku īpašība ir tas, ka tos var mehāniski pārveidot parsētājos, kas ir sistēma, kas skenējot programmas tekstu izveido programmas struktūru. Šī struktūra tālāk ir reprezentēta koka veidā un  var tikt kompilēta izpildāmā kodā. [2]
+
+\fixme{Vienkrāsas valodiņas gramatikas piemērs (Vai to vispār vajag?)}
+
+(Zemāk - šīs ir ka piemērs ko nevar, es neplānoju skaidrot visu, bet ar šo es gribēju parādīt, ka tiešām ne visu var.)
+Starp īpašībām, kuras nevar aprakstīt ar bezkonteksta gramatikām ir leksiskais tvērums (lexical scope) un statiskā tipizācija (static typing).
+\fixme{Piemēram, viena no valodas īpašībām, ko nevar aprakstīt ar bezkonteksta gramatikām ir tipu sakritības jēdziens.} Piemēram kodu šādā fragmentā: int a; a = 3.4; ar bezkonteksta gramatikām izsekot nevarēs, jo par to gramatikas līmenī ir zināms tikai tas, ka tas ir kaut kāds identifikators, bet pie kura tipa tas pieder, zināms nav.
+
+\subsection{Parsētāji}
+Vairākums parsētāju mūsdienās aktuālākam valodām (piemēram C/C++) ir rakstīti manuāli. 
+Parsētāju tipi - LR, LL, to trūkumi
+
+\subsection{Regulārās izteiksmes}
+Regulēs izteiksmes, kas tie ir un ko ar tām var darīt.
+
+\subsection{Priekšprocesori}
+Varbūt šī nodaļa nav vajadzīga, atkarīgs no tā, vai būs nodaļa 5.2.
+Kas tie ir un to iespējas.
+To sakars ar izstrādājamo sistēmu, kāpēc šī sistēma nav priekšprocesors, bet gan kaut kas cits.
+
+\subsection{Tipu teorija (?)}
+Varbūt šī nodaļa nav vajadzīga?
+īss tipu teorijas pārskats
+
+\section{Dinamiskas gramatikas}
+Dinamiskas vai adaptīvās gramatikas ir gramatiskais formālisms, kas ļauj modificēt gramatikas likumu kopu ar gramatikas rīkiem. [1]
+
+
+
+Dinamiskas gramatikas, kas tēs ir. Fakti par to, ka tēs jau ir pētītas un reāli implementējamas un lietojamas. Reālais labums no tām.
+\fixme{No otras puses kāpēc tēs daudz nepētīja un daudz reāli nelieto.} Tēs vispārīgā gadījumā ir nekontrolējamas.
+
+
+
+\section{Par izstrādājamo sistēmu (ievads \#3)}
+Ka var redzēt no iepriekšējās nodaļas, pašmodificējošās gramatikas ir diezgan sarežģīts rēks, kas kaut arī ir ļoti lietderīgs, mūsdienās gandrīz netiek lietots. Tas netiek lietots savas sarežģītības dēļ un dēļ tā, ka vispārīgā gadījumā pašmodificējošo gramatiku ir ļoti grūti kontrolēt. Ļaujot neierobežoti modificēt gramatiku mēs varam nonākt pie gadījuma, kad sākotnējā gramatika tiek izmesta ārā, bet tās vietā parādās cita, pilnīgi jauna. Tas netiek lietots savas saredzamības dēj un dēļ tā, ka vispārīgā gadījumā pašmodificējošo gramatiku ir ļoti grūti kontrolēt. Ļaujot neierobežoti modificēt gramatiku mēs varam nonākt pie gadījuma, kad sākotnēja gramatika tiek izmesta ārā, bet tās vietā parādās cita, pilnīgi jauna. Šādā gadījumā šīs jaunās gramatikas adekvātumu un korektību nevar garantēt.
+
+Šīs darbs apraksta iespēju izveidot pašmodificējošo kodu ar funkcionālās makro valodas palīdzību. Šī makro valoda ļaus izveidot jaunas valodas konstrukcijas no jau eksistējošām vienībām. Parsētāja darba laikā makro sastapšanas reizes tiks pārrakstītas uz kodu ar attiecīgu struktūru, kas var tikt atpazīti ar valodas sākotnējo gramatiku. Tātad šī sistēma ļaus modificēt gramatiku nebojājot jau eksistējošo sintaksi. Neko pavisam jauno šī makro sistēma nejaus izveidot, lai paliktu savietojamība ar sākotnējo gramatiku, tomēr tā ļaus atvieglot programmētāja darbu dodot iespēju aizstāt kodā sarežģītas konstrukcijas ar vienkāršākām. 
+\subsection{Origins - Eq}
+Valoda Eq tiek izstrādāta (kur?). Šīs valodas sintakse bāzējas uz LaTeX teksta procesora sintakses, kas ir standarts priekš zinātniskām publikācijām. Konsekventi programma, kas rakstīta valodā Eq ir korekti interpretējama ar LaTeX procesoru. Tajā pašā laikā Eq programma varēs tikt kompilēta vairākumam mūsdienīgu arhitektūru. 
+\fixme{Saite uz Eq projektu}
+
+Šeit būs pavisam nedaudz informācijas par to, kas ir Eq, kāpēc vispār parādies šī ideja.
+
+\subsection{Sintakse un darbība}
+fixme{Šeit būs makro sintakses piemērs} 
+
+\subsection{Pieejas universālums}
+Kaut arī ideja un pieejas izstrāde sākās ar valodu Eq, tā nav piesaistīta tieši šai valodai. Visspēcīgāka šīs sistēmas īpašība ir tas, ka tā ir universāla un var tikt pielietota jebkādam parserim kas atbilst dažiem nosacījumiem. 
+Par parsētāja modeli
+
+\fixme{Kāpēc ir izvēlēts tieši LL(k) parsētāji?}
+\subsection{Sistēmas īpašības}
+Šī nodaļa aprakstīs, kā mēs gribam realizēt gramatikas pašmodificēšanos, lai izmaiņas būtu kontrolētas.
+Mēs gribam norobežot modificēšanas iespējas
+
+\subsubsection{Pārrakstīšanas sistēma}
+Match sistēma, atļauto regulāro izteiksmju sintakse. Sintakse ir viegli paplašināma.
+Konteksti
+\subsubsection{Tipu sistēma}
+Kā tiks pārbaudīti tipi.
+\section{Prototipa realizācija}
+Pagaidām sistēma nav ieviesta Eq kompilatorā, bet atrodas prototipēšanas stadijā. \fixme{Šeit tiks aprakstītas izstrādātā prototipa īpašības un izvēlētās pieejas.}
+\subsection{Pieejas izvēle}
+
+\subsection{Lietotie algoritmi}
+Determinizācija,
+Minimizācija,
+Apvienošana.
+
+\subsection{Kāpēc tieši šāds risinājums}
+???
+
+Kāpēc šīm uzdevumam neder jau eksistējošas regulāro izteiksmju bibliotēkas. Kāpēc  neder vispārpieņemtie automātu apvienošanas algoritmi.
+Regulāro izteiksmju dzinēji strādā ar tekstu, nevis ar tokeniem, nav vērts mēģināt pielāgot. Automātu apvienošana - visur aprakstītās pieejas nesaglabā, pie kāda no automātiem pieder katrs stāvoklis, it īpaši akceptējošie stāvokļi. Mums ir svarīgi zināt, kāds no automātiem ir akceptēts, jo no tā ir atkarīgs, kura no produkcijām tiks lietota. 
+
+\section{Rezultēti}
+
+\subsection{Prototipa īpašības}
+Tika izstrādāts prototips, kas parada, ka šāda sistēma var tikt implementēta.
+\fixme{Šeit droši vien jāapraksta vairāk par beigu prototipa versiju, par to, ko viņa varēs darīt.} Cik tā ir efektīva?
+\subsection{Salīdzinājums ar priekšprocesoriem}
+\fixme{Varbūt šī nodaļa nav vajadzīga.}
+Ko sistēma var un ko nevar salīdzinājumā ar priekšprocesoriem.
+\section{Secinājumi}
+Tālāk darbs tik turpināts (šeit var pārfrāzēt Conclusions no raksta melnraksta).
+
+
+\section{Random thoughts}
+\subsection{Saistība ar priekšprocesoriem}
+Ir divu veidu priekšprocesori - leksiskie un sintaktiskie. Leksiskie priekšprocesori tiek palaisti pirms pirmkoda parsēšanas un nezin neko par apstrādājamas valodas sintaksi (piem. C/C++ priekšprocesors). No otras puses sintaktiskie priekšprocesori tiek palaisti pēc parsera darbības un apstrādā sintaktiskos kokus, ko uzbūvē parsētājs. Dēļ aprakstāmās sistēmas īpašībām šajā darbā netiks apskatīti sintaktiskie priekšprocesori, jo sistēmas īpašība ir tāda, ka līdz tas darba izpildei parsētājs nevar uzbūvēt sintaktisko koku.
+
+Bet leksiskie priekšprocesori pēc savām īpašībām ir tuvi aprakstāmai sistēmai. Ar makro valodu palīdzību tiem tiek uzdoti koda pārrakstīšanas likumi, un kods tiek pārveidots attiecīgi tēs. Bet leksisko priekšprocesoru vislielākais trūkums ir tas, ka tie apstrādā tekstu pa tokeniem neievērojot izteiksmju un konstrukciju struktūru. Piemēram, apskatīsim šādu izteiksmi - \verb/|(a|b)+c|/, kurai vajadzētu tikt pārveidotai uz \verb/abs((a|b)+c)/. Ar tādu makro sistēmu, kas neievēro koda struktūru, tātad neievēro to, ka patiesībā \verb/(a|b)+c/ ir atomāra konstrukcija izteiksmē, šādu koda gabalu pareizi pārrakstīt nevarēs. Vidējā \verb/|/ zīme sabojās konstrukciju un priekšprocesors nevarēs apstrādāt šādu gadījumu.
+
+Priekšprocesoru var iemācīt apstrādāt šāda veida konstrukcijas un atpazīt tos, ka atomārās izteiksmes. Bet tas nozīmēs, ka priekšprocesoram būs jāzina apstrādājamas valodas sintakse, kas neatbilst priekšprocesora lomai kompilēšanas procesā un nozīmē ka būs divreiz jāimplementē sintakses atpazīšana.
+
+Otrā problēma ar šāda tika priekšprocesoriem ir tas, ka tie strādā ārpus programmas kontekstiem. Tas nozīmē, ka konteksta sākuma tokens (\verb|{| C/C++, Java un citu valodu gadījumā) tiek uzskatīts par parastu tekstu un var tikt pārrakstīts. Loģiskāk būtu, ja kontekstu makro tiktu mantoti līdzīgi ka mainīgie  makro, kas ir specifiski kontekstam būtu ar lielāku prioritāti ka tie, kas definēti vispārīgākā kontekstā. 
+
+\subsection{Our goals}
+Apskatāmās sistēmas 2 galvenie mērķi ir dot iespēju ieviest jaunas konstrukcijas un tajā pašā laikā saglabāt korektu jau iepriekšeksistējošās sintakses apstrādi.
+
+\subsection{Programmas konteksti}
+Programmas konteksts (pēc Wikipedia) ir vismazākā datu kopa, ko vajag saglabāt programmas darbības pārtraukuma gadījumā, lai varētu atjaunot programmas darbu. Bet pašas programmas iekšienē var eksistēt lokālie konteksti, ko ievieš, piemēram, figūriekavas C/C++ gadījumā. Tad mainīgie, kas tiek definēti vispārīgā programmas kontekstā (globālie mainīgie), var tikt pārdefinēti mazākajā kontekstā (piemēram, kaut kādas funkcijas vai klases robežās) un iegūst lielāku prioritāti. Tas nozīmē, ka ja tiek lietots šāds pārdefinēts mainīgais, tas tiek uzskatīts par lokālu un tiek lietots lokāli līdz specifiska konteksta beigām, nemainot globālā mainīgā vērtību.
+
+Konteksta piemērs:
+\begin{verbatim}
+int a = 0;
+int b = 1;
+int main() {
+	int a = 2;
+	a++;
+	b += a;
+}
+\end{verbatim} 
+Šajā piemērā \verb|a| ir definēta gan globāli, gan lokāli. Kad tiek izpildīta rindiņa \verb|a++;|, lokāla mainīgā vērtība tiks samazināta uz 3, jo \verb|a| ir pārdefinēts ar vērtību 2. Globālais \verb|a| tā ara paliks ar vērtību 0. Un kad tiks izpildīta rindiņa \verb|b += a;|, \verb|b| pieņems vērtību 4. Konteksta iekša tiks samainīta globālā mainīgā \verb|b| vērtība, jo tas netika pārdefinēts.
+
+Tālāk termins koda konteksts tiks lietots tieši šajā nozīmē. 
+
+\bibliography{mybib}{}
+\bibliographystyle{plain}
+\end{document}
+
+%Literatūras saraksts
+%[1] http://web.cs.wpi.edu/~jshutt/thesis/survey.html\#Chomsky
+%[2] Introduction to automata theory, languages and compilation [169-179] about context-free grammars
