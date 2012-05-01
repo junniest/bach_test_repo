@@ -565,6 +565,7 @@ def execute (stream):
     regexp_id = 0
     automaton = None
     current_state_list = []
+    current_context = 0
     while token is not None:
         if isinstance (token, t_m_start):
             auto = r_prs.parse (regexp_id)
@@ -573,6 +574,10 @@ def execute (stream):
                 automaton = merge ([auto])
             else:
                 automaton = merge ([automaton, auto])
+        elif isinstance (token, t_context_start):
+            current_context += 1
+        elif isinstance (token, t_context_end):
+            current_context -= 1
         else:
             if automaton is not None:
                 current_state_list.append((automaton [0], []))
@@ -591,5 +596,49 @@ def execute (stream):
 
         token = get.get_token ()
 
+
+""" ==== States grouped by contexts ==== """
+
+class contexted_state_list(object):
+    """
+        >>> n1 = node_dfa([]); n1.regexp_id = 1
+        >>> n2 = node_dfa([]); n2.regexp_id = 2
+        >>> n3 = node_dfa([]); n3.regexp_id = 3
+        >>> n4 = node_dfa([]); n4.regexp_id = 4
+        >>> n5 = node_dfa([]); n5.regexp_id = 5
+        >>> l = contexted_state_list()
+        >>> l.add(0, n1)
+        >>> l.add(0, n2)
+        >>> l.add(1, n3)
+        >>> l.add(1, n4)
+        >>> l.add(2, n5)
+        >>> [node.state.regexp_id for node in l.list]
+        [2, 1, 4, 3, 5]
+        """
+    
+    class comparable(object):
+        
+        def __init__(self, state):
+            self.state = state
+        
+        def __cmp__(self, other):
+            return cmp(self.state.regexp_id, other.state.regexp_id)
+    
+    def __init__(self):
+        self.list = []
+        self.last_level = None
+        self.idx = None
+    
+    def add (self, level, state):
+        if self.last_level != level:
+            self.last_level = level
+            self.idx = -1
+            self.list.append(self.comparable(state))
+        else:
+            self.list.insert(self.idx, self.comparable(state))
+            self.idx -= 1
+    
+    def __repr__ (self):
+        return repr (self.list)
 
 # vim: set ts=4 sw=4 sts=4 et
