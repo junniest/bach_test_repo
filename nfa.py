@@ -52,12 +52,12 @@ class token_nfa (nfa):
         self.token = token
         self.start = self
         self.end = self
-$
+
     def get_epsilon_closure (self, closure):
         """ Epsilon closure for a single state. """
         if self not in closure:
             closure.add (self)
-$
+
     def __repr__ (self):
         str = "%s" % (self.token)
         if self.nxt is not None:
@@ -80,7 +80,7 @@ class asterisk_nfa (nfa):
             closure.add (self)
             self.content.get_epsilon_closure (closure)
             self.get_next_state ().get_epsilon_closure (closure)
-$
+
     def __repr__ (self):
         str = "( %s )*" % repr (self.content)
         if self.nxt is not None:
@@ -104,9 +104,9 @@ class or_nfa (nfa):
             closure.add (self)
             self.alternative[0].get_epsilon_closure (closure)
             self.alternative[1].get_epsilon_closure (closure)
-$
+
     def __repr__ (self):
-        str = "( %s | %s )" % (repr (self.alternative[0]),$
+        str = "( %s | %s )" % (repr (self.alternative[0]),
                                repr (self.alternative[1]))
         if self.nxt is not None:
             str = str + " -> " + repr (self.nxt)
@@ -141,19 +141,19 @@ class node_dfa (object):
         self.accepting = False
         self.regexp_id = None
         self.id = None
-$
+
     def get_moves (self, token):
         """ Returns moves possible from the given DFA state (NFA state list)
             by a specific symbol. """
         return set (s.get_next_state () for s in self.states
                     if isinstance (s, token_nfa) and token.eq (s.token))
-$
+
     def get_tokens (self):
         return set (s.token for s in self.states if isinstance(s, token_nfa))
-$
+
     def set_regexp_id (self, regexp_id):
         self.regexp_id = regexp_id
-$
+
     def __repr__ (self):
         state_list = map (lambda (x,y): str(x) + ' -> ' + repr(y.id), self.paths.iteritems())
         return "<id:%s, accept:%r>" % (self.id, self.accepting)#, state_list)
@@ -187,12 +187,12 @@ def get_epsilon_closure (nfa_state_list):
 
 
 def rearrange (dfa_state_list):
-    """ Method sets DFA state "accepting" parameter according to the NFA states$
-        it contains. Then sets an id for the state and removes unnecessary$
+    """ Method sets DFA state "accepting" parameter according to the NFA states
+        it contains. Then sets an id for the state and removes unnecessary
         information (the list of NFA states). """
     for i in xrange(len(dfa_state_list)):
         dfa_state_list[i].accepting = \
-            not not filter(lambda nfa_state: isinstance (nfa_state, done_nfa),$
+            not not filter(lambda nfa_state: isinstance (nfa_state, done_nfa),
                            dfa_state_list[i].states)
         dfa_state_list[i].id = i
         dfa_state_list[i].states = None
@@ -200,7 +200,7 @@ def rearrange (dfa_state_list):
 
 
 def det (automaton, regexp_id):
-    """ Method creates a DFA for the given NFA using its starting state and a$
+    """ Method creates a DFA for the given NFA using its starting state and a
         list of symbols that are used in it for traversing the automaton. """
     nfa_state_list = get_epsilon_closure ([automaton])
     if not nfa_state_list:
@@ -208,7 +208,7 @@ def det (automaton, regexp_id):
     dfa_state_list = []
 
     add_to_state_list (nfa_state_list, dfa_state_list)
-$
+
     for dfa in dfa_state_list:
         dfa.set_regexp_id (regexp_id)
         for token in dfa.get_tokens ():
@@ -229,11 +229,11 @@ def get_group_no(state, group_list):
 
 
 def break_to_groups (group, group_list):
-    """ Breaks the given group into smaller groups according to the paths they$
+    """ Breaks the given group into smaller groups according to the paths they
         have. """
     result = []
     state_path_list = []
-    # the cycle creates pairs of states and their paths encoded as paths to a$
+    # the cycle creates pairs of states and their paths encoded as paths to a
     # particular group number in the given group_list
     for state in group:
         paths = {}
@@ -279,7 +279,7 @@ def minimize (automata):
 
 
 def make_automata_from_groups (group_list):
-    """ This method reforms a list of groups (after minimization) into an$
+    """ This method reforms a list of groups (after minimization) into an
         automaton. """
     start_state = None
     # All the first elements of a group are a new state
@@ -288,11 +288,11 @@ def make_automata_from_groups (group_list):
         new_state = group [0]
         if new_state.id == 0:
             start_state = new_state
-        if len (group) == 1:$
+        if len (group) == 1:
             # if group length is 1 it's just a state, nothing to do
             continue
-        # if s group has several states, we have to replace these states in all$
-        # paths so that the paths are correct$
+        # if s group has several states, we have to replace these states in all
+        # paths so that the paths are correct
         for i in xrange(1, len (group)):
             old_state = group [i]
             if old_state.id == 0:
@@ -313,14 +313,14 @@ class getter (object):
     def __init__ (self, stream = None):
         self.stream = stream
         self.ind = 0
-$
+
     def get_token (self):
         if self.ind < len(self.stream):
             self.ind += 1
             return self.stream [self.ind - 1]
         else:
             return None
-$
+
     def unget (self):
         self.ind -= 1
 
@@ -329,7 +329,7 @@ class regexp_parser (object):
     def __init__ (self, gtr = None):
         self.gtr = gtr
         self.stack = None
-$
+
     def concat (self, seq_len):
         """ If possible, concatenates the last seq_len states of the stack. """
         i = 1
@@ -338,7 +338,7 @@ $
             state0 = self.stack.pop()
             self.stack.append (state0.add_next_state (state1))
             i += 1
-$
+
     def handle_primary (self):
         """ Handles the primary matches - characters and *, calls handle_or for
             brace content. """
@@ -358,7 +358,7 @@ $
                 raise Exception ("Closing brace expected, got %s instead." % token)
             return
         self.gtr.unget ()
-$
+
     def handle_seq (self):
         """ Handles primary match sequenes. """
         self.handle_primary ()
@@ -374,7 +374,7 @@ $
             token = self.gtr.get_token ()
         self.concat (seq_len)
         self.gtr.unget ()
-$
+
     def handle_or (self):
         """ Handles or's. """
         self.handle_seq ()
@@ -385,7 +385,7 @@ $
             self.stack.append (or_nfa (state1, state0))
         else:
             self.gtr.unget ()
-$
+
     def parse (self, regexp_id):
         """ Parses the giver regular expression and creates an NFA. """
         self.stack = []
@@ -417,7 +417,7 @@ class node_dfa_m (object):
             if state.accepting:
                 return state.regexp_id
         return None
-$
+
     def __repr__ (self):
         state_list = map(lambda (x,y): str(x) + ' -> ' + repr(y.state_list),
                          self.paths.iteritems())
@@ -428,7 +428,7 @@ def add_to_state_list_m (dfa_state_list, merge_dfa_state_list):
     """ Locate a merged DFA state in the list using the given the list of
         unmerged DFA states. If such a state is present, return it. If it is not
         present, create a new state, add it to the state list and return it. If
-        two or more such states are present in the list - raise an$
+        two or more such states are present in the list - raise an
         exception. """
     state = None
     l = filter (lambda x: x.state_list == dfa_state_list, merge_dfa_state_list)
@@ -453,7 +453,7 @@ def merge_paths (merge_list):
 
 
 def merge (automata_list):
-    """ Merges a list of automata into a single one to improve execution$
+    """ Merges a list of automata into a single one to improve execution
         time. """
     merge0 = [None]
     for merge1 in automata_list[0:]:
@@ -462,7 +462,7 @@ def merge (automata_list):
         for state in new_automata:
             rv = merge_paths(state.state_list)
             for (symbol, state_list) in rv.iteritems():
-                state.paths[symbol] = add_to_state_list_m (state_list,$
+                state.paths[symbol] = add_to_state_list_m (state_list,
                                                            new_automata)
         merge0 = new_automata
     return new_automata
@@ -615,20 +615,20 @@ class contexted_state_list(object):
         >>> [node.state.regexp_id for node in l.list]
         [2, 1, 4, 3, 5]
         """
-$
+
     class comparable(object):
-$
+
         def __init__(self, state):
             self.state = state
-$
+
         def __cmp__(self, other):
             return cmp(self.state.regexp_id, other.state.regexp_id)
-$
+
     def __init__(self):
         self.list = []
         self.last_level = None
         self.idx = None
-$
+
     def add (self, level, state):
         if self.last_level != level:
             self.last_level = level
@@ -637,7 +637,7 @@ $
         else:
             self.list.insert(self.idx, self.comparable(state))
             self.idx -= 1
-$
+
     def __repr__ (self):
         return repr (self.list)
 
