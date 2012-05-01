@@ -140,29 +140,22 @@ class node_dfa (object):
         self.paths = {}
         self.accepting = False
         self.regexp_id = None
+        self.id = None
   
     def get_moves (self, token):
         """ Returns moves possible from the given DFA state (NFA state list)
             by a specific symbol. """
-        moves = set()
-        for nfa_state in self.states:
-            if isinstance (nfa_state, token_nfa) and \
-                    token.eq (nfa_state.token):
-                moves.add (nfa_state.get_next_state ())
-        return moves
+        return set (s.get_next_state () for s in self.states
+                    if isinstance (s, token_nfa) and token.eq (s.token))
     
     def get_tokens (self):
-        token_list = set ()
-        for nfa_state in self.states:
-            if isinstance (nfa_state, token_nfa):
-                token_list.add(nfa_state.token)
-        return token_list
+        return set (s.token for s in self.states if isinstance(s, token_nfa))
     
     def set_regexp_id (self, regexp_id):
         self.regexp_id = regexp_id
     
     def __repr__ (self):
-        state_list = map(lambda (x,y): str(x) + ' -> ' + repr(y.id), self.paths.iteritems())
+        state_list = map (lambda (x,y): str(x) + ' -> ' + repr(y.id), self.paths.iteritems())
         return "<id:%s, accept:%r>" % (self.id, self.accepting)#, state_list)
 
 """ ---- Logic for DFA creation from an NFA ---- """
@@ -478,18 +471,21 @@ def merge (automata_list):
 
 class t_token (object):
     """ Default token """
+    repr_s = None
+
     def __init__ (self, value = None):
         self.value = value
 
     def __repr__ (self):
-        if self.value is None:
+        if self.repr_s:
+            return self.repr_s
+        elif self.value is None:
             return "[" + type(self).__name__[2:] + "]"
         else:
             return "[" + type(self).__name__[2:] + ":" + str(self.value) + "]"
 
     def eq (self, token):
         assert type(token) != type
-
         return isinstance(token, type(self)) and (self.value is None or
                                                   self.value == token.value)
 
@@ -518,58 +514,45 @@ class t_bool (t_short):
             self.value = False
 
 class t_context_start (t_token):
-    def __repr__ (self):
-        return "[{]"
+    repr_s = "[{]"
 
 class t_context_end (t_token):
-    def __repr__ (self):
-        return "[}]"
+    repr_s = "[}]"
 
 class t_delim_col (t_token):
-    def __repr__ (self):
-        return "[;]"
+    repr_s = "[;]"
 
 class t_delim_com (t_token):
-    def __repr__ (self):
-        return "[,]"
+    repr_s = "[,]"
 
 class t_lbrace (t_token):
-    def __repr__ (self):
-        return "[(]"
+    repr_s = "[(]"
 
 class t_rbrace (t_token):
-    def __repr__ (self):
-        return "[)]"
+    repr_s = "[)]"
 
 """ Match tokens """
 
 class t_m_token (t_token):
-    def __repr__ (self):
-        return ""
+    repr_s = ""
 
 class t_m_lbrace (t_m_token):
-    def __repr__ (self):
-        return "("
+    repr_s = "("
 
 class t_m_rbrace (t_m_token):
-    def __repr__ (self):
-        return ")"
+    repr_s = ")"
 
 class t_m_asterisk (t_m_token):
-    def __repr__ (self):
-        return "*"
+    repr_s = "*"
 
 class t_m_pipe (t_m_token):
-    def __repr__ (self):
-        return "*"
+    repr_s = "|"
 
 class t_m_start (t_m_token):
-    def __repr__ (self):
-        return "[match]"
+    repr_s = "[match]"
 
 class t_m_end (t_m_token):
-    def __repr__ (self):
-        return "[\match]"
+    repr_s = "[\match]"
 
 """ ==== Execution logic ==== """
 
