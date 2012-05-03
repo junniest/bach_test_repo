@@ -1,0 +1,40 @@
+\section{Iepriekšējās zināšanas (ievads \#2)}
+Šajā nodaļā ir aprakstīti galvenie jēdzieni, kas nepieciešami darba izpratnei un kas lietoti darba izstrādes gaitā. 
+
+\subsection{Bezkonteksta gramatikas}
+Bezkonteksta gramatika satur vārdnīcu no simboliem un pārrakstīšanas likumu kopu. Vārdnīca sastāv no termināliem un neterminālem simboliem, un viens no netermināļem ir gramatikas sākuma simbols. Pārrakstītājas likumi ir izskatā A  b, kur A ir viens no netermināliem simboliem, bet b ir neterminālu un terminālu simbolu virkne. Kad kāda likuma kreisē puse parādās apstādāmo simbolu rindā, rinda var tikt pārrakstīta aizvietojot kreisēs puses netermināli ar labo likuma daļu. \verb|A\Rightarrow b| parāda, ka \verb|A| var tikt pārveidots virknē \verb|b| atkārtoti pārrakstot to lietojot gramatikas likumus. Visu terminālu simbolu virkņu kopa ir saukta par gramatikas ģenerēto valodu. \cite{Shutt:AG}
+Programmēšanas valodas ir jēdzienu sistēma, kas ļauj aprakstīt algoritmus. Šai sistēmai jābūt viennozīmīgi aprakstāmai un saprotamai programmētajam. Tātad ir nepieciešams apraksts, kas ļauj saprotami un pārskatāmi izveidot bāzes struktūras valodai.
+Bezkonteksta gramatikas izgudroja N. Homskis, kas plānoja lietot tos lai aprakstītu reālās cilvēku valodas. Šinī jomā bezkonteksta gramatikas netiek lietotas, jo dabiskās valodas ir pārāk sarežģītas, tomēr šīs gramatikas tiek lietotas lai aprakstītu programmēšanas valodu sintaksi. Programmēšanas valodas globālā līmenī nav kontekst-neatkarīgas, bet tomēr tēs ir neatkarīgas lokāli, un kaut arī ne visas programmēšanas valodu īpašības var aprakstīt ar bezkonteksta gramatikām, tos ir ērti lietot lai parādīt valodas konstrukciju struktūru.
+Svarīgāka bezkonteksta gramatiku īpašība ir tas, ka tos var mehāniski pārveidot parsētājos, kas ir sistēma, kas skenējot programmas tekstu izveido programmas struktūru. Šī struktūra tālāk ir reprezentēta koka veidā un  var tikt kompilēta izpildāmā kodā. \cite{Hopcroft:IAT}
+
+\fixme{Vienkrāsas valodiņas gramatikas piemērs (Vai to vispār vajag?)}
+
+(Zemāk - šīs ir ka piemērs ko nevar, es neplānoju skaidrot visu, bet ar šo es gribēju parādīt, ka tiešām ne visu var.)
+Starp īpašībām, kuras nevar aprakstīt ar bezkonteksta gramatikām ir leksiskais tvērums (lexical scope) un statiskā tipizācija (static typing).
+\fixme{Piemēram, viena no valodas īpašībām, ko nevar aprakstīt ar bezkonteksta gramatikām ir tipu sakritības jēdziens.} Piemēram kodu šādā fragmentā: \verb|int a; a = 3.4;| ar bezkonteksta gramatikām izsekot nevarēs, jo par to gramatikas līmenī ir zināms tikai tas, ka tas ir kaut kāds identifikators, bet pie kura tipa tas pieder, zināms nav.
+
+\subsection{Parsētāji}
+Vairākums parsētāju mūsdienās aktuālākam valodām (piemēram C/C++) ir rakstīti manuāli. 
+Parsētāju tipi - LR, LL, to trūkumi
+\fixme{paskaidrot, no nozīmē reducēt gramatikas likumus}
+
+\subsection{Regulārās izteiksmes}
+Regulēs izteiksmes, kas tie ir un ko ar tām var darīt.
+
+\subsection{Priekšprocesori}
+Varbūt šī nodaļa nav vajadzīga, atkarīgs no tā, vai būs nodaļa 5.2.
+Kas tie ir un to iespējas.
+To sakars ar izstrādājamo sistēmu, kāpēc šī sistēma nav priekšprocesors, bet gan kaut kas cits.
+
+\subsection{Tipu teorija (?)}
+Varbūt šī nodaļa nav vajadzīga?
+īss tipu teorijas pārskats
+
+\subsection{Dinamiskas gramatikas}
+Dinamiskas vai adaptīvās gramatikas ir gramatiskais formālisms, kas ļauj modificēt gramatikas likumu kopu ar gramatikas rīkiem. [1]
+
+Dinamiskas gramatikas, kas tēs ir. Fakti par to, ka tēs jau ir pētītas un reāli implementējamas un lietojamas. Reālais labums no tām.
+\fixme{No otras puses kāpēc tēs daudz nepētīja un daudz reāli nelieto.} Tēs vispārīgā gadījumā ir nekontrolējamas.
+
+
+

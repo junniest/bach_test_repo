@@ -1,0 +1,19 @@
+\section{Problēmas apraksts}
+Ļoti bieži mūsdienīgas valodas ievieš jaunas sintaktiskās konstrukcijas lai paplašinātu valodas iespējas un lietojamību. Dažreiz šīs izmaiņas izraisa ievērojamas valodas modifikācijas, bet dažreiz šīs izmaiņas ir tikai tā sauktais sintaktiskais cukurs, \emph{syntactic sugar}, konstrukcijas kas tiek pievienotas valodai tikai lai padarītu valodu lasāmāku un patīkamāku cilvēkam. Šīs konstrukcijas nemaina valodas funkcionalitāti, bet gan atvieglo tās lietošanu. Labs sintaktiskā cukura piemērs ir C valodas konstrukcija \verb|a[i]|, kas patiesībā ir \verb|*(a + i)|.
+
+Bet tik un tā jebkāda tipa izmaiņas prasa arī valodas gramatikas izmaiņas, kas vairākumā gadījumu nozīmē parsētāja vai kompilātora pārrakstīšanu. Lai tas nebūtu nepieciešams, valodai jāsatur sintakses modifikācijas atbalsts, kas parasti vai nu ir ļoti ierobežots, vai arī neeksistē vispār.
+
+Šīs darbs pieņem, ka viena no ērtākām pieejām, kā varētu izvairīties no kompilatora pārrakstīšanas nelielu valodas gramatikas izmaiņu gadījumā, ir adaptīvo gramatiku principa pielietošana. Tas nozīmē, ka valodai jāsatur konstrukcijas, kas parsēšanas laikā var modificēt un paplašināt pašas valodas sintaksi. 
+
+Viens no metodēm, kā varētu izpildīt pašmodificēšanas uzdevumu ir izveidot \textbf{kross-kompilatoru}, kas transformētu jauno sintaksi tā, lai standarta kompilators to varētu atpazīt. Bet šīs metodes problēma ir tas, ka lielākas daļas moderno valodu sintaksi ir neiespējams noparsēt lietojot automātiskos rīkus. Zemāk ir piedāvāti daži piemēri gadījumiem no populāras valodas C, kad automātiskā parsēšana ir neiespējama.
+
+\begin{enumerate}
+\item
+Valodā C lietotājs var nodefinēt patvaļīgu tipu lietojot konstrukciju \verb|typedef|. Šāda veida iespēja padara neiespējamu šādas izteiksmes apstrādi \verb|(x) + 5|, ja vien mēs neesam pārliecināti, kas ir \verb|x| - tips vai mainīgais. Ja \verb|x| ir tips, tad šī izteiksme pārveido izteiksmes \verb|+ 5| vērtību uz tipu \verb|x|. Ja \verb|x| ir mainīgais, tad šī izteiksme nozīmē vienkāršu mainīgā \verb|x| un vērtības \verb|5| saskaitīšanu. 
+\item
+Pieņemsim, ka ir iespēja paplašināt C valodas sintaksi ar infiksu operatoru \verb|++| un pierakstīt konstanšu masīvus \verb|[1, 2, 3]| veidā. Tad izteiksme \verb|a ++ [1]| būtu nepārsējama, jo eksistē vismaz divi to interpretācijas veidi. Tas varētu tikt saprasts ka postfiksā operatora \verb|++| pielietošana mainīgam \verb|a| un tad \verb|a| indeksēšana ar \verb|[1]|. Vai arī tas varētu būt divu masīvu \verb|a| un \verb|[1]| konkatenēšana.
+\end{enumerate}
+
+Dažreiz arī programmatūras koda dalīšana pa tokeniem ir atkarīga no šī koda konteksta. 
+
+Tas nozīmē, ka \textbf{kross-kompilatora} arī būs jāraksta manuāli, risinot eksistējošās gramatikas konfliktus, un oriģinālvalodas ievērojamu izmaiņu gadījumā būs jāpastrādā abi kompilatori, kas nozīmē divreiz vairāk darba.
