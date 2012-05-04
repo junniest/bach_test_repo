@@ -1,15 +1,48 @@
 \section{Prototipa realizācija}
-Pagaidām sistēma nav ieviesta Eq kompilatorā, bet atrodas prototipēšanas stadijā. \fixme{Šeit tiks aprakstītas izstrādātā prototipa īpašības un izvēlētās pieejas.}
-\subsection{Pieejas izvēle}
+Lai ilustrētu šādas sistēmas izstrādes iespējamību, tika izstrādāts prototips, kas parada, ka šāda sistēma var tikt implementēta. Šī nodaļa apraksta prototipa vispārīgās īpašības un pieejas, kas tika lietotas tā realizācijā. Prototips vienkāršības un izstrādes ātruma dēļ tika rakstīts Python valodā, kas ir skriptu valoda, un tāpēc prototips ir viegli palaižams un atkļūdojams uz jebkuras mašīnas ar uzstādītu 2.7.0 Python versiju.
+
+\subsection{Vispārīgā pieeja}
+\label{subsec:solution_approach}
+Šī apakšnodaļa apraksta sistēmas prototipa darbību virkni un prototipa iespējas uz doto brīdi. Šeit ir tikai vispārīgi aprakstīta darba gaita, bez pamatojumiem, kāpēc šāda rīcība ir izvēlēta, bet apakšnodaļā~\ref{subsec:solution_motivation} tiks sīkāk aprakstīts, kāpēc tas tika izveidots tieši šādi un ne citādi.
+
+Prototips imitē darbu reālajā vidē, no mockup leksera klases lasot pa vienam tokenus no ieejas plūsmas. Ir viens vispārējā rakstura tokens, no kura tiek mantotas dažādas tokenu apakšklases. Piemēram, eksistē tokena klase izteiksmei - \verb|t_expr|, kuras apakšklase ir reāls skaitlis \verb|t_real|. Tajā pašā laikā \verb|t_real| ir virsklase veselu skaitļu klasei \verb|t_int|. Tokeniem var būt saturs, piemēram regulārā izteksme \verb|t_id('f')| sagaidīs tieši identifikatoru \verb|f|, bet izteksme \verb|t_id()| sagaidīs jebkuru identifikatoru. Šie tokeni nav reāli, to klases tika izvēlētas uzskatamības pēc, bet patiesībā tokenu skaitam un hierarhijai nav nozīmes. Vienīgais, ko vajag zināt sistēmai, lai veiksmīgi strādātu, ir to mantošanas struktūra un tokenu vērtību salīdzināšana, lai tā zinātu sakritības attiecības starp regulārās izteiksmes tokeniem un ieejas plūsmas tokeniem.
+
+Tā kā šī sistēma nav parsētājs, tā neapstrādā tokenus, kas neattiecās uz sistēmas darbu. Tas nozīmē, ka kamēr sistēmā neeksistē neviena regulārā izteiksme, tā palaiž garām tokenus un neapstrādā tos. Tiklīdz tiek sastapts makro sākuma tokens, prototips uzsāk regulārās izteiksmes parsēšanu. Parsēšanas procesā tiek izveidots nedeterminēts galīgs automāts. Tālāk šīs automāts tiek determinēts un minimizēts, tātad katra regulāra izteiksme tiek pārveidota minimālajā determinētā automātā, tātad ir optimizēta pēc izpildes laika.
+
+Tikko parādās vismaz 2 regulārās izteiksmes, sistēma sapludina kopā to determinētos automātus, kas tiek darīts lai samazinātu tokenu virknes sakrišanas atrašanas laiku. Tā izteiksme, kas tika ielasīta agrāk būs ar lielāku prioritāti nekā tā, kas ir ielasīta vēlāk. Tātad ja secīgi tiks ielasītas 2 izteiksmes \verb|t_id() ( )| un \verb|t_id() ( t_real() * )|, tad ielasot virkni \verb|t_id('f') ( )| tiks akceptēta pirmā izteiksme. Gadījumā, ja izteiksmes tiks ielasītas pretējā secībā, pirmā izteiksme nekad netiks atpazīta, jo otrā izteiksme pārklāj visas pirmās izteiksmes korektās ieejas.
+
+Tālāk, kad atnāk kaut kādi tokeni, kas neatzīmē makro sākšanās, sistēma izpilda pārejas starp sapludinātā automāta stāvokļiem un atceras tokenus, kas jau ir nolasījusi. Tikko kāds no automāta stāvokļiem ir akceptējošs, sistēma aizstāv ielasīto virkni ar citu, kas ir konstruēta pēc akceptētās regulārās izteiksmes noteikumiem. Tad darbs tiek uzsākts no aizvietotās virknes sākuma. 
+
+Viena no galvenām šīs sistēmas īpašībām ir iespēja atšķirt programmatūras kontekstus. Ja sistēma darba gaitā sastapās ar konteksta sākuma simbolu, tā izveido eksistējošā automāta kopiju un tālāk konteksta makro pievieno šai kopijai. Konteksta iekšienē strādā tādi paši likumi par izteiksmju prioritātēm - izteiksme, kas bija agrāk ir ar lielāku prioritāti. Bet makro, kas ir specifiski kontekstam ir ar lielāku prioritāti nekā vispārīgāki makro. Tātad jā pēc kārtas atnāks \verb|t_id() ( )|, konteksta sākuma tokens un \verb|t_id() ( t_real() * )|, tad otrā konteksta ietvaros virkne \verb|t_id('f') ( )| tiks akceptēta ar otro regulāro izteiksmi. Pēc izejas no konteksta konteks-specifiskais automāts tiek izmests ārā un darbs tiek turpināts ar automātu no iepriekšējā kontekstu līmeņa.
+
+Konteksti ir implementēti tieši šādi, jo sapludinātā automāta atbrīvošana no vairs nevajadzīgiem pamestā konteksta stāvokļiem ir diezgan darbietilpīgs uzdevums. Ja $n$ ir konteksta regulāro izteiksmju daudzums un $m$ - maksimālais nesapludinātā automāta garums, tad dzēšanai būs vajadzīgs vismaz $O(n*m)$ laiks. 
+
+Sistēma turpina darbu aprakstītā gaitā līdz ieejas tokenu virknes beigām. Pēc sistēmas apstāšanās tiek iegūta jauna tokenu virkne, kas tika apstrādāta attiecīgi kodā ierakstitiem makro. Kad sistēma tiks integrēta ar reālu kompilatoru, tā strādās paralēli ar parsētāju un sistēmas izejas tokenu virkne tiks apstrādāta ar standartiem valodas likumiem.
+
+\subsection{Izņēmumi}
+Prototipā pagaidām nav implementēta apstrādes dalīšana pa gramatikas produkcijām, visas regulārās izteiksmes ir sapludinātas vienā automāta. Regulāro izteiksmju dalīšana pa tipiem tiks izstrādāta vēlāk, kad tiks uzsākta integrācija un sadarbība ar reālu kompilatoru. Tā varētu tikt implementēta līdzīgi tam, kā tiek realizēti konteksti - pa vienam sapludinātam automātam priekš katra produkcijas tipa.
 
 \subsection{Lietotie algoritmi}
-Determinizācija,
-Minimizācija,
-Apvienošana.
+\label{subsec:solution_algorithms}
+
+\subsubsection{Determinizācija}
+\fixme{Write!}
+
+\subsubsection{Minimizācija}
+\fixme{Write!}
+
+\subsubsection{Apvienošana}
+\fixme{Write!}
 
 \subsection{Kāpēc tieši šāds risinājums}
-???
+\label{subsec:solution_motivation}
+\fixme{Write!}
+
+Kāpēc sapludina visu kopā, kāpēc minimizē, 
+
 
 Kāpēc šīm uzdevumam neder jau eksistējošas regulāro izteiksmju bibliotēkas. Kāpēc  neder vispārpieņemtie automātu apvienošanas algoritmi.
 Regulāro izteiksmju dzinēji strādā ar tekstu, nevis ar tokeniem, nav vērts mēģināt pielāgot. Automātu apvienošana - visur aprakstītās pieejas nesaglabā, pie kāda no automātiem pieder katrs stāvoklis, it īpaši akceptējošie stāvokļi. Mums ir svarīgi zināt, kāds no automātiem ir akceptēts, jo no tā ir atkarīgs, kura no produkcijām tiks lietota. 
+
+
 

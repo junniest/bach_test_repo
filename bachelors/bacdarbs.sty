@@ -7,6 +7,11 @@
 \topmargin=0pt
 \textheight=595pt
 
+\setlength{\parindent}{1cm}
+
+\usepackage{setspace}
+\onehalfspacing
+
 \newfont{\bxsl}{cmbxsl10 at 12pt} % new font definition
 
 \setcounter{secnumdepth}{4}   % depth of beginning section numbering
@@ -37,10 +42,7 @@
 % *******************  NEW COMMANDS  ********************************
 
 \newcommand{\mdots}{\ldots\ldots\ldots\ldots}
-\newcommand{\annovirsraksts}[1]{\renewcommand{\abstractname}{#1}}
-\newcommand{\saturraditajs}{\newpage \pagenumbering{roman}%
-         \setcounter{page}{5} \tableofcontents%
-    \newpage \normalsize \pagenumbering{arabic} \setcounter{page}{1}}
+
 
 \def\upcase{\expandafter\makeupcase}
 \def\makeupcase#1{\uppercase{#1}}
@@ -188,62 +190,6 @@ komisijas sekretārs \hfill \@sekretars
 \ifthenelse{\equal{#3}{}}{}{. #3}%
 \ifthenelse{\equal{#4}{}}{.}{, #4.}%
 \ifthenelse{\equal{#5}{}}{}{\,(#5).}}
-
-%journal article, article in conference proceedings, book part with title
-%               in russian
-%-----------------------------------------------------------------------
-
-\newcommand{\kraksts}[9]{{\cyr #1. {\cyi #2}. #3%
-\ifthenelse{\equal{#1}{}}{\typein[\?]{Bakdarbs warning: You've missed
-   an author in \protect\raksts.Press Enter to proceed.}}{}%
-\ifthenelse{\equal{#2}{}}{\typein[\?]{Bakdarbs warning: You've missed
-   a title in \protect\raksts.Press Enter to proceed.}}{}%
-\ifthenelse{\equal{#3}{}}{\typein[\?]{Bakdarbs warning: You've missed
-   a journal or book title in \protect\raksts.Press Enter to proceed.}}{}%
-\ifthenelse{\equal{#4}{}}{\,}{\,{\cyb #4}\,}(#5)%
-\ifthenelse{\equal{#5}{}}{\typein[\?]{Bakdarbs warning: You've missed
-   a year in \protect\raksts.Press Enter to proceed.}}{}%
-\ifthenelse{\equal{#6}{}}{}{, {\it N}\,#6}%
-\ifthenelse{\equal{#7}{}}{}{, #7}%
-\ifthenelse{\equal{#8}{}}{.}{, #8}}%
-\ifthenelse{\equal{#9}{}}{}{\,(#9).}}
-
-% book, book part, conference proceedings in russian
-%---------------------------------------------------------------------
-
-\newcommand{\kgramata}[7]{{\cyr #1%
-\ifthenelse{\equal{#1}{}}{{\cyi #2}}{. {\cyi #2}}%
-\ifthenelse{\equal{#2}{}}{\typein[\?]{Bakdarbs warning: You've missed
-   a title in \protect\gramata.Press Enter to proceed.}}{}%
-\ifthenelse{\equal{#3}{}}{}{, {\cyb #3}}%
-\ifthenelse{\equal{#4}{}}{, }{. #4, }#5%
-\ifthenelse{\equal{#5}{}}{\typein[\?]{Bakdarbs warning: You've missed
-   a year in \protect\gramata.Press Enter to proceed.}}{}%
-\ifthenelse{\equal{#6}{}}{.}{, #6}}%
-\ifthenelse{\equal{#7}{}}{}{\,(#7).}}
-
-% booklet, manual, Master's thesis, Phdthesis and others in russian
-%---------------------------------------------------------------------
-
-\newcommand{\kmisc}[5]{{\cyr #1%
-\ifthenelse{\equal{#1}{}}{{\cyi #2}}{. {\cyi #2}}%
-\ifthenelse{\equal{#2}{}}{\typein[\?]{Bakdarbs warning: You've missed
-   a title in \protect\misc.Press Enter to proceed.}}{}%
-\ifthenelse{\equal{#3}{}}{}{. #3}%
-\ifthenelse{\equal{#4}{}}{.}{, #4.}}%
-\ifthenelse{\equal{#5}{}}{}{\,(#5).}}
-
-% **************  USING THE RUSSIAN LANGUAGE IN DOCUMENT  ***********
-
-\newcommand{\kir}{\input cyracc.def
-\font\tencyr = wncyr10 at 12pt\def\cyr{\tencyr\cyracc}
-\font\tencyb = wncyb10 at 12pt\def\cyb{\tencyb\cyracc}
-\font\tencyi = wncyi10 at 12pt\def\cyi{\tencyi\cyracc}}
-
-
-
-
-
 
 
 

@@ -1,4 +1,4 @@
-@article{Christiansen:SAG,
+@article{Christiansen:SurveyAdaptableGrammars,
 	author = {Christiansen, H.},
 	title = {A survey of adaptable grammars},
 	journal = {SIGPLAN Not.},
@@ -23,7 +23,7 @@
 	howpublished = {http://www.cs.engr.uky.edu/$\sim$lewis/essays/compilers/rec-des.html},
 }
 
-@book{Hopcroft:IAT,
+@book{Hopcroft:IntroAutomataTheory,
 	author = {Hopcroft, John E. and Motwani, Rajeev and Ullman, Jeffrey D.},
 	title = {Introduction to Automata Theory, Languages, and Computation (3rd Edition)},
 	year = {2006},
@@ -33,10 +33,27 @@
 	pages = {169-179},
 } 
 
-@misc{Shutt:AG,
+@misc{Shutt:AdaptiveGrammars,
 	author = {John N. Shutt},
 	title = {Adaptive grammars},
 	year = {2005},
 	month = nov,
 	howpublished = {http://web.cs.wpi.edu/~jshutt/},
+}
+
+@techreport{Boullier:DynamicGrammars,
+    hal_id = {inria-00074352},
+    url = {http://hal.inria.fr/inria-00074352},
+    title = {{Dynamic grammars and semantic analysis}},
+    author = {Boullier, Pierre},
+    abstract = {{We define a dynamic grammar as a device which may generate an unbounded set of context-free grammars, each grammar is produced, while parsing a source text, by the recognition of some construct. It is shown that dynamic grammars have the formal power of Turing machines. For a given source text, a dynamic grammar, when non ambiguous, may be seen as a sequence of usual context-free grammars specialized by this source text: an initial grammar is modified, little by little, while the program is parsed and is used to continue the parsing process. An experimental system which implements a non ambiguous \sl dynamic parser is sketched and applications of this system for the resolution of some semantic analysis problems are shown. Some of these examples are non-trivial (overloading resolution, derived types, polymorphism, \ldots) and indicate that this method may partly compete with other well-known techniques used in type-checking.}},
+    keywords = {PARSING / INCREMENTAL / EXTENSIBLE / LR / UNBOUNDED LOOK-AHEAD / CONTEXT-FREE / CONTEXT-SENSITIVE / AMBIGUITY / TYPE-CHECKING},
+    language = {Anglais},
+    affiliation = {CHLOE - INRIA Rocquencourt},
+    type = {Rapport de recherche},
+    institution = {INRIA},
+    number = {RR-2322},
+    note = {Projet CHLOE},
+    year = {1994},
+    pdf = {http://hal.inria.fr/inria-00074352/PDF/RR-2322.pdf},
 }
