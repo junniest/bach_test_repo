@@ -3,7 +3,7 @@ __date__ = "2012-02-09"
 
 import collections
 import time
-from ordered_default_dict import DefaultOrderedDict
+
 
 """ ==== Nondeterminate Finite Automaton logic ==== """
 
@@ -156,8 +156,7 @@ class node_dfa (object):
 
     def __repr__ (self):
         state_list = map (lambda (x,y): str(x) + ' -> ' + repr(y.id), self.paths.iteritems())
-        return "<id:%s, regexp_id:%s, accept:%r>" % (self.id, self.regexp_id, 
-                                                     self.accepting)#, state_list)
+        return "<id:%s, accept:%r>" % (self.id, self.accepting)#, state_list)
 
 """ ---- Logic for DFA creation from an NFA ---- """
 
@@ -401,29 +400,17 @@ class regexp_parser (object):
 
 class node_dfa_m (object):
     """ Merged DFA node class. """
-    def __init__ (self, level, merge_auto = None, single_auto = None, list = None):
-        
+    def __init__ (self, state_list):
         self.paths = {}
-        self.state_list = contexted_state_list()
-        if merge_auto is None:
-            self.state_list = contexted_state_list()
+        if isinstance(state_list[0], node_dfa_m):
+            new_list = state_list[0].state_list
+            if len (state_list) > 1:
+                new_list.append(state_list[1])
+            self.state_list = new_list
+        elif state_list[0] is None:
+            self.state_list = [state_list[1]]
         else:
-            self.state_list = single_auto.state_list.copy ()
-        print "AAA", merge_auto
-        print "VVV", single_auto
-        self.state_list.add (level, single_auto)
-
-#        if isinstance(state_list[0], node_dfa_m):
-#            new_list = state_list[0].state_list
-#            if len (state_list) > 1:
-#                new_list.append(state_list[1])
-#            self.state_list = new_list
-#        elif state_list[0] is None:
-#            self.state_list = [state_list[1]]
-#        else:
-#            print "ololo"
-#        self.state_list = state_list
-#        print self.state_list
+            self.state_list = state_list
 
     def get_accepting(self):
         for state in self.state_list:
@@ -437,7 +424,7 @@ class node_dfa_m (object):
         return "State %r %r" % (self.state_list, state_list)
 
 
-def add_to_state_list_m (level, dfa_state_list, merge_dfa_state_list):
+def add_to_state_list_m (dfa_state_list, merge_dfa_state_list):
     """ Locate a merged DFA state in the list using the given the list of
         unmerged DFA states. If such a state is present, return it. If it is not
         present, create a new state, add it to the state list and return it. If
@@ -448,8 +435,7 @@ def add_to_state_list_m (level, dfa_state_list, merge_dfa_state_list):
     if len (l) == 1:
         state = l[0]
     elif len (l) == 0:
-        print dfa_state_list
-        state = node_dfa_m (level, list = dfa_state_list)
+        state = node_dfa_m (dfa_state_list)
         merge_dfa_state_list.append (state)
     else:
         raise Exception ("Duplicate state found during merge")
@@ -459,40 +445,24 @@ def add_to_state_list_m (level, dfa_state_list, merge_dfa_state_list):
 def merge_paths (merge_list):
     """ For a list of states from unmerged DFA creates a dictionary with paths
         by a symbol to different lists of states. """
-    rv = DefaultOrderedDict(list)
-#    print merge_list
-    for merge in merge_list.list:
-#        print merge.state
-        for k, v in merge.state.paths.iteritems():
+    rv = collections.defaultdict(list)
+    for merge in merge_list:
+        for k, v in merge.paths.iteritems():
             rv[k].append(v)
     return rv
 
-def merge (level, single_auto, merge_auto = None):
+
+def merge (merge_state_0, merge_state_1):
     """ Merges a list of automata into a single one to improve execution
         time. """
-#    if auto0 is None:
-#        first_state = node_dfa_m(auto1[0])
-#    else:
-    print merge_auto, single_auto
-    new_automaton = []
-    if merge_auto is None:
-        new_automaton = [node_dfa_m (level, None, single_auto[0])]
-        for state in new_automaton:
-            for (symbol, path) in state.state_list.list[0].paths:
-                state.paths[symbol] = add_to_state_list_m (level, [path], new_automaton)
-            
-    else:
-        pass
-#        merge_state = merge_auto[0]
-#        single_state = single_auto[0]
-#        first_state = node_dfa_m (level, merge_state, single_state)
-#        new_automata = [first_state]
-#        for state in new_automata:
-#            rv = merge_paths2 (merge_states, single_state)
-#            for (symbol, state_list) in rv.iteritems():
-#                state.paths[symbol] = add_to_state_list_m (level, state_list,
-#                                                           new_automata)
-    return new_automaton
+    first_state = node_dfa_m([merge_state_0, merge_state_1])
+    new_automata = [first_state]
+    for state in new_automata:
+        rv = merge_paths(state.state_list)
+        for (symbol, state_list) in rv.iteritems():
+            state.paths[symbol] = add_to_state_list_m (state_list,
+                                                       new_automata)
+    return new_automata
 
 """ ==== Test token classes === """
 
@@ -518,7 +488,7 @@ class t_token (object):
 
     def __hash__ (self):
         return hash((type(self), self.value))
-
+    
     def __eq__ (self, other):
         return type(self) == type(other) and self.value == other.value
 
@@ -599,23 +569,17 @@ def execute (stream):
     automaton = None
     current_state_list = []
     current_context = 0
-    automata_list = []
     while token is not None:
         if isinstance (token, t_m_start):
             auto = r_prs.parse (regexp_id)
             regexp_id += 1
             if automaton is None:
-                automaton = merge (current_context, auto)
+                automaton = merge (None, auto[0])
             else:
-                automaton = merge (current_context, auto, automaton)
-#            for i in automaton: print i
+                automaton = merge (automaton[0], auto[0])
         elif isinstance (token, t_context_start):
-            automata_list.append (automaton)
-            print "got a context"
             current_context += 1
         elif isinstance (token, t_context_end):
-            print "left a context"
-            automaton = automata_list.pop ()
             current_context -= 1
         else:
             if automaton is not None:
@@ -667,13 +631,6 @@ class contexted_state_list(object):
         self.list = []
         self.last_level = None
         self.idx = None
-    
-    def copy (self):
-        rv = type (self) ()
-        rv.list = self.list[:]
-        rv.last_level = self.last_level
-        rv.idx = self.idx
-        return rv
 
     def add (self, level, state):
         if self.last_level != level:
