@@ -146,7 +146,7 @@ class node_dfa (object):
         """ Returns moves possible from the given DFA state (NFA state list)
             by a specific symbol. """
         return set (s.get_next_state () for s in self.states
-                    if isinstance (s, token_nfa) and token.eq (s.token))
+                    if isinstance (s, token_nfa) and token.le (s.token))
 
     def get_tokens (self):
         return set (s.token for s in self.states if isinstance(s, token_nfa))
@@ -484,7 +484,7 @@ class t_token (object):
         else:
             return "[" + type(self).__name__[2:] + ":" + str(self.value) + "]"
 
-    def eq (self, token):
+    def le (self, token):
         assert type(token) != type
         return isinstance(token, type(self)) and (self.value is None or
                                                   self.value == token.value)
@@ -583,7 +583,7 @@ def execute (stream):
                 current_state_list.append((automaton [0], []))
             new_state_list = []
             for state, processed_token_list in current_state_list:
-                l = filter (lambda (x, y): x.eq(token), state.paths.iteritems ())
+                l = filter (lambda (x, y): x.le (token), state.paths.iteritems ())
                 if l:
                     processed_token_list.append (token)
                     new_state = l[0][1]
