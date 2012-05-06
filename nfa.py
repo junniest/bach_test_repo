@@ -402,29 +402,27 @@ class regexp_parser (object):
 
 class node_dfa_m (object):
     """ Merged DFA node class. """
-    def __init__ (self, merged_state, single_state):
+    def __init__ (self, level, merged_state, single_state):
         """ The object is created with 2 states, a previous merged automaton
             state and the newly added (if such exists) state. This is done to
             make path merging easier (no need to recalculate paths for each 
             single dfa state, but only for 2 existing states). """
         self.paths = DefaultOrderedDict (list)
-        self.state_list = []
+        self.state_list = contexted_state_list ()
+        self.level = level
         self.merged_state = merged_state
         self.single_state = single_state
 
     def get_accepting(self):
         """ Gets the first accepting state in the dfa state list. """
-        for state in self.state_list:
-            if state.accepting:
-                return state.regexp_id
-        return None
+        return self.state_list.get_accepting ()
 
     def rearrange (self):
         """ The method merges the states together in a single list. """
         if self.merged_state is not None:
-            self.state_list = self.merged_state.state_list[:]
+            self.state_list = self.merged_state.state_list.copy ()
         if self.single_state is not None:
-            self.state_list.append (self.single_state)
+            self.state_list.add (self.level, self.single_state)
         return self
 
     def __repr__ (self):
@@ -433,7 +431,7 @@ class node_dfa_m (object):
         return "State %r %r" % (self.state_list, state_list)
 
 
-def add_to_state_list_m (dfa_state_list, merge_dfa_state_list):
+def add_to_state_list_m (level, dfa_state_list, merge_dfa_state_list):
     """ Locate a merged DFA state in the list using the given the list of
         unmerged DFA states. If such a state is present, return it. If it is not
         present, create a new state, add it to the state list and return it. If
@@ -452,7 +450,7 @@ def add_to_state_list_m (dfa_state_list, merge_dfa_state_list):
     if len (l) == 1:
         state = l[0]
     elif len (l) == 0:
-        state = node_dfa_m (merged_state, single_state)
+        state = node_dfa_m (level, merged_state, single_state)
         merge_dfa_state_list.append (state)
     else:
         raise Exception ("Duplicate state found during merge")
@@ -476,15 +474,15 @@ def rearrange_m (new_automata):
     return [state.rearrange () for state in new_automata]
 
 
-def merge (merge_state_0, merge_state_1):
+def merge (level, merge_state_0, merge_state_1):
     """ Merges a list of automata into a single one to improve execution
         time. """
-    first_state = node_dfa_m(merge_state_0, merge_state_1)
+    first_state = node_dfa_m(level, merge_state_0, merge_state_1)
     new_automata = [first_state]
     for state in new_automata:
         rv = merge_paths (state)
         for (symbol, state_list) in rv.iteritems():
-            state.paths[symbol] = add_to_state_list_m (state_list,
+            state.paths[symbol] = add_to_state_list_m (level, state_list,
                                                        new_automata)
     return rearrange_m (new_automata)
 
@@ -559,6 +557,9 @@ class t_lbrace (t_token):
 class t_rbrace (t_token):
     repr_s = "[)]"
 
+class t_oper (t_token):
+    pass
+
 """ Match tokens """
 
 class t_m_token (t_token):
@@ -593,35 +594,42 @@ def execute (stream):
     regexp_id = 0
     automaton = None
     current_state_list = []
-    current_context = 0
+    current_level = 0
+    automata_stack = []
     while token is not None:
         if isinstance (token, t_m_start):
             auto = r_prs.parse (regexp_id)
             regexp_id += 1
             if automaton is None:
-                automaton = merge (None, auto[0])
+                automaton = merge (current_level, None, auto[0])
             else:
-                automaton = merge (automaton[0], auto[0])
+                automaton = merge (current_level, automaton[0], auto[0])
+            print "Added a regexp, level", current_level, ", id", \
+                   auto[0].regexp_id 
         elif isinstance (token, t_context_start):
-            current_context += 1
+            automata_stack.append (automaton)
+            current_level += 1
+            print "Entered a context, level", current_level
         elif isinstance (token, t_context_end):
-            current_context -= 1
+            automaton = automata_stack.pop ()
+            current_level -= 1
+            print "Left a context, level", current_level
         else:
             if automaton is not None:
                 current_state_list.append((automaton [0], []))
             new_state_list = []
             for state, processed_token_list in current_state_list:
-                l = filter (lambda (x, y): x.le (token), state.paths.iteritems ())
-                if l:
+                moves = filter (lambda (x, y): x.le (token),
+                            state.paths.iteritems ())
+                if moves:
                     processed_token_list.append (token)
-                    new_state = l[0][1]
+                    new_state = moves[0][1]
                     i = new_state.get_accepting()
                     if i is None:
                         new_state_list.append((new_state, processed_token_list))
                     else:
                         print "Accepted regexp", i, processed_token_list
             current_state_list = new_state_list
-
         token = get.get_token ()
 
 
@@ -673,6 +681,12 @@ class contexted_state_list(object):
             self.list.insert(self.idx, self.comparable(state))
             self.idx -= 1
 
+    def get_accepting (self):
+        for item in self.list[::-1]:
+            if item.state.accepting:
+                return item.state.regexp_id
+        return None
+    
     def __repr__ (self):
         return repr (self.list)
 
