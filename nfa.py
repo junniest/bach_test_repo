@@ -523,16 +523,16 @@ class t_id (t_token):
 class t_expr (t_token):
     pass
 
-class t_real (t_expr):
+class t_real (t_token):
     pass
 
-class t_int (t_real):
+class t_int (t_token):
     pass
 
-class t_short (t_int):
+class t_short (t_token):
     pass
 
-class t_bool (t_short):
+class t_bool (t_token):
     def __init__ (self, value = None):
         if value:
             self.value = True
@@ -628,7 +628,7 @@ def execute (stream):
                     if i is None:
                         new_state_list.append((new_state, processed_token_list))
                     else:
-                        print "Accepted regexp", i, processed_token_list
+                        print "\tAccepted regexp", i, processed_token_list
             current_state_list = new_state_list
         token = get.get_token ()
 
@@ -652,14 +652,6 @@ class contexted_state_list(object):
         [2, 1, 4, 3, 5]
         """
 
-    class comparable(object):
-
-        def __init__(self, state):
-            self.state = state
-
-        def __cmp__(self, other):
-            return cmp(self.state.regexp_id, other.state.regexp_id)
-
     def __init__(self):
         self.list = []
         self.last_level = None
@@ -676,15 +668,15 @@ class contexted_state_list(object):
         if self.last_level != level:
             self.last_level = level
             self.idx = -1
-            self.list.append(self.comparable(state))
+            self.list.append(state)
         else:
-            self.list.insert(self.idx, self.comparable(state))
+            self.list.insert(self.idx, state)
             self.idx -= 1
 
     def get_accepting (self):
-        for item in self.list[::-1]:
-            if item.state.accepting:
-                return item.state.regexp_id
+        for state in self.list[::-1]:
+            if state.accepting:
+                return state.regexp_id
         return None
     
     def __repr__ (self):
