@@ -3,6 +3,7 @@ __date__ = "2012-02-09"
 
 import collections
 import time
+from ordered_default_dict import DefaultOrderedDict
 
 
 """ ==== Nondeterminate Finite Automaton logic ==== """
@@ -156,7 +157,8 @@ class node_dfa (object):
 
     def __repr__ (self):
         state_list = map (lambda (x,y): str(x) + ' -> ' + repr(y.id), self.paths.iteritems())
-        return "<id:%s, accept:%r>" % (self.id, self.accepting)#, state_list)
+        return "<id:%s, regexp_id:%s, accept:%r>" % (self.id, self.regexp_id, 
+                                                     self.accepting)#, state_list)
 
 """ ---- Logic for DFA creation from an NFA ---- """
 
@@ -400,23 +402,30 @@ class regexp_parser (object):
 
 class node_dfa_m (object):
     """ Merged DFA node class. """
-    def __init__ (self, state_list):
-        self.paths = {}
-        if isinstance(state_list[0], node_dfa_m):
-            new_list = state_list[0].state_list
-            if len (state_list) > 1:
-                new_list.append(state_list[1])
-            self.state_list = new_list
-        elif state_list[0] is None:
-            self.state_list = [state_list[1]]
-        else:
-            self.state_list = state_list
+    def __init__ (self, merged_state, single_state):
+        """ The object is created with 2 states, a previous merged automaton
+            state and the newly added (if such exists) state. This is done to
+            make path merging easier (no need to recalculate paths for each 
+            single dfa state, but only for 2 existing states). """
+        self.paths = DefaultOrderedDict (list)
+        self.state_list = []
+        self.merged_state = merged_state
+        self.single_state = single_state
 
     def get_accepting(self):
+        """ Gets the first accepting state in the dfa state list. """
         for state in self.state_list:
             if state.accepting:
                 return state.regexp_id
         return None
+
+    def rearrange (self):
+        """ The method merges the states together in a single list. """
+        if self.merged_state is not None:
+            self.state_list = self.merged_state.state_list[:]
+        if self.single_state is not None:
+            self.state_list.append (self.single_state)
+        return self
 
     def __repr__ (self):
         state_list = map(lambda (x,y): str(x) + ' -> ' + repr(y.state_list),
@@ -431,38 +440,54 @@ def add_to_state_list_m (dfa_state_list, merge_dfa_state_list):
         two or more such states are present in the list - raise an
         exception. """
     state = None
-    l = filter (lambda x: x.state_list == dfa_state_list, merge_dfa_state_list)
+    merged_state = single_state = None
+    for i in dfa_state_list:
+        if isinstance (i, node_dfa_m):
+            merged_state = i
+        elif isinstance (i, node_dfa):
+            single_state = i
+    
+    l = filter (lambda x: x.merged_state == merged_state and 
+                x.single_state == single_state, merge_dfa_state_list)
     if len (l) == 1:
         state = l[0]
     elif len (l) == 0:
-        state = node_dfa_m (dfa_state_list)
+        state = node_dfa_m (merged_state, single_state)
         merge_dfa_state_list.append (state)
     else:
         raise Exception ("Duplicate state found during merge")
     return state
 
 
-def merge_paths (merge_list):
+def merge_paths (state):
     """ For a list of states from unmerged DFA creates a dictionary with paths
         by a symbol to different lists of states. """
-    rv = collections.defaultdict(list)
-    for merge in merge_list:
-        for k, v in merge.paths.iteritems():
-            rv[k].append(v)
+    rv = DefaultOrderedDict (list)
+    for merge in [state.merged_state, state.single_state]:
+        if merge is None:
+            continue
+        for k, v in merge.paths.iteritems ():
+            rv[k].append (v)
     return rv
+
+
+def rearrange_m (new_automata):
+    """ Calls rearrange for all of the new states. """
+    return [state.rearrange () for state in new_automata]
 
 
 def merge (merge_state_0, merge_state_1):
     """ Merges a list of automata into a single one to improve execution
         time. """
-    first_state = node_dfa_m([merge_state_0, merge_state_1])
+    first_state = node_dfa_m(merge_state_0, merge_state_1)
     new_automata = [first_state]
     for state in new_automata:
-        rv = merge_paths(state.state_list)
+        rv = merge_paths (state)
         for (symbol, state_list) in rv.iteritems():
             state.paths[symbol] = add_to_state_list_m (state_list,
                                                        new_automata)
-    return new_automata
+    return rearrange_m (new_automata)
+
 
 """ ==== Test token classes === """
 
@@ -631,6 +656,13 @@ class contexted_state_list(object):
         self.list = []
         self.last_level = None
         self.idx = None
+
+    def copy (self):
+        rv = type (self) ()
+        rv.list = self.list[:]
+        rv.last_level = self.last_level
+        rv.idx = self.idx
+        return rv
 
     def add (self, level, state):
         if self.last_level != level:

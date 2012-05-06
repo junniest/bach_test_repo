@@ -1,5 +1,15 @@
 from nfa import *
 
+regexp_1 = [t_m_start(), t_id(), t_lbrace(), t_rbrace(), t_m_end()]
+regexp_2 = [t_m_start(), t_id(), t_lbrace(), t_real(), t_m_asterisk(), 
+            t_rbrace(), t_m_end()]
+regexp_3 = [t_m_start(), t_id(), t_lbrace(), t_real(), t_rbrace(), t_m_end()]
+list_1 = [t_id('f'), t_lbrace(), t_rbrace()]
+
+execute (regexp_1 + regexp_2 + regexp_3 + list_1)
+
+quit ()
+
 token_regexp_1 = [t_m_start(), t_id('f'), t_lbrace(), t_m_lbrace(), t_expr(), 
                   t_m_lbrace(), t_delim_com(), t_int(), t_m_pipe(), 
                   t_delim_com(), t_real(), t_m_rbrace(), t_m_rbrace(), 
