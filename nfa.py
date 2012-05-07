@@ -348,7 +348,22 @@ class regexp_parser (object):
         if token is None:
             return
         if not isinstance (token, t_m_token):
-            self.stack.append (token_nfa (token))
+            # We've got some hacks coming up (this replaces token type
+            # inheritance, as it messes up the matching process)
+            if isinstance (token, t_expr):
+                self.stack.append (or_nfa (or_nfa (token_nfa (t_expr ()), 
+                                                   token_nfa (t_real ())),
+                                           or_nfa (token_nfa (t_int ()), 
+                                                   token_nfa (t_bool ()))))
+            elif isinstance (token, t_real):
+                self.stack.append (or_nfa (or_nfa (token_nfa (t_real()),
+                                                   token_nfa (t_int())),
+                                           token_nfa (t_bool ())))
+            elif isinstance (token, t_int):
+                self.stack.append (or_nfa (token_nfa (t_int()),
+                                           token_nfa (t_bool ())))
+            else:
+                self.stack.append (token_nfa (token))
             return
         if isinstance (token, t_m_asterisk):
             self.stack.append (asterisk_nfa (self.stack.pop ()))
@@ -529,15 +544,15 @@ class t_real (t_token):
 class t_int (t_token):
     pass
 
-class t_short (t_token):
-    pass
-
 class t_bool (t_token):
     def __init__ (self, value = None):
-        if value:
-            self.value = True
+        if value is None:
+            self.value = None
         else:
-            self.value = False
+            if value:
+                self.value = True
+            else:
+                self.value = False
 
 class t_context_start (t_token):
     repr_s = "[{]"
