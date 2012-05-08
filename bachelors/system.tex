@@ -44,7 +44,7 @@ Vispirms apskatīsim \textit{match} likumus, kas modificē apstrādājamās gram
 \begin{verbatim}
 match [\prod1] v = regexp → [\prod2] f(v)
 \end{verbatim}
-\caption{\label{fid:matchsyntax}\emph{Match} makro sintakses vispārīgs piemērs}
+\caption{\label{fig:matchsyntax}\emph{Match} makro sintakses vispārīgs piemērs}
 \end{figure}
 
 Šīs piemērs ir uztverams sekojoši. Ja produkcijas \verb|prod1| sākumā ir atrodama pseido-tokenu virkne, kas atbilst regulārai izteiksmei \verb|regexp|, tad tai tiek piekārtots mainīgais ar vārdu \verb|v|. Mainīgais \verb|v| var tikt lietots makro labajā pusē kaut kādas funkcijas izpildē. Tātad ja tāda virkne \verb|v| eksistē, tā tika aizstāta ar pseido-tokenu virkni, ko atgriezīs \verb|f(v)|  un tālāk reducēta pēc gramatikas produkcijas \verb|prod2| likumiem. 
@@ -63,7 +63,7 @@ unary-regexp    → pseudo-token | ( regexp )
 
 Pagaidām sistēmas prototipa izstrādē tiek lietota šāda minimāla sintakse, bet tālākā darba gaitā tā viegli var tikt paplašināta.
 
-Vēl viens korektā makro piemērs: Pieņemsim, ka ērtības dēļ programmētājs grib ieviest sekojošu notāciju absolūtās vērtības izrēķināšanai - \verb/|<expr>|/. Sākotnējā valodas gramatikā eksistē absolūtās vērtības funkcija izskatā \verb|abs(<expr>)|. Tad makro, kas parādīts figūrā~\ref{fig:matchsample1} izdarītu šo substitūciju, ļaujot programmētājam lietot ērtāku funkcijas pierakstu.
+Tagad mēs varam izveidot definētās makro sintakses korektu piemēru. Pieņemsim, ka ērtības dēļ programmētājs grib ieviest sekojošu notāciju absolūtās vērtības izrēķināšanai - \verb/|{expr}|/. Sākotnējā valodas gramatikā eksistē absolūtās vērtības funkcija izskatā \verb|abs({expr})|. Tad makro, kas parādīts figūrā~\ref{fig:matchsample1} izdarītu šo substitūciju, ļaujot programmētājam lietot ērtāku funkcijas pierakstu.
 
 \begin{figure}[h!]
 \begin{verbatim}
@@ -73,23 +73,22 @@ match [{expr}] v = {|} {expr} {|}
 \caption{\label{fig:matchsample1}Makro piemērs}
 \end{figure}
 
-Tagad mēs varam izveidot definētās makro sintakses korektu piemēru. Pieņemsim, ka funkcija \verb|replace| ir definēta valodā $T$ ar trim argumentiem, un darba gaitā tā jebkurā pseido-tokenu virknē aizvieto elementus, kas sakrīt ar otro argumentu, ar trešo funkcijas argumentu. Pieņemsim arī, ka mums ir nepieciešams izsaukt funkciju \verb|bar| ar vienu argumentu, kas ir summa no funkcijas \verb|foo| argumentiem. Šādā gadījumā makro, kas parādīts figūrā~\ref{fig:matchsample2}, izpildīs nepieciešamu darbību.
+Vēl viens korektā makro piemērs: pieņemsim, ka funkcija \verb|replace| ir definēta valodā $T$ ar trim argumentiem, un darba gaitā tā jebkurā pseido-tokenu virknē aizvieto elementus, kas sakrīt ar otro argumentu, ar trešo funkcijas argumentu. Pieņemsim arī, ka mums ir nepieciešams izsaukt funkciju \verb|bar| ar vienu argumentu, kas ir summa no funkcijas \verb|foo| argumentiem. Šādā gadījumā makro, kas parādīts figūrā~\ref{fig:matchsample2}, izpildīs nepieciešamu darbību.
 
 \begin{figure}[h!]
 \begin{verbatim}
 match [{expr}] v = {id:foo} {(} {expr} ( {,} {expr} ) * {)}
-    → [{expr}] {id:bar} (replace (tail v) {,} {+})
+    → [{expr}] {id:bar} (replace v {,} {+})
 \end{verbatim}
-\caption{\label{fig:matchsample1}Makro piemērs}
+\caption{\label{fig:matchsample2}Makro piemērs}
 \end{figure}
 
 \subsection{\label{subsec:system_qualities}Sistēmas īpašības}
 Šī nodaļa aprakstīs, kā mēs gribam realizēt gramatikas pašmodificēšanos, lai izmaiņas būtu kontrolētas.
 Mēs gribam norobežot modificēšanas iespējas
 
-\subsubsection{Pārrakstīšanas sistēma}
-Match sistēma, atļauto regulāro izteiksmju sintakse. Sintakse ir viegli paplašināma.
-Konteksti
+\subsubsection{Funkcionālā pārrakstīšanas valoda}
+
 \subsubsection{Tipu sistēma}
 Kā tiks pārbaudīti tipi.
 
@@ -100,4 +99,6 @@ Bet leksiskie priekšprocesori pēc savām īpašībām ir tuvi aprakstāmai sis
 
 Priekšprocesoru var iemācīt apstrādāt šāda veida konstrukcijas un atpazīt tos, ka atomārās izteiksmes. Bet tas nozīmēs, ka priekšprocesoram būs jāzina apstrādājamas valodas sintakse, kas neatbilst priekšprocesora lomai kompilēšanas procesā un nozīmē ka būs divreiz jāimplementē sintakses atpazīšana.
 
-Otrā problēma ar šāda tika priekšprocesoriem ir tas, ka tie strādā ārpus programmas kontekstiem. Tas nozīmē, ka konteksta sākuma tokens (\verb|{| C/C++, Java un citu valodu gadījumā) tiek uzskatīts par parastu tekstu un var tikt pārrakstīts. Loģiskāk būtu, ja kontekstu makro tiktu mantoti līdzīgi ka mainīgie  makro, kas ir specifiski kontekstam būtu ar lielāku prioritāti ka tie, kas definēti vispārīgākā kontekstā. 
+Otrā problēma ar šāda tika priekšprocesoriem ir tas, ka tie strādā ārpus programmas kontekstiem. Tas nozīmē, ka konteksta sākuma tokens (\verb|{| C/C++, Java un citu valodu gadījumā) tiek uzskatīts par parastu tekstu un var tikt pārrakstīts. Loģiskāk būtu, ja kontekstu makro tiktu mantoti līdzīgi ka mainīgie, kas ir specifiski kontekstam būtu ar lielāku prioritāti ka tie, kas definēti vispārīgākā kontekstā. 
+
+\fixme{Ko var un ko nevar salīdzinājumā ar C priekšprocesoru?}

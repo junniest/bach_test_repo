@@ -50,14 +50,12 @@ Regulāro izteiksmju dzinēji strādā ar tekstu, nevis ar tokeniem, nav vērts 
 \label{subsec:solution_problems}
 \fixme{Write!}
 \subsubsection{Problēmas}
-Prototipa realizācijā darba autors saskārās ar sekojošu problēmu. Ir jāņem vērā tas, ka makro darbība ir atkarīga no makro parādīšanas secības, jo diemžēl vispārīgā gadījumā nevar viennozīmīgi izlemt, kurš ceļš automātā ir pareizs. Tas parādās dēļ tā fakta, ka tokenu klases tiek mantotas viena no otra (jo skaitlis var tikt uzskatīts par izteiksmi). 
+Problēmas?
+%Prototipa realizācijā darba autors saskārās ar sekojošu problēmu. Ir jāņem vērā tas, ka makro darbība ir atkarīga no makro parādīšanas secības, jo diemžēl vispārīgā gadījumā nevar viennozīmīgi izlemt, kurš ceļš automātā ir pareizs. Tas parādās dēļ tā fakta, ka tokenu klases tiek mantotas viena no otra (jo skaitlis var tikt uzskatīts par izteiksmi). 
 
-Lai ilustrētu šo problēmu, tiek piedāvāts tokenu virknes piemērs:
-Суть проблемы вот в чём. Пусть есть 2 токена, например, \verb|t_real| и \verb|t_int|, и при этом \verb|t_int < t_real|, то есть \verb|t_int| - подкласс \verb|t_real|. Вроде как это прекрасно, и тогда регулярка \verb|t_real, t_delim_col| заматчит и \verb|real;| и \verb|int;|.
-
-Но тут получается такая хрень, что если у меня есть 2 регулярки подряд и первая из них хочет \verb|t_real|, \verb|t_delim_com|, а вторая - \verb|t_int|, \verb|t_delim_col|. И тогда, если надо заматчить \verb|int;|, автомат встречает \verb|int|, идёт по пути который соответствует 1ой регулярке и потом там пропадает, ибо автомат хочет запятую, а там точка с запятой. И это неправильно, ибо \verb|int;| должен был спокойно заматчиться на 2ую регулярку.
-
-Ну и короче я тут не понимаю, шо делать. Это нормально, что оно не заматчится? Вроде как юзер сам дурак, что правила в таком порядке написал... Или ненормально, но чтобы починить это ненормально нужно вообще напрочь отказаться от наследования типов токенов, так как иначе будет та самая ситуация. Либо вводить элемент недетерминированности и идти по 2 путям параллельно, но там можно запутаться в приоритетах матчей.
+%Lai ilustrētu šo problēmu, tiek piedāvāts tokenu virknes piemērs:
 
 \subsubsection{Izņēmumi}
 Prototipā pagaidām nav implementēta apstrādes dalīšana pa gramatikas produkcijām, visas regulārās izteiksmes ir sapludinātas vienā automāta. Regulāro izteiksmju dalīšana pa tipiem tiks izstrādāta vēlāk, kad tiks uzsākta integrācija un sadarbība ar reālu kompilatoru. Tā varētu tikt implementēta līdzīgi tam, kā tiek realizēti konteksti - pa vienam sapludinātam automātam priekš katra produkcijas tipa.
+
+Sistēma nezin neko par valodas gramatiku. Tieši tāpēc tokens \verb|{real}| netiks uztverts ka \verb|{expr}|, kaut arī racionāls skaitlis ir izteiksme. Tā kā sistēmai jābūt neatkarīgai no valodas gramatikas, šī hierarhija nav iekodējama transformāciju sistēmā. To ir jānodrošina parsētājam, attiecīgi apstrādājot tokenus un apkopojot to nozīmi. Par to arī būs jārūpējas programmētājam rakstot savas makro izteiksmes.
