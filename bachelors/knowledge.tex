@@ -5,9 +5,9 @@
 Bezkonteksta gramatika satur vārdnīcu no simboliem un pārrakstīšanas likumu kopu. Vārdnīca sastāv no termināliem un neterminālem simboliem, un viens no netermināļem ir gramatikas sākuma simbols. Pārrakstītājas likumi ir izskatā \verb|A| $\Rightarrow$ \verb|b|, kur \verb|A| ir viens no netermināliem simboliem, bet b ir neterminālu un terminālu simbolu virkne. Kad kāda likuma kreisē puse parādās apstādāmo simbolu rindā, rinda var tikt pārrakstīta aizvietojot kreisēs puses netermināli ar labo likuma daļu. \verb|A| $\Rightarrow$ \verb|b| parāda, ka \verb|A| var tikt pārveidots virknē \verb|b| atkārtoti pārrakstot to lietojot gramatikas likumus. Visu terminālu simbolu virkņu kopa ir saukta par gramatikas ģenerēto valodu. \cite{Shutt:AdaptiveGrammars}
 Programmēšanas valodas ir jēdzienu sistēma, kas ļauj aprakstīt algoritmus. Šai sistēmai jābūt viennozīmīgi aprakstāmai un saprotamai programmētajam. Tātad ir nepieciešams apraksts, kas ļauj saprotami un pārskatāmi izveidot bāzes struktūras valodai.
 Bezkonteksta gramatikas izgudroja N. Homskis, kas plānoja lietot tos lai aprakstītu reālās cilvēku valodas. Šinī jomā bezkonteksta gramatikas netiek lietotas, jo dabiskās valodas ir pārāk sarežģītas, tomēr šīs gramatikas tiek lietotas lai aprakstītu programmēšanas valodu sintaksi. Programmēšanas valodas globālā līmenī nav kontekst-neatkarīgas, bet tomēr tēs ir neatkarīgas lokāli, un kaut arī ne visas programmēšanas valodu īpašības var aprakstīt ar bezkonteksta gramatikām, tos ir ērti lietot lai parādīt valodas konstrukciju struktūru.
-Svarīgāka bezkonteksta gramatiku īpašība ir tas, ka tos var mehāniski pārveidot parsētājos, kas ir sistēma, kas skenējot programmas tekstu izveido programmas struktūru. Šī struktūra tālāk ir reprezentēta koka veidā un  var tikt kompilēta izpildāmā kodā. \cite{Hopcroft:IntroAutomataTheory}
+Svarīgāka bezkonteksta gramatiku īpašība ir tas, ka tos var mehāniski pārveidot parsētājos, kas ir sistēma, kas skenējot programmas tekstu izveido programmas struktūru. Šī struktūra tālāk ir reprezentēta abstraktās sintakses koka (AST, Abstract Syntax Tree) veidā un  var tikt kompilēta izpildāmā kodā. \cite{Hopcroft:IntroAutomataTheory}
 
-\fixme{Vienkrāsas valodiņas gramatikas piemērs (Vai to vispār vajag?)}
+\fixme{Vienkāršas valodiņas gramatikas piemērs (Vai to vispār vajag?)}
 
 (Zemāk - šīs ir ka piemērs ko nevar, es neplānoju skaidrot visu, bet ar šo es gribēju parādīt, ka tiešām ne visu var.)
 Starp īpašībām, kuras nevar aprakstīt ar bezkonteksta gramatikām ir leksiskais tvērums (lexical scope) un statiskā tipizācija (static typing).
@@ -24,7 +24,14 @@ Regulārās izteiksmes, kas tie ir un ko ar tām var darīt.
 \subsection{Priekšprocesori}
 Kas tie ir un to iespējas.
 
-\subsection{Dinamiskas gramatikas}
+\subsection{Tokeni}
+
+\subsection{Pseido-tokeni}
+Šajā darbā tiek lietots jēdziens pseido-tokens. Ir 
+
+Tālāk darbā tiks lietotas šādas notācijas pseidotokenu aprakstam: <expr>, <id>, <int>, <real>.
+
+\subsection{\label{subsec:dynamicgrammars}Dinamiskas gramatikas}
 Dinamiskas vai adaptīvās gramatikas ir gramatiskais formālisms, kas ļauj modificēt gramatikas likumu kopu ar gramatikas rīkiem. [1]
 
 Dinamiskas gramatikas, kas tās ir. Fakti par to, ka tās jau ir pētītas un reāli implementējamas un lietojamas. Reālais labums no tām.

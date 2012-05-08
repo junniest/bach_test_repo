@@ -1,22 +1,89 @@
-\section{Par izstrādājamo sistēmu (ievads \#3)}
-Ka var redzēt no iepriekšējās nodaļas, pašmodificējošās gramatikas ir diezgan sarežģīts rīks, kas kaut arī ir ļoti lietderīgs, mūsdienās gandrīz netiek lietots. Tas netiek lietots savas sarežģītības dēļ un dēļ tā, ka vispārīgā gadījumā pašmodificējošo gramatiku ir ļoti grūti kontrolēt. Ļaujot neierobežoti modificēt gramatiku mēs varam nonākt pie gadījuma, kad sākotnējā gramatika tiek izmesta ārā, bet tās vietā parādās cita, pilnīgi jauna. Tas netiek lietots savas saredzamības dēj un dēļ tā, ka vispārīgā gadījumā pašmodificējošo gramatiku ir ļoti grūti kontrolēt. Ļaujot neierobežoti modificēt gramatiku mēs varam nonākt pie gadījuma, kad sākotnēja gramatika tiek izmesta ārā, bet tās vietā parādās cita, pilnīgi jauna. Šādā gadījumā šīs jaunās gramatikas adekvātumu un korektību nevar garantēt.
+\section{Transformāciju sistēma}
+Ka var redzēt no nodaļas~\ref{subsec:dynamicgrammars}, pašmodificējošās gramatikas ir diezgan sarežģīts rīks, kas kaut arī ir ļoti lietderīgs, mūsdienās gandrīz netiek lietots. Tas netiek lietots savas sarežģītības dēļ un dēļ tā, ka vispārīgā gadījumā pašmodificējošo gramatiku ir ļoti grūti kontrolēt. Ļaujot neierobežoti modificēt gramatiku mēs varam nonākt pie gadījuma, kad sākotnējā gramatika tiek izmesta ārā, bet tās vietā parādās cita, pilnīgi jauna. Neierobežotas modifikācijas iespējas var arī ieviest tādas gramatikas īpašības, kas neļaus parsētājam pareizi darboties (piemēram kreisā rekursija LL parsētāju gadījumā). Tātad vispārīgā gadījumā jaunās gramatikas pareizību nevar garantēt.
 
-Šīs darbs apraksta iespēju izveidot pašmodificējošo kodu ar funkcionālās makro valodas palīdzību. Šī makro valoda ļaus izveidot jaunas valodas konstrukcijas no jau eksistējošām vienībām. Parsētāja darba laikā makro sastapšanas reizes tiks pārrakstītas uz kodu ar attiecīgu struktūru, kas var tikt atpazīti ar valodas sākotnējo gramatiku. Tātad šī sistēma ļaus modificēt gramatiku nebojājot jau eksistējošo sintaksi. Neko pavisam jauno šī makro sistēma nejaus izveidot, lai paliktu savietojamība ar sākotnējo gramatiku, tomēr tā ļaus atvieglot programmētāja darbu dodot iespēju aizstāt kodā sarežģītas konstrukcijas ar vienkāršākām.
-\subsection{Origins - Eq}
-Valoda Eq tiek izstrādāta (kur?). Šīs valodas sintakse bāzējas uz LaTeX teksta procesora sintakses, kas ir standarts priekš zinātniskām publikācijām. Konsekventi programma, kas rakstīta valodā Eq ir korekti interpretējama ar LaTeX procesoru. Tajā pašā laikā Eq programma varēs tikt kompilēta vairākumam mūsdienīgu arhitektūru. 
-\fixme{Saite uz Eq projektu}
+Šīs darbs piedāvā uzbūves principus sistēmai, kura dod iespēju programmētājam dinamiski paplašināt valodas iespējas ar makro valodas palīdzību. Šī makro valoda ļaus izveidot jaunas valodas konstrukcijas no jau eksistējošām vienībām ar regulāro izteiksmju un nelielas funkcionālās valodas palīdzību. Parsētāja darba laikā makro sastapšanas reizes tiks pārrakstītas uz kodu ar attiecīgu struktūru, kas var tikt atpazīti ar valodas sākotnējo gramatiku. Tātad šī sistēma ļaus modificēt gramatiku nebojājot jau eksistējošo sintaksi. Nekādas pavisam jaunas konstrukcijas šī makro sistēma nejaus izveidot, lai paliktu savietojamība ar sākotnējo gramatiku, tomēr tā ļaus atvieglot programmētāja darbu dodot iespēju aizstāt kodā sarežģītas konstrukcijas ar vienkāršākām. 
 
-Šeit būs pavisam nedaudz informācijas par to, kas ir Eq, kāpēc vispār parādies šī ideja.
+Tālāk aprakstāmā sistēma tiks saukta par transformāciju sistēmu. Šī nodaļa dos vispārīgu ieskatu transformācijas sistēmas uzbūvē, darba gaitā, aprakstīs transformācijas sistēmas likumu sintaksi un parādīs iespēju pierādīt transformācijas pareizību.
 
-\subsection{Sintakse un darbība}
-fixme{Šeit būs makro sintakses piemērs} 
+\subsection{Idejas rašanās - valoda Eq}
+Šīs makro transformācijas sistēmas ideja ir radusies valodas Eq (atrodams tiešsaistē - https://github.com/zayac/eq) izstrādes gaitā, kurā piedalās cilvēku grupa no Heriot-Watt University (Riccarton, Edinburgh) un Moscow Institute of Physics and Technology (Dolgoprudny, Russia). Šīs valodas sintakse bāzējas uz \LaTeX{} teksta procesora sintakses, kas ir standarts priekš zinātniskām publikācijām. Konsekventi programma, kas rakstīta valodā Eq ir korekti interpretējama ar \LaTeX{} procesoru. Tajā pašā laikā Eq programma varēs tikt kompilēta vairākumam mūsdienīgu arhitektūru. 
 
-\subsection{Pieejas universālums}
-Kaut arī ideja un pieejas izstrāde sākās ar valodu Eq, tā nav piesaistīta tieši šai valodai. Visspēcīgāka šīs sistēmas īpašība ir tas, ka tā ir universāla un var tikt pielietota jebkādam parserim kas atbilst dažiem nosacījumiem. 
-Par parsētāja modeli
+Tā kā \LaTeX{} sintakse ir viegi paplašināma, arī Eq valodas sintaksei izlēma piedāvāt paplašināšanas iespējas. Makro sintakse bez kaut kādas šablonu sistēmas ir bezjēdzīga, jo ir ļoti ierobežota. Tāpēc tika izvēlēta regulāro izteiksmju šablonu sistēma, kas dod brīvību sakrišanas meklēšanas mehānismam. Tālāk lai apstrādāt regulārās izteiksmes apstrādātos tokenus tika nolemts izveidot vienkāršu funkcionālu valodu, kas ļaus pārstrādāt tokenu virknes atkarībā no programmētāja izveidotiem šabloniem.
 
-\fixme{Kāpēc ir izvēlēts tieši LL(k) parsētāji?}
-\subsection{Sistēmas īpašības}
+Bet kaut arī ideja un pieejas izstrāde sākās ar valodu Eq, tā nav piesaistīta tieši šai valodai. Visspēcīgāka šīs sistēmas īpašība ir tas, ka tā ir universāla un var tikt pielietota jebkādam parsētājam kas atbilst dažiem nosacījumiem. Par parsētājiem nepieciešamām īpašībām tiks runāts apakšnodaļā~\ref{subsec:parserqualities}.
+
+\subsection{\label{subsec:parserqualities}Parsētāji}
+Lai parsētājs varētu kļūt par bāzi izstrādājamai transformāciju sistēmai, tam jābūt izstrādātam ar rekursīvas nokāpšanas algoritmiem LL(k) vai LL(*). LL ir viena no intuitīvi saprotamākām parsētāju rakstīšanas pieejam, kas ar lejupejošo procesu apstrādā programmatūras tekstu. LL parsētājiem nav nepieciešams atsevišķs darbs parsēšanas tabulas izveidošanā, tātad parsēšanas process ir vairāk saprotams cilvēkam un vienkāršāk realizējams, samazinot kļūdu varbūtību. Gadījumā, ka gramatika ir labi rakstīta (k, simbolu skaits ieskatam uz priekšu, ir mazs) LL parsētāja darba ātruma atkarībā no tokenu daudzuma var tuvoties lineārai. \cite{Lewis:LLParsers}
+
+Tā kā transformāciju sistēma tiek veidota ka paplašinājums parsētājam, tā prasa lai parsētājs uzvedās zināmā veidā. Zemāk tiks aprakstītas īpašības, kurām jāatbilst parsētājam, lai uz tā veiksmīgi varētu uzbūvēt aprakstāmo sistēmu.
+\begin{description}
+\item[Tokenu virkne]
+Parsētājam jāprot aplūkot tokenu virkni ka abpusēji saistītu sarakstu, lai eksistētu iespēja to apstaigāt abos virzienos. Tam arī jādod iespēju aizvietot kaut kādu tokenu virkni ar jaunu un ļaut uzsākt apstrādi no jaunās virknes sākuma.
+\item[Pseido-tokeni]
+Parsētāji parasti pielieto (reducē) gramatikas likumus ielasot tokenus no ieejas virknes. Pseido-tokens, savukārt, konceptuāli ir atomārs ieejas plūsmas elements, bet īstenībā attēlo jau reducētu kaut kādu valodas gramatikas likumu. Viens no pseido-tokeniem, piemēram, ir tokens izteiksme - \verb|<expr>|, kas var sastāvēt no daudziem dažādiem tokeniem (piem. \verb|(a+b*c)+d|). Tas nav viens tokens, bet tā ir tokenu grupa, ko atpazīst parsētājs un kas var tikt attēlots ka atomāra vienība.
+\item[Vadīšanas funkcijas]
+Pirmkārt, mēs prasam, lai katra gramatikas produkcija tiktu reprezentēta ar vadīšanas funkciju (\emph{handle-function}). Ir svarīgi atzīmēt, ka šim funkcijām būs blakus efekti, tāpēc to izsaukšanas kārtība ir svarīga. Šo funkciju signatūrai jāizskatās šādi: \verb|Parser| $\to$ \verb/(AST|Error)/, tas ir, funkcija ieejā iegūst parsētāja objektu un izejā atgriež abstraktā sintakses koka (Abstract Syntax Tree) mezglu vai arī kļūdu. Šīs funkcijas atkārto gramatikas struktūru, tas ir ja gramatikas produkcija A ir atkarīga no produkcijas B, A-vadīšanas funkcija izsauks B-vadīšanas funkciju. 
+
+Katra no šādām funkcijām pēc nepieciešamības implementē arī kļūdu apstrādi un risina konfliktus starp produkcijām ar valodas apraksta palīdzību.
+\item[Piederības funkcijas]
+Katrai vadīšanas funkcijai pārī ir piekārtota funkcija-predikāts. Šīs predikāts pārbauda, vai tā vietā tokenu virknē, uz kuru dotajā brīdī norāda parsētājs, atbilst parsētam gramatikas likumam. Šādas piederības funkcijas (\emph{is-function}) izpilde nemaina parsētāja stāvokli. 
+
+\item[Sakrišanas funkcijas]
+Katras vadīšanas funkcijas darbības sākumā tiek izsaukta tā sauktā sakrišanas funkcija (\emph{match-function}). Sakrišanas funkcija ir transformācijas sistēmas saskarne ar signatūru \verb|(Parser, Production)| $\to$ \verb|Parser|. Tā pārbauda, vai tā vieta tokenu virknē, uz kuru rāda parsētājs, ir derīga kaut kādai transformācijai dotās produkcijas ietvaros. Ja pārbaude ir veiksmīga, funkcija izpilda sakrītošās virknes substitūciju ar jaunu virkni un parsētāja stāvoklī uzliek norādi uz aizvietotās virknes sākumu. Gadījumā,  ja pārbaude nav veiksmīga, funkcija nemaina parsētāja stāvokli, un parsētājs var turpināt darbu nemodificētas gramatikas ietvaros.
+\end{description}
+
+Ja izstrādājamās valodas parsētāja modelis atbilst aprakstītām īpašībām, tad uz tās var veiksmīgi uzbūvēt aprakstāmo transformāciju sistēmu un ļaut programmētājam ieviest modifikācijas oriģinālās valodas sintaksē.
+
+\subsection{Makro sistēmas sintakse}
+Makro izteiksmes strādā stingri kaut kādas produkcijas ietvaros, tāpēc makro sintaksē tiek lietoti tipi, kas tiek apzīmēti ar produkciju nosaukumiem. Tipi tiks lietoti lai nodrošinātu tokenu virknes korektību sākotnējās gramatikas ietvaros pēc sintakses izmaiņu ieviešanas. Transformāciju sistēma sastāv no \emph{match} makro likumiem un transformāciju funkcijām. Makro kreisā puse satur regulāro izteiksmi no tokeniem un pseido-tokeniem, kas tālāk tiek izmantota lai atrast tokenu virkni, kurai šī transformācija ir pielietojama. Makro labā pusē ir atrodamas funkcijas, kas ir rakstītas vienkāršā funkcionāla valodā $T$. Valoda $T$ tiek lietota lai izpildītu transformācijas ar tokenu virknēm, kas tiek akceptēti ar makro funkcijas kreiso pusi.
+
+Apakšnodaļā~\ref{subsec:system_qualities} tiks vispārīgi aprakstīta tipu sistēma un funkcionālā valoda $T$, bet tā kā tās neietilpst šī darba ietvaros, sīkāk tās aprakstītas nebūs.
+
+Vispirms apskatīsim \textit{match} likumus, kas modificē apstrādājamās gramatikas produkcijas uzvedību. \emph{Match} makro sintakses visparīgu piemēru var redzēt figūrā~\ref{fig:matchsyntax}.
+\begin{figure}[h!]
+\begin{verbatim}
+match [\prod1] v = regexp → [\prod2] f(v)
+\end{verbatim}
+\caption{\label{fid:matchsyntax}\emph{Match} makro sintakses vispārīgs piemērs}
+\end{figure}
+
+Šīs piemērs ir uztverams sekojoši. Ja produkcijas \verb|prod1| sākumā ir atrodama pseido-tokenu virkne, kas atbilst regulārai izteiksmei \verb|regexp|, tad tai tiek piekārtots mainīgais ar vārdu \verb|v|. Mainīgais \verb|v| var tikt lietots makro labajā pusē kaut kādas funkcijas izpildē. Tātad ja tāda virkne \verb|v| eksistē, tā tika aizstāta ar pseido-tokenu virkni, ko atgriezīs \verb|f(v)|  un tālāk reducēta pēc gramatikas produkcijas \verb|prod2| likumiem. 
+
+Regulārā izteiksme \verb|regexp| ir vienkārša standarta regulārā izteiksme, kas gramatika ir definēta figūrā~\ref{fig:regexpsyntax}.
+
+\begin{figure}[h!]
+\begin{verbatim}
+regexp          → concat-regexp | regexp
+concat-regexp   → asterisk-regexp  concat-regexp
+asterisk-regexp → unary-regexp * | unary-regexp
+unary-regexp    → pseudo-token | ( regexp )
+\end{verbatim}
+\caption{\label{fig:regexpsyntax}Regulāro izteiksmju gramatika uz pseido-tokeniem}
+\end{figure}
+
+Pagaidām sistēmas prototipa izstrādē tiek lietota šāda minimāla sintakse, bet tālākā darba gaitā tā viegli var tikt paplašināta.
+
+Vēl viens korektā makro piemērs: Pieņemsim, ka ērtības dēļ programmētājs grib ieviest sekojošu notāciju absolūtās vērtības izrēķināšanai - \verb/|<expr>|/. Sākotnējā valodas gramatikā eksistē absolūtās vērtības funkcija izskatā \verb|abs(<expr>)|. Tad makro, kas parādīts figūrā~\ref{fig:matchsample1} izdarītu šo substitūciju, ļaujot programmētājam lietot ērtāku funkcijas pierakstu.
+
+\begin{figure}[h!]
+\begin{verbatim}
+match [{expr}] v = {|} {expr} {|}
+    → [{expr}] {id:abs} {(} {expr} {)}
+\end{verbatim}
+\caption{\label{fig:matchsample1}Makro piemērs}
+\end{figure}
+
+Tagad mēs varam izveidot definētās makro sintakses korektu piemēru. Pieņemsim, ka funkcija \verb|replace| ir definēta valodā $T$ ar trim argumentiem, un darba gaitā tā jebkurā pseido-tokenu virknē aizvieto elementus, kas sakrīt ar otro argumentu, ar trešo funkcijas argumentu. Pieņemsim arī, ka mums ir nepieciešams izsaukt funkciju \verb|bar| ar vienu argumentu, kas ir summa no funkcijas \verb|foo| argumentiem. Šādā gadījumā makro, kas parādīts figūrā~\ref{fig:matchsample2}, izpildīs nepieciešamu darbību.
+
+\begin{figure}[h!]
+\begin{verbatim}
+match [{expr}] v = {id:foo} {(} {expr} ( {,} {expr} ) * {)}
+    → [{expr}] {id:bar} (replace (tail v) {,} {+})
+\end{verbatim}
+\caption{\label{fig:matchsample1}Makro piemērs}
+\end{figure}
+
+\subsection{\label{subsec:system_qualities}Sistēmas īpašības}
 Šī nodaļa aprakstīs, kā mēs gribam realizēt gramatikas pašmodificēšanos, lai izmaiņas būtu kontrolētas.
 Mēs gribam norobežot modificēšanas iespējas
 
@@ -26,10 +93,10 @@ Konteksti
 \subsubsection{Tipu sistēma}
 Kā tiks pārbaudīti tipi.
 
-\subsection{Saikne ar priekšprocesoriem}
+\subsection{Sistēmas sakars ar priekšprocesoriem}
 Ir divu veidu priekšprocesori - leksiskie un sintaktiskie. Leksiskie priekšprocesori tiek palaisti pirms pirmkoda parsēšanas un nezin neko par apstrādājamas valodas sintaksi (piem. C/C++ priekšprocesors). No otras puses sintaktiskie priekšprocesori tiek palaisti pēc parsera darbības un apstrādā sintaktiskos kokus, ko uzbūvē parsētājs. Dēļ aprakstāmās sistēmas īpašībām šajā darbā netiks apskatīti sintaktiskie priekšprocesori, jo sistēmas īpašība ir tāda, ka līdz tas darba izpildei parsētājs nevar uzbūvēt sintaktisko koku.
 
-Bet leksiskie priekšprocesori pēc savām īpašībām ir tuvi aprakstāmai sistēmai. Ar makro valodu palīdzību tiem tiek uzdoti koda pārrakstīšanas likumi, un kods tiek pārveidots attiecīgi tēs. Bet leksisko priekšprocesoru vislielākais trūkums ir tas, ka tie apstrādā tekstu pa tokeniem neievērojot izteiksmju un konstrukciju struktūru. Piemēram, apskatīsim šādu izteiksmi - \verb/|(a|b)+c|/, kurai vajadzētu tikt pārveidotai uz \verb/abs((a|b)+c)/. Ar tādu makro sistēmu, kas neievēro koda struktūru, tātad neievēro to, ka patiesībā \verb/(a|b)+c/ ir atomāra konstrukcija izteiksmē, šādu koda gabalu pareizi pārrakstīt nevarēs. Vidējā \verb/|/ zīme sabojās konstrukciju un priekšprocesors nevarēs apstrādāt šādu gadījumu.
+Bet leksiskie priekšprocesori pēc savām īpašībām ir tuvi aprakstāmai sistēmai. Ar makro valodu palīdzību tiem tiek uzdoti koda pārrakstīšanas likumi, un kods tiek pārveidots attiecīgi tēs. Bet leksisko priekšprocesoru vislielākais trūkums ir tas, ka tie apstrādā tekstu pa tokeniem neievērojot izteiksmju un konstrukciju struktūru. Piemēram, apskatīsim šādu izteiksmi - \verb/|(a|b)+c|/, kurai vajadzētu tikt pārveidotai uz \verb/abs((a|b)+c)/. Ar tādu makro sistēmu, kas neievēro koda struktūru, tātad neievēro to, ka patiesībā \verb/(a|b)+c/ ir atomāra konstrukcija izteiksmē, šādu koda gabalu pareizi apstrādāt nevarēs. Vidējā \verb/|/ zīme sabojās konstrukciju un priekšprocesors nevarēs apstrādāt šādu gadījumu.
 
 Priekšprocesoru var iemācīt apstrādāt šāda veida konstrukcijas un atpazīt tos, ka atomārās izteiksmes. Bet tas nozīmēs, ka priekšprocesoram būs jāzina apstrādājamas valodas sintakse, kas neatbilst priekšprocesora lomai kompilēšanas procesā un nozīmē ka būs divreiz jāimplementē sintakses atpazīšana.
 

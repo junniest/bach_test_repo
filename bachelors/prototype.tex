@@ -1,8 +1,11 @@
 \section{Prototipa realizācija}
 Lai ilustrētu šādas sistēmas izstrādes iespējamību, tika izstrādāts prototips, kas parada, ka šāda sistēma var tikt implementēta. Šī nodaļa apraksta prototipa vispārīgās īpašības un pieejas, kas tika lietotas tā realizācijā. Prototips vienkāršības un izstrādes ātruma dēļ tika rakstīts Python valodā, kas ir skriptu valoda, un tāpēc prototips ir viegli palaižams un atkļūdojams uz jebkuras mašīnas ar uzstādītu 2.7.0 Python versiju.
 
-\subsection{Vispārīgā pieeja}
-\label{subsec:solution_approach}
+Šīs nodaļas apakšnodaļa~\ref{subsec:solution_problems} savukārt apraksta problēmas ar kurām saskārās darba autors un izņēmumus, kas pagaidām netiek implementēti prototipā.
+
+\fixme{pārrakstīt atkarībā no satura}
+
+\subsection{\label{subsec:solution_approach}Vispārīgā pieeja}
 Šī apakšnodaļa apraksta sistēmas prototipa darbību virkni un prototipa iespējas uz doto brīdi. Šeit ir tikai vispārīgi aprakstīta darba gaita, bez pamatojumiem, kāpēc šāda rīcība ir izvēlēta, bet apakšnodaļā~\ref{subsec:solution_motivation} tiks sīkāk aprakstīts, kāpēc tas tika izveidots tieši šādi un ne citādi.
 
 Prototips imitē darbu reālajā vidē, no mockup leksera klases lasot pa vienam tokenus no ieejas plūsmas. Ir viens vispārējā rakstura tokens, no kura tiek mantotas dažādas tokenu apakšklases. Piemēram, eksistē tokena klase izteiksmei - \verb|t_expr|, kuras apakšklase ir reāls skaitlis \verb|t_real|. Tajā pašā laikā \verb|t_real| ir virsklase veselu skaitļu klasei \verb|t_int|. Tokeniem var būt saturs, piemēram regulārā izteksme \verb|t_id('f')| sagaidīs tieši identifikatoru \verb|f|, bet izteksme \verb|t_id()| sagaidīs jebkuru identifikatoru. Šie tokeni nav reāli, to klases tika izvēlētas uzskatamības pēc, bet patiesībā tokenu skaitam un hierarhijai nav nozīmes. Vienīgais, ko vajag zināt sistēmai, lai veiksmīgi strādātu, ir to mantošanas struktūra un tokenu vērtību salīdzināšana, lai tā zinātu sakritības attiecības starp regulārās izteiksmes tokeniem un ieejas plūsmas tokeniem.
@@ -19,9 +22,6 @@ Konteksti ir implementēti tieši šādi, jo sapludinātā automāta atbrīvoša
 
 Sistēma turpina darbu aprakstītā gaitā līdz ieejas tokenu virknes beigām. Pēc sistēmas apstāšanās tiek iegūta jauna tokenu virkne, kas tika apstrādāta attiecīgi kodā ierakstitiem makro. Kad sistēma tiks integrēta ar reālu kompilatoru, tā strādās paralēli ar parsētāju un sistēmas izejas tokenu virkne tiks apstrādāta ar standartiem valodas likumiem.
 
-\subsection{Izņēmumi}
-Prototipā pagaidām nav implementēta apstrādes dalīšana pa gramatikas produkcijām, visas regulārās izteiksmes ir sapludinātas vienā automāta. Regulāro izteiksmju dalīšana pa tipiem tiks izstrādāta vēlāk, kad tiks uzsākta integrācija un sadarbība ar reālu kompilatoru. Tā varētu tikt implementēta līdzīgi tam, kā tiek realizēti konteksti - pa vienam sapludinātam automātam priekš katra produkcijas tipa.
-
 \subsection{Lietotie algoritmi}
 \label{subsec:solution_algorithms}
 
@@ -34,9 +34,11 @@ Prototipā pagaidām nav implementēta apstrādes dalīšana pa gramatikas produ
 \subsubsection{Apvienošana}
 \fixme{Write!}
 
-\subsection{Kāpēc tieši šāds risinājums}
+\subsection{Realizācijas pamatojums}
 \label{subsec:solution_motivation}
 \fixme{Write!}
+
+Tika izvēlēta tieši šā
 
 Kāpēc sapludina visu kopā, kāpēc minimizē, 
 
@@ -44,5 +46,18 @@ Kāpēc sapludina visu kopā, kāpēc minimizē,
 Kāpēc šīm uzdevumam neder jau eksistējošas regulāro izteiksmju bibliotēkas. Kāpēc  neder vispārpieņemtie automātu apvienošanas algoritmi.
 Regulāro izteiksmju dzinēji strādā ar tekstu, nevis ar tokeniem, nav vērts mēģināt pielāgot. Automātu apvienošana - visur aprakstītās pieejas nesaglabā, pie kāda no automātiem pieder katrs stāvoklis, it īpaši akceptējošie stāvokļi. Mums ir svarīgi zināt, kāds no automātiem ir akceptēts, jo no tā ir atkarīgs, kura no produkcijām tiks lietota. 
 
+\subsection{Problēmas un izņēmumi}
+\label{subsec:solution_problems}
+\fixme{Write!}
+\subsubsection{Problēmas}
+Prototipa realizācijā darba autors saskārās ar sekojošu problēmu. Ir jāņem vērā tas, ka makro darbība ir atkarīga no makro parādīšanas secības, jo diemžēl vispārīgā gadījumā nevar viennozīmīgi izlemt, kurš ceļš automātā ir pareizs. Tas parādās dēļ tā fakta, ka tokenu klases tiek mantotas viena no otra (jo skaitlis var tikt uzskatīts par izteiksmi). 
 
+Lai ilustrētu šo problēmu, tiek piedāvāts tokenu virknes piemērs:
+Суть проблемы вот в чём. Пусть есть 2 токена, например, \verb|t_real| и \verb|t_int|, и при этом \verb|t_int < t_real|, то есть \verb|t_int| - подкласс \verb|t_real|. Вроде как это прекрасно, и тогда регулярка \verb|t_real, t_delim_col| заматчит и \verb|real;| и \verb|int;|.
 
+Но тут получается такая хрень, что если у меня есть 2 регулярки подряд и первая из них хочет \verb|t_real|, \verb|t_delim_com|, а вторая - \verb|t_int|, \verb|t_delim_col|. И тогда, если надо заматчить \verb|int;|, автомат встречает \verb|int|, идёт по пути который соответствует 1ой регулярке и потом там пропадает, ибо автомат хочет запятую, а там точка с запятой. И это неправильно, ибо \verb|int;| должен был спокойно заматчиться на 2ую регулярку.
+
+Ну и короче я тут не понимаю, шо делать. Это нормально, что оно не заматчится? Вроде как юзер сам дурак, что правила в таком порядке написал... Или ненормально, но чтобы починить это ненормально нужно вообще напрочь отказаться от наследования типов токенов, так как иначе будет та самая ситуация. Либо вводить элемент недетерминированности и идти по 2 путям параллельно, но там можно запутаться в приоритетах матчей.
+
+\subsubsection{Izņēmumi}
+Prototipā pagaidām nav implementēta apstrādes dalīšana pa gramatikas produkcijām, visas regulārās izteiksmes ir sapludinātas vienā automāta. Regulāro izteiksmju dalīšana pa tipiem tiks izstrādāta vēlāk, kad tiks uzsākta integrācija un sadarbība ar reālu kompilatoru. Tā varētu tikt implementēta līdzīgi tam, kā tiek realizēti konteksti - pa vienam sapludinātam automātam priekš katra produkcijas tipa.

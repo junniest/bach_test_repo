@@ -21,24 +21,11 @@ int main() {
 
 Tālāk termins koda konteksts tiks lietots tieši šajā nozīmē. 
 
-\subsection{Parsētāji}
+\subsection{Why adaptable grammars are cool}
+Adaptīvās gramatikas ir ļoti spēcīgs rīks kompilatoru un parsētāju būvēšanā. 
+Static semantics - gandrīz sintakse, bet ne gluži
 
-Lai parsētājs varētu kļūt par bāzi izstrādājamai transformāciju sistēmai, tam jābūt izstrādātam ar rekursīvas nokāpšanas algoritmiem LL(k) vai LL(*). LL ir viena no saprotamākām parsētāju rakstīšanas pieejam, kas ar lejupejošo procesu apstrādā programmatūras tekstu. Gadījumā, ka gramatika ir labi rakstīta (k, simbolu skaits ieskatam uz priekšu, ir mazs) parsētāja darba ātrum atkarībā no tokenu daudzuma var tuvoties lineāram. \cite{Lewis:LLParsers}
-Tā kā transformāciju sistēma tiek veidota ka paplašinājums parsētājam, tā prasa lai parsētājs uzvedās zināmā veidā. Zemāk tiks aprakstītas īpašības, kurām jāatbilst parsētājam, lai uz tā veiksmīgi varētu uzbūvēt aprakstāmo sistēmu.
-\begin{description}
-\item[Tokenu virkne]
-Parsētājam jāprot aplūkot tokenu virkni ka abpusēji saistītu sarakstu, lai eksistētu iespēja to apstaigāt abos virzienos. Tam arī jādod iespēju aizvietot kaut kādu tokenu virkni ar jaunu un ļaut uzsākt apstrādi no jaunās virknes sākuma.
-\item[Pseido-tokeni]
-Parsētāji parasti pielieto (reducē) gramatikas likumus ielasot tokenus no ieejas virknes. Pseido-tokens, savukārt, konceptuāli ir atomārs ieejas plūsmas elements, bet īstenībā attēlo jau reducētu kaut kādu valodas gramatikas likumu. Viens no pseido-tokeniem, piemēram, ir tokens izteiksme - \verb|expr|, kas var sastāvēt no daudziem dažādiem tokeniem (piem. \verb|(a+b*c)+d|). Tas nav viens tokens, bet tā ir tokenu grupa, ko atpazīst parsētājs un kas var tikt attēlots ka atomāra vienība.
-\item[Vadīšanas funkcijas]
-Pirmkārt, mēs prasam, lai katra gramatikas produkcija tiktu reprezentēta ar vadīšanas funkciju (\emph{handle-function}). Ir svarīgi atzīmēt, ka šim funkcijām būs blakus efekti, tāpēc to izsaukšanas kārtība ir svarīga. Šo funkciju signatūrai jāizskatās šādi: \verb|Parser| $\to$ \verb/(AST|Error)/, tas ir, funkcija ieejā iegūst parsētāja objektu un izejā atgriež abstraktā sintakses koka (Abstract Syntax Tree) mezglu vai arī kļūdu. Šīs funkcijas atkārto gramatikas struktūru, tas ir ja gramatikas produkcija A ir atkarīga no produkcijas B, A-vadīšanas funkcija izsauks B-vadīšanas funkciju. 
+\subsection{Why adaptable grammars suck}
+В общем к ним сложно написать формализм и они не особо применимы реально, потому что очень уж ограничены.
 
-Katra no šādām funkcijām pēc nepieciešamības implementē arī kļūdu apstrādi un risina konfliktus starp produkcijām ar valodas apraksta palīdzību.
-\item[Piederības funkcijas]
-Katrai vadīšanas funkcijai pārī ir piekārtota funkcija-predikāts. Šīs predikāts pārbauda, vai tā vietā tokenu virknē, uz kuru dotajā brīdī norāda parsētājs, atbilst parsētam gramatikas likumam. Šādas piederības funkcijas (\emph{is-function}) izpilde nemaina parsētāja stāvokli. 
-
-\item[Sakrišanas funkcijas]
-Katras vadīšanas funkcijas darbības sākumā tiek izsaukta tā sauktā sakrišanas funkcija (\emph{match-function}). Sakrišanas funkcija ir transformācijas sistēmas saskarne ar signatūru \verb|(Parser, Production)| $\to$ \verb|Parser|. Tā pārbauda, vai tā vieta tokenu virknē, uz kuru rāda parsētājs, ir derīga kaut kādai transformācijai dotās produkcijas ietvaros. Ja pārbaude ir veiksmīga, funkcija izpilda sakrītošās virknes substitūciju ar jaunu virkni un parsētāja stāvoklī uzliek norādi uz aizvietotās virknes sākumu. Gadījumā,  ja pārbaude nav veiksmīga, funkcija nemaina parsētāja stāvokli, un parsētājs var turpināt darbu nemodificētas gramatikas ietvaros.
-\end{description}
-
-Ja izstrādājamās valodas parsētāja modelis atbilst aprakstītām īpašībām, tad uz tās var veiksmīgi uzbūvēt aprakstāmo transformāciju sistēmu un ļaut programmētājam ieviest modifikācijas oriģinālās valodas sintaksē.
+Адаптирующиеся грамматики в общем случае мало того, что требуют пересчитывания всей таблицы парсинга - омг, так ещё и могут накосячить с тем, что потеряется парсабельность самой грамматики - LL(1) или LALR() или ещё какая-нибудь, которая необходима для того, чтобы работал парсер. Следовательно фиг ты их прикрутишь в обычном виде к уже существующему парсеру \cite{Christiansen:SurveyAdaptableGrammars}

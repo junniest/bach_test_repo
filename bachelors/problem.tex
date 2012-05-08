@@ -1,4 +1,6 @@
-\section{Problēmas apraksts}
+\section{Problēmas pamatojums}
+
+\subsection{Problēmas apraksts}
 Ļoti bieži mūsdienīgas valodas ievieš jaunas sintaktiskās konstrukcijas lai paplašinātu valodas iespējas un lietojamību. Dažreiz šīs izmaiņas izraisa ievērojamas valodas modifikācijas, bet dažreiz šīs izmaiņas ir tikai tā sauktais sintaktiskais cukurs, \emph{syntactic sugar}, konstrukcijas kas tiek pievienotas valodai tikai lai padarītu valodu lasāmāku un patīkamāku cilvēkam. Šīs konstrukcijas nemaina valodas funkcionalitāti, bet gan atvieglo tās lietošanu. Labs sintaktiskā cukura piemērs ir C valodas konstrukcija \verb|a[i]|, kas patiesībā ir \verb|*(a + i)|.
 
 Bet tik un tā jebkāda tipa izmaiņas prasa arī valodas gramatikas izmaiņas, kas vairākumā gadījumu nozīmē parsētāja vai kompilātora pārrakstīšanu. Lai tas nebūtu nepieciešams, valodai jāsatur sintakses modifikācijas atbalsts, kas parasti vai nu ir ļoti ierobežots, vai arī neeksistē vispār.
@@ -17,3 +19,6 @@ Pieņemsim, ka ir iespēja paplašināt C valodas sintaksi ar infiksu operatoru 
 Dažreiz arī programmatūras koda dalīšana pa tokeniem ir atkarīga no šī koda konteksta, kas padara ne tikai parsēšanas procesu, bet arī leksēšanas procesu neautomatizējamu. 
 
 Tas nozīmē, ka \textbf{kross-kompilatora} arī būs jāraksta manuāli, risinot eksistējošās gramatikas konfliktus, un oriģinālvalodas ievērojamu izmaiņu gadījumā būs jāpastrādā abi kompilatori, kas nozīmē divreiz vairāk darba.
+
+\fixme{Continue}
+
