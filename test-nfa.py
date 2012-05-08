@@ -143,7 +143,7 @@ def test_case_4 ():
     """ A test for token types. """
     regexp_1 = [t_m_start(), t_m_lbrace(), t_real(), t_m_pipe(), t_int(),
                 t_m_rbrace(), t_delim_col(), t_m_end()]
-    # {match} {real} ';' {\match}
+    # {match} ( {real} | {int} ) ';' {\match}
 
     regexp_2 = [t_m_start(), t_int(), t_delim_com(), t_m_end()]
     # {match} {int} ',' {\match}
@@ -165,12 +165,35 @@ def test_case_4 ():
     transform_system.match_stream (list_3)
 
 
+def test_case_5 ():
+    """ A test for token types. """
+    regexp_1 = [t_m_start(), t_m_lbrace(), t_real(), t_m_pipe(), t_int(),
+                t_m_rbrace(), t_delim_com(), t_m_end()]
+    # {match} ( {real} | {int} ) ',' {\match}
+        
+    regexp_2 = [t_m_start(), t_m_lbrace(), t_int(), t_delim_com(), t_m_rbrace(), 
+                t_m_asterisk(), t_m_end()]
+    # {match} ( {int} ',' ) * {\match}
+
+    list_1 = [t_int(2), t_delim_com(), t_int(4), t_delim_com()]
+    # 2, 4, - Should match #1
+    
+    list_2 = [t_int(2), t_delim_com(), t_int(4)]
+    # 2, 4 - Should match #0
+
+    transform_system = system ()
+    transform_system.add_match (regexp_1)
+    transform_system.add_match (regexp_2)
+    transform_system.match_stream (list_1)
+    transform_system.match_stream (list_2)
+
+
 def execute_test (test_no):
     globals() ['test_case_' + str (test_no)]()
 
 
 if __name__ == "__main__":
-    for i in xrange(5):
+    for i in xrange(6):
         print
         print "================"
         execute_test(i)

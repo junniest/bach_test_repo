@@ -621,9 +621,10 @@ class system (object):
     def match_stream (self, stream):
         self.getter.set_stream (stream)
         token = self.getter.get_token ()
+        self.current_state_list.append((self.automaton[0], []))
+        accepted_regexp = None
         while token is not None:
             if self.automaton is not None:
-                self.current_state_list.append((self.automaton[0], []))
                 new_state_list = []
                 for state, processed_token_list in self.current_state_list:
                     moves = filter (lambda (x, y): x.le (token),
@@ -632,13 +633,13 @@ class system (object):
                         processed_token_list.append (token)
                         new_state = moves[0][1]
                         i = new_state.get_accepting()
-                        if i is None:
-                            new_state_list.append((new_state, 
-                                                   processed_token_list))
-                        else:
-                            print "\tAccepted regexp", i, processed_token_list
+                        new_state_list.append((new_state, processed_token_list))
+                        if i is not None:
+                            accepted_regexp = (i, processed_token_list[:])
                 self.current_state_list = new_state_list
             token = self.getter.get_token ()
+        if accepted_regexp is not None:
+            print "\tAccepted regexp", accepted_regexp[0], accepted_regexp[1]
         pass
 
 
