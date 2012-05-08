@@ -315,9 +315,15 @@ class getter (object):
         self.stream = stream
         self.ind = 0
 
+    def set_stream (self, stream):
+        self.stream = stream
+        self.ind = 0
+
     def get_token (self):
         if self.ind < len(self.stream):
-            self.ind += 1
+            self.ind += 1 
+            if isinstance(self.stream [self.ind - 1], (t_m_start, t_m_end)):
+                return self.get_token ()
             return self.stream [self.ind - 1]
         else:
             return None
@@ -500,9 +506,9 @@ class t_token (object):
         if self.repr_s:
             return self.repr_s
         elif self.value is None:
-            return "[" + type(self).__name__[2:] + "]"
+            return "{" + type(self).__name__[2:] + "}"
         else:
-            return "[" + type(self).__name__[2:] + ":" + str(self.value) + "]"
+            return "{" + type(self).__name__[2:] + ":" + str(self.value) + "}"
 
     def le (self, token):
         assert type(token) != type
@@ -539,23 +545,17 @@ class t_bool (t_token):
             else:
                 self.value = False
 
-class t_context_start (t_token):
-    repr_s = "[{]"
-
-class t_context_end (t_token):
-    repr_s = "[}]"
-
 class t_delim_col (t_token):
-    repr_s = "[;]"
+    repr_s = "{;}"
 
 class t_delim_com (t_token):
-    repr_s = "[,]"
+    repr_s = "{,}"
 
 class t_lbrace (t_token):
-    repr_s = "[(]"
+    repr_s = "{(}"
 
 class t_rbrace (t_token):
-    repr_s = "[)]"
+    repr_s = "{)}"
 
 class t_oper (t_token):
     pass
@@ -578,59 +578,68 @@ class t_m_pipe (t_m_token):
     repr_s = "|"
 
 class t_m_start (t_m_token):
-    repr_s = "[match]"
+    repr_s = "{match}"
 
 class t_m_end (t_m_token):
-    repr_s = "[\match]"
+    repr_s = "{\match}"
+
 
 """ ==== Execution logic ==== """
 
-def execute (stream):
-    """ Parses a stream of tokens. Creates automata when encounters a regular
-        expression. """
-    get = getter (stream)
-    token = get.get_token ()
-    r_prs = regexp_parser (get)
-    regexp_id = 0
-    automaton = None
-    current_state_list = []
-    current_level = 0
-    automata_stack = []
-    while token is not None:
-        if isinstance (token, t_m_start):
-            auto = r_prs.parse (regexp_id)
-            regexp_id += 1
-            if automaton is None:
-                automaton = merge (current_level, None, auto[0])
-            else:
-                automaton = merge (current_level, automaton[0], auto[0])
-            print "Added a regexp, level", current_level, ", id", \
-                   auto[0].regexp_id 
-        elif isinstance (token, t_context_start):
-            automata_stack.append (automaton)
-            current_level += 1
-            print "Entered a context, level", current_level
-        elif isinstance (token, t_context_end):
-            automaton = automata_stack.pop ()
-            current_level -= 1
-            print "Left a context, level", current_level
+class system (object):
+    def __init__ (self):
+        self.getter = getter ()
+        self.parser = regexp_parser (self.getter)
+        self.regexp_id = 0
+        self.automaton = None
+        self.current_state_list = []
+        self.current_level = 0
+        self.automata_stack = []
+
+    def enter_context (self):
+        self.automata_stack.append (self.automaton)
+        self.current_level += 1
+        print "Entered a context, level", self.current_level
+    
+    def leave_context (self):
+        self.automaton = self.automata_stack.pop ()
+        self.current_level -= 1
+        print "Left a context, level", self.current_level
+
+    def add_match (self, regexp):
+        self.getter.set_stream (regexp)
+        auto = self.parser.parse (self.regexp_id)
+        self.regexp_id += 1
+        if self.automaton is None:
+            self.automaton = merge (self.current_level, None, auto[0])
         else:
-            if automaton is not None:
-                current_state_list.append((automaton [0], []))
-            new_state_list = []
-            for state, processed_token_list in current_state_list:
-                moves = filter (lambda (x, y): x.le (token),
-                            state.paths.iteritems ())
-                if moves:
-                    processed_token_list.append (token)
-                    new_state = moves[0][1]
-                    i = new_state.get_accepting()
-                    if i is None:
-                        new_state_list.append((new_state, processed_token_list))
-                    else:
-                        print "\tAccepted regexp", i, processed_token_list
-            current_state_list = new_state_list
-        token = get.get_token ()
+            self.automaton = merge (self.current_level, self.automaton[0],
+                                    auto[0])
+        print "Added a regexp, level", self.current_level, ", id", \
+            self.regexp_id - 1
+
+    def match_stream (self, stream):
+        self.getter.set_stream (stream)
+        token = self.getter.get_token ()
+        while token is not None:
+            if self.automaton is not None:
+                self.current_state_list.append((self.automaton[0], []))
+                new_state_list = []
+                for state, processed_token_list in self.current_state_list:
+                    moves = filter (lambda (x, y): x.le (token),
+                                    state.paths.iteritems ())
+                    if moves:
+                        processed_token_list.append (token)
+                        new_state = moves[0][1]
+                        i = new_state.get_accepting()
+                        if i is None:
+                            new_state_list.append((new_state, 
+                                                   processed_token_list))
+                        else:
+                            print "\tAccepted regexp", i, processed_token_list
+                self.current_state_list = new_state_list
+            token = self.getter.get_token ()
+        pass
 
 
 """ ==== States grouped by contexts ==== """

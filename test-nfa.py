@@ -2,18 +2,18 @@ from nfa import *
 
 def test_case_0 ():
     """ A test for context switching and matching (depth = 2). """
+    
     regexp_1 = [t_m_start(), t_id(), t_lbrace(), t_m_lbrace(), t_real(),
                 t_m_pipe(), t_int(), t_m_rbrace(), t_m_asterisk(), t_rbrace(),
                 t_m_end()]
     # {match} {id} '(' ( {real} | {int} ) * ')' {\match}
-
-    regexp_2 = [t_context_start(), t_m_start(), t_id(), t_lbrace(), t_real(),
-                t_rbrace(), t_m_end()]
     # {
+    
+    regexp_2 = [t_m_start(), t_id(), t_lbrace(), t_real(),
+                t_rbrace(), t_m_end()]
     #     {match} {id} '(' {real} ')' {\match}
     
-    list_1 =   [t_id('g'), t_lbrace(), t_real(5.78), t_rbrace(), 
-                t_context_start()]
+    list_1 =   [t_id('g'), t_lbrace(), t_real(5.78), t_rbrace()]
     #     g(5.78) - Should match #1
     #     {
     
@@ -24,16 +24,25 @@ def test_case_0 ():
     list_2 =   [t_id('e'), t_lbrace(), t_real(4.0), t_rbrace()]
     #         e(4.0) - Should match #2
     
-    list_3 =   [t_id('e'), t_lbrace(), t_real(4.0), t_int(5), t_rbrace(),
-                    t_context_end()]
+    list_3 =   [t_id('e'), t_lbrace(), t_real(4.0), t_int(5), t_rbrace()]
     #         e(4.0 5) - Should match #0
     #     }
-
-    list_4 =   [t_id('d'), t_lbrace(), t_real(3.4), t_rbrace(), t_context_end()]
-    #     d(3.4) - Should match #1
-    # }
     
-    execute (regexp_1 + regexp_2 + list_1 + regexp_3 + list_2 + list_3 + list_4)
+    list_4 =   [t_id('d'), t_lbrace(), t_real(3.4), t_rbrace()]
+    #     d(3.4) - Should match #1
+    # }  
+    
+    transform_system = system ()
+    transform_system.add_match (regexp_1)
+    transform_system.enter_context ()
+    transform_system.add_match (regexp_2)
+    transform_system.match_stream (list_1)
+    transform_system.enter_context ()
+    transform_system.add_match (regexp_3)
+    transform_system.match_stream (list_2)
+    transform_system.match_stream (list_3)
+    transform_system.leave_context ()
+    transform_system.match_stream (list_4)
 
 
 def test_case_1 ():
@@ -42,8 +51,7 @@ def test_case_1 ():
                 t_rbrace(), t_m_end()]
     # {match} {id} '(' {real} * ')' {\match}
 
-    list_1 =   [t_context_start(), t_id('f'), t_lbrace(), t_real(3.5),
-                t_rbrace()]
+    list_1 =   [t_id('f'), t_lbrace(), t_real(3.5), t_rbrace()]
     # {
     #     f(3.5) - Should match #0
 
@@ -54,15 +62,22 @@ def test_case_1 ():
     list_2 =   [t_id('g'), t_lbrace(), t_real(5.78), t_rbrace()]
     #     g(5.78) - Should match #1
 
-    list_3 =   [t_id('e'), t_lbrace(), t_real(4.0), t_real(5.8), t_rbrace(),
-                t_context_end()]
+    list_3 =   [t_id('e'), t_lbrace(), t_real(4.0), t_real(5.8), t_rbrace()]
     #    e(4.0 5.8) - Should match #0
     # }
 
     list_4 =   [t_id('d'), t_lbrace(), t_real(3.4), t_rbrace()]
     # d(3.4) - Should match #0
 
-    execute (regexp_1 + list_1 + regexp_2 + list_2 + list_3 + list_4)
+    transform_system = system ()
+    transform_system.add_match (regexp_1)
+    transform_system.enter_context ()
+    transform_system.match_stream (list_1)
+    transform_system.add_match (regexp_2)
+    transform_system.match_stream (list_2)
+    transform_system.match_stream (list_3)
+    transform_system.leave_context ()
+    transform_system.match_stream (list_4)
 
 
 def test_case_2 ():
@@ -84,7 +99,12 @@ def test_case_2 ():
     list_2 =   [t_id('f'), t_lbrace(), t_real(6.1), t_rbrace()]
     # f(6.1) - Should match #1
 
-    execute (regexp_1 + regexp_2 + regexp_3 + list_1 + list_2)
+    transform_system = system ()
+    transform_system.add_match (regexp_1)
+    transform_system.add_match (regexp_2)
+    transform_system.add_match (regexp_3)
+    transform_system.match_stream (list_1)
+    transform_system.match_stream (list_2)
 
 
 def test_case_3 ():
@@ -111,7 +131,12 @@ def test_case_3 ():
     list_3 = [t_id('e'), t_lbrace(), t_expr(), t_rbrace()]
     # e(expr) - Should match #0
 
-    execute(regexp_1 + regexp_2 + list_1 + list_2 + list_3)
+    transform_system = system ()
+    transform_system.add_match (regexp_1)
+    transform_system.add_match (regexp_2)
+    transform_system.match_stream (list_1)
+    transform_system.match_stream (list_2)
+    transform_system.match_stream (list_3)
 
 
 def test_case_4 ():
@@ -132,7 +157,12 @@ def test_case_4 ():
     list_3 = [t_expr('4 + 13'), t_delim_col()]
     # 4 + 13; - Should not match
 
-    execute(regexp_1 + regexp_2 + list_1 + list_2 + list_3)
+    transform_system = system ()
+    transform_system.add_match (regexp_1)
+    transform_system.add_match (regexp_2)
+    transform_system.match_stream (list_1)
+    transform_system.match_stream (list_2)
+    transform_system.match_stream (list_3)
 
 
 def execute_test (test_no):
