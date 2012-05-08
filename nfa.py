@@ -3,7 +3,6 @@ __date__ = "2012-02-09"
 
 import collections
 import time
-from ordered_default_dict import DefaultOrderedDict
 
 
 """ ==== Nondeterminate Finite Automaton logic ==== """
@@ -348,22 +347,7 @@ class regexp_parser (object):
         if token is None:
             return
         if not isinstance (token, t_m_token):
-            # We've got some hacks coming up (this replaces token type
-            # inheritance, as it messes up the matching process)
-            if isinstance (token, t_expr):
-                self.stack.append (or_nfa (or_nfa (token_nfa (t_expr ()), 
-                                                   token_nfa (t_real ())),
-                                           or_nfa (token_nfa (t_int ()), 
-                                                   token_nfa (t_bool ()))))
-            elif isinstance (token, t_real):
-                self.stack.append (or_nfa (or_nfa (token_nfa (t_real()),
-                                                   token_nfa (t_int())),
-                                           token_nfa (t_bool ())))
-            elif isinstance (token, t_int):
-                self.stack.append (or_nfa (token_nfa (t_int()),
-                                           token_nfa (t_bool ())))
-            else:
-                self.stack.append (token_nfa (token))
+            self.stack.append (token_nfa (token))
             return
         if isinstance (token, t_m_asterisk):
             self.stack.append (asterisk_nfa (self.stack.pop ()))
@@ -372,7 +356,8 @@ class regexp_parser (object):
             self.handle_or ()
             token = self.gtr.get_token ()
             if not isinstance (token, t_m_rbrace):
-                raise Exception ("Closing brace expected, got %s instead." % token)
+                raise Exception ("Closing brace expected, got %s instead." 
+                                 % token)
             return
         self.gtr.unget ()
 
@@ -422,7 +407,7 @@ class node_dfa_m (object):
             state and the newly added (if such exists) state. This is done to
             make path merging easier (no need to recalculate paths for each 
             single dfa state, but only for 2 existing states). """
-        self.paths = DefaultOrderedDict (list)
+        self.paths = {}
         self.state_list = contexted_state_list ()
         self.level = level
         self.merged_state = merged_state
@@ -475,7 +460,7 @@ def add_to_state_list_m (level, dfa_state_list, merge_dfa_state_list):
 def merge_paths (state):
     """ For a list of states from unmerged DFA creates a dictionary with paths
         by a symbol to different lists of states. """
-    rv = DefaultOrderedDict (list)
+    rv = collections.defaultdict(list)
     for merge in [state.merged_state, state.single_state]:
         if merge is None:
             continue
