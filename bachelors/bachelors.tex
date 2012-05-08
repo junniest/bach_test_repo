@@ -1,13 +1,25 @@
 \documentclass[12pt, a4paper]{report}
-
-% Valodu atbalsts
 \usepackage{polyglossia}
 \setdefaultlanguage{latvian}
-%\setotherlanguages{english,russian}
+\setotherlanguages{english, russian}
 \usepackage{bacdarbs}
 \usepackage{mathtools}
+\usepackage{fixlatvian}
 
 \newcommand{\fixme}[1]{\vskip 5mm\noindent{\bf FIXME}: {\it #1}}
+
+\usepackage[hmargin=2cm,vmargin=2cm,lmargin=3cm,rmargin=2cm]{geometry} 
+
+\setlength{\parindent}{1cm}
+
+\usepackage{setspace}
+\onehalfspacing
+
+\setmainfont{Times New Roman}
+
+\setcounter{secnumdepth}{4} 
+
+\renewcommand{\thesection}{\arabic{section}}
 
 \nosaukums{Ar regulārām izteiksmēm paplašinātu gramatiku dinamiska parsēšana.}
 \darbatips{Bakalaura}
@@ -18,17 +30,16 @@
 \univer{Latvijas Universitāte}
 \fakul{Datorikas}
 \nod{Profesors}
-\begin{document}
-\titullapa
 
-\annovirsraksts{Anotācija}
-        \begin{abstract}
-        Anotācijas teksts latviešu valoda.
-        \end{abstract}
-\annovirsraksts{Abstract}
-        \begin{abstract}
-        The text of the abstract in English.
-        \end{abstract}
+\begin{document}
+
+\titullapa
+\begin{abstract}Anotācijas teksts latviešu valodā\end{abstract}
+
+\begin{otherlanguage}{english}\begin{abstract}Abstract text in English\end{abstract}\end{otherlanguage}
+
+\setcounter{tocdepth}{4}
+\tableofcontents
 
 \include{terms_notations}
 
@@ -64,7 +75,3 @@ Tālāk darbs tik turpināts (šeit var pārfrāzēt Conclusions no raksta melnr
 \bibliography{bachelors}{}
 \bibliographystyle{plain}
 \end{document}
-
-%Literatūras saraksts
-%[1] http://web.cs.wpi.edu/~jshutt/thesis/survey.html\#Chomsky
-%[2] Introduction to automata theory, languages and compilation [169-179] about context-free grammars
