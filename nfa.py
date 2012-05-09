@@ -654,7 +654,8 @@ class system (object):
             token = self.getter.get_token ()
         if accepted_regexp is not None:
             print "\tAccepted regexp", accepted_regexp[0], accepted_regexp[1]
-        pass
+            return accepted_regexp[0]
+        return None
 
 
 """ ==== States grouped by contexts ==== """

@@ -36,13 +36,13 @@ def test_case_0 ():
     transform_system.add_match (regexp_1)
     transform_system.enter_context ()
     transform_system.add_match (regexp_2)
-    transform_system.match_stream (list_1)
+    assert transform_system.match_stream (list_1) == 1
     transform_system.enter_context ()
     transform_system.add_match (regexp_3)
-    transform_system.match_stream (list_2)
-    transform_system.match_stream (list_3)
+    assert transform_system.match_stream (list_2) == 2
+    assert transform_system.match_stream (list_3) == 0
     transform_system.leave_context ()
-    transform_system.match_stream (list_4)
+    assert transform_system.match_stream (list_4) == 1
 
 
 def test_case_1 ():
@@ -72,12 +72,12 @@ def test_case_1 ():
     transform_system = system ()
     transform_system.add_match (regexp_1)
     transform_system.enter_context ()
-    transform_system.match_stream (list_1)
+    assert transform_system.match_stream (list_1) == 0
     transform_system.add_match (regexp_2)
-    transform_system.match_stream (list_2)
-    transform_system.match_stream (list_3)
+    assert transform_system.match_stream (list_2) == 1
+    assert transform_system.match_stream (list_3) == 0
     transform_system.leave_context ()
-    transform_system.match_stream (list_4)
+    assert transform_system.match_stream (list_4) == 0
 
 
 def test_case_2 ():
@@ -103,8 +103,8 @@ def test_case_2 ():
     transform_system.add_match (regexp_1)
     transform_system.add_match (regexp_2)
     transform_system.add_match (regexp_3)
-    transform_system.match_stream (list_1)
-    transform_system.match_stream (list_2)
+    assert transform_system.match_stream (list_1) == 0
+    assert transform_system.match_stream (list_2) == 1
 
 
 def test_case_3 ():
@@ -134,9 +134,9 @@ def test_case_3 ():
     transform_system = system ()
     transform_system.add_match (regexp_1)
     transform_system.add_match (regexp_2)
-    transform_system.match_stream (list_1)
-    transform_system.match_stream (list_2)
-    transform_system.match_stream (list_3)
+    assert transform_system.match_stream (list_1) == 1
+    assert transform_system.match_stream (list_2) == 0
+    assert transform_system.match_stream (list_3) == 0
 
 
 def test_case_4 ():
@@ -160,9 +160,9 @@ def test_case_4 ():
     transform_system = system ()
     transform_system.add_match (regexp_1)
     transform_system.add_match (regexp_2)
-    transform_system.match_stream (list_1)
-    transform_system.match_stream (list_2)
-    transform_system.match_stream (list_3)
+    assert transform_system.match_stream (list_1) == 0
+    assert transform_system.match_stream (list_2) == 1
+    assert transform_system.match_stream (list_3) is None
 
 
 def test_case_5 ():
@@ -184,8 +184,8 @@ def test_case_5 ():
     transform_system = system ()
     transform_system.add_match (regexp_1)
     transform_system.add_match (regexp_2)
-    transform_system.match_stream (list_1)
-    transform_system.match_stream (list_2)
+    assert transform_system.match_stream (list_1) == 1
+    assert transform_system.match_stream (list_2) == 0
 
 
 def test_case_6 ():
@@ -205,8 +205,8 @@ def test_case_6 ():
     transform_system = system ()
     transform_system.add_match (regexp_1)
     transform_system.add_match (regexp_2)
-    transform_system.match_stream (list_1)
-    transform_system.match_stream (list_2)
+    assert transform_system.match_stream (list_1) == 1
+    assert transform_system.match_stream (list_2) == 0
 
 
 def test_case_7 ():
@@ -230,9 +230,9 @@ def test_case_7 ():
     transform_system = system ()
     transform_system.add_match (regexp_1)
     transform_system.add_match (regexp_2)
-    transform_system.match_stream (list_1)
-    transform_system.match_stream (list_2)
-    transform_system.match_stream (list_3)
+    assert transform_system.match_stream (list_1) == 0
+    assert transform_system.match_stream (list_2) == 1
+    assert transform_system.match_stream (list_3) == 1
 
 
 def execute_test (test_no):
