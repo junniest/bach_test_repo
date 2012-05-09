@@ -3,6 +3,8 @@ Ka var redzēt no nodaļas~\ref{subsec:dynamicgrammars}, pašmodificējošās gr
 
 Šīs darbs piedāvā uzbūves principus sistēmai, kura dod iespēju programmētājam dinamiski paplašināt valodas iespējas ar makro valodas palīdzību. Šī makro valoda ļaus izveidot jaunas valodas konstrukcijas no jau eksistējošām vienībām ar regulāro izteiksmju un nelielas funkcionālās valodas palīdzību. Parsētāja darba laikā makro sastapšanas reizes tiks pārrakstītas uz kodu ar attiecīgu struktūru, kas var tikt atpazīti ar valodas sākotnējo gramatiku. Tātad šī sistēma ļaus modificēt gramatiku nebojājot jau eksistējošo sintaksi. Nekādas pavisam jaunas konstrukcijas šī makro sistēma nejaus izveidot, lai paliktu savietojamība ar sākotnējo gramatiku, tomēr tā ļaus atvieglot programmētāja darbu dodot iespēju aizstāt kodā sarežģītas konstrukcijas ar vienkāršākām. 
 
+Šīs sistēmas galvenais mērķis ir piedāvāt iespēju modificēt valodas sintaksi programmas rakstīšanas gaitā, nebojājot jau eksistējošo konstrukciju darbu. Sistēma ieviesīs pašmodificēšanos uz pārrakstīšanas bāzes, kas vienlaikus nodrošinās modifikācijas un parsētāja nemainīgumu. Tajā pašā laikā sistēma būs stabila pret kļūdām dēļ tā, ka tā strādās tikai konrētās produkcijas ietvaros un tā, ka tā pārbaudīs tipus jaunizveidotām virknēm.
+
 Tālāk aprakstāmā sistēma tiks saukta par transformāciju sistēmu. Šī nodaļa dos vispārīgu ieskatu transformācijas sistēmas uzbūvē, darba gaitā, aprakstīs transformācijas sistēmas likumu sintaksi un parādīs iespēju pierādīt transformācijas pareizību.
 
 \subsection{Idejas rašanās - valoda Eq}
@@ -70,7 +72,7 @@ Tagad mēs varam izveidot definētās makro sintakses korektu piemēru. Pieņems
 match [{expr}] v = {|} {expr} {|}
     → [{expr}] {id:abs} {(} {expr} {)}
 \end{verbatim}
-\caption{\label{fig:matchsample1}Makro piemērs}
+\caption{\label{fig:matchsample1}Makro piemērs \#1}
 \end{figure}
 
 Vēl viens korektā makro piemērs: pieņemsim, ka funkcija \verb|replace| ir definēta valodā $T$ ar trim argumentiem, un darba gaitā tā jebkurā pseido-tokenu virknē aizvieto elementus, kas sakrīt ar otro argumentu, ar trešo funkcijas argumentu. Pieņemsim arī, ka mums ir nepieciešams izsaukt funkciju \verb|bar| ar vienu argumentu, kas ir summa no funkcijas \verb|foo| argumentiem. Šādā gadījumā makro, kas parādīts figūrā~\ref{fig:matchsample2}, izpildīs nepieciešamu darbību.
@@ -80,17 +82,51 @@ Vēl viens korektā makro piemērs: pieņemsim, ka funkcija \verb|replace| ir de
 match [{expr}] v = {id:foo} {(} {expr} ( {,} {expr} ) * {)}
     → [{expr}] {id:bar} (replace v {,} {+})
 \end{verbatim}
-\caption{\label{fig:matchsample2}Makro piemērs}
+\caption{\label{fig:matchsample2}Makro piemērs \#2}
 \end{figure}
 
 \subsection{\label{subsec:system_qualities}Sistēmas īpašības}
 Šī nodaļa aprakstīs, kā mēs gribam realizēt gramatikas pašmodificēšanos, lai izmaiņas būtu kontrolētas.
 Mēs gribam norobežot modificēšanas iespējas
 
-\subsubsection{Funkcionālā pārrakstīšanas valoda}
+\subsubsection{Funkcionālā valoda $T$}
+Lai varētu izpildīt atrastās tokenu virknes apstrādi un modificēšanu ir nepieciešams kaut kāds papildus rīks. Par šo rīk utika izvēlēta vienkārša funkcionāla valoda. Tā tika izvēlēta tāpēc, ka tās funkcijām nepiemīt blakusefekti, tātad to izpilde nevarēs samainīt eksistējošos datus. Valoda, kuras funkcijām ir blakusefekti, varētu sabojāta parsētāja darbu.
+
+Šī minimālistiska funkcionālā valoda tika nosaukta par $T$, un tā tiks lietota lai aprakstītu plānotas tokenu virknes transformācijas iespējas. Valodas gramatika ir parādīta figūrā~\ref{fig:tlanguagegrammar}
+
+\begin{figure}
+\begin{verbatim}
+program         → ( function ) *
+function        → id '::' fun_type id id * '=' expr
+fun_type        → (type | '(' fun_type ')') '->' fun_type
+expr            → id | expr expr | let_expr | if_expr | builtin
+let_expr        → 'let' id '=' expr (',' id '=' expr) * 'in' expr
+if_expr         → 'if' cond_expr 'then' expr 'else' expr
+cond_expr       → 'type' expr '==' type | expr
+builtin         → 'cons' expr  (expr | 'nil') 
+                  | 'head' expr | 'tail' expr | 'value' expr
+                  | pseudo_token '[' expr ']' | number
+                  | + | - | ...
+type            → pseudotoken_regexp | int | regexp_t
+\end{verbatim}
+\caption{\label{fig:tlanguagegrammar}$T$ valodas gramatika}
+\end{figure}
+
+\fixme{Was ist regexp\_t?}
+
+Galvenais šīs valodas pielietojums ir dot iespēju apstaigāt pseido-tokenu virkni, kura tika atzīta par sakrītošu ar atbilstošu šablonu. Lai to darīt, tā dos iespēju lietot rekursiju un dažas iebūvētās funkcijas - saraksta pirmā elementa funkciju \verb|head|, saraksta astes funkciju \verb|tail| un objektu pāra izveidošanas funkciju \verb|cons|. Funkcija \verb|cons| funkcionālo valodu kontekstā strādā kā saraksta izveidošanas funkcija, jo saraksts \verb|list(1, 2, 3)| tiek reprezentēta ka \verb|cons(1, cons(2, cons(3, nil)))|, kur \verb|nil| ir speciāls tukšs objekts.
+
+\fixme{Paskaidrot sintaksi (if\_expr, let\_expr, ...)}
+
+Lai būtu iespēja apstādināt rekursiju, šī valoda arī ļaus izpildīt aritmētiskās operācijas ar veseliem skaitļiem. Tas dos iespēju izveidot skaitītājus un izveidot rekursijas izejas nosacījumus.
+
+Ir plānots, ka šī valoda arī ļaus izpildīt daļēju novērtējumu izteiksmēm, tur kur būs nepieciešams. Tas nozīmē, ka valodai jāsatur saskarne, kas ļaus piekļūt pie tokena vērtības. Šim mērķim ir domāta funkcija \verb|value|, kas ir pielietojama pseido-tokeniem ar skaitlisku vērtību, piemēram, lai dabūt skaitli \verb|5| no pseido-tokena \verb|{int:5}|. Lai izveidotu jaunu tokenu ar izrēķinātu vērtību, tiks lietota sintakse \verb|pseudo_token[value]|, kur \verb|pseudo_token| ir izveidojamā tokena tips un \verb|value| ir vērtība, piemēram, \verb|int[10]|.
+
+Funkcija \verb|type|, savukārt, ļaus pārbaudīt tokenu tipu, kas var būt nepieciešams transformācijas procesā, piemēram, lai atpazīt kādu operatoru.
 
 \subsubsection{Tipu sistēma}
-Kā tiks pārbaudīti tipi.
+
+\fixme{Write this}
 
 \subsection{Sistēmas sakars ar priekšprocesoriem}
 Ir divu veidu priekšprocesori - leksiskie un sintaktiskie. Leksiskie priekšprocesori tiek palaisti pirms pirmkoda parsēšanas un nezin neko par apstrādājamas valodas sintaksi (piem. C/C++ priekšprocesors). No otras puses sintaktiskie priekšprocesori tiek palaisti pēc parsera darbības un apstrādā sintaktiskos kokus, ko uzbūvē parsētājs. Dēļ aprakstāmās sistēmas īpašībām šajā darbā netiks apskatīti sintaktiskie priekšprocesori, jo sistēmas īpašība ir tāda, ka līdz tas darba izpildei parsētājs nevar uzbūvēt sintaktisko koku.
@@ -99,6 +135,6 @@ Bet leksiskie priekšprocesori pēc savām īpašībām ir tuvi aprakstāmai sis
 
 Priekšprocesoru var iemācīt apstrādāt šāda veida konstrukcijas un atpazīt tos, ka atomārās izteiksmes. Bet tas nozīmēs, ka priekšprocesoram būs jāzina apstrādājamas valodas sintakse, kas neatbilst priekšprocesora lomai kompilēšanas procesā un nozīmē ka būs divreiz jāimplementē sintakses atpazīšana.
 
-Otrā problēma ar šāda tika priekšprocesoriem ir tas, ka tie strādā ārpus programmas kontekstiem. Tas nozīmē, ka konteksta sākuma tokens (\verb|{| C/C++, Java un citu valodu gadījumā) tiek uzskatīts par parastu tekstu un var tikt pārrakstīts. Loģiskāk būtu, ja kontekstu makro tiktu mantoti līdzīgi ka mainīgie, kas ir specifiski kontekstam būtu ar lielāku prioritāti ka tie, kas definēti vispārīgākā kontekstā. 
+Otrā problēma ar šāda tika priekšprocesoriem ir tas, ka tie strādā ārpus programmas tvērumiem. Tas nozīmē, ka tvēruma sākuma tokens (\verb|{| C/C++, Java un citu valodu gadījumā) tiek uzskatīts par parastu tekstu un var tikt pārrakstīts. Loģiskāk būtu, ja konkrētā tvērumā definēti makro tiktu mantoti līdzīgi ka mainīgie, kas nozīmē, ka šabloni, kas ir specifiski tvērumam, būtu ar lielāku prioritāti ka tie, kas definēti vispārīgākā tvērumā. 
 
 \fixme{Ko var un ko nevar salīdzinājumā ar C priekšprocesoru?}
