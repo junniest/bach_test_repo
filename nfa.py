@@ -582,31 +582,41 @@ class t_m_end (t_m_token):
 
 """ ==== Execution logic ==== """
 
-class system (object):
+class matcher (object):
+    """ The matcher system class. """
+    
     def __init__ (self):
         self.getter = getter ()
         self.parser = regexp_parser (self.getter)
         self.regexp_id = 0
-        self.automaton = None
-        self.current_state_list = []
         self.current_level = 0
+
         self.automata_stack = []
-        self.regexp_priority_lane = contexted_id_list ()
+        self.automaton = None
+
+        self.regexp_priority_stack = []
+        self.regexp_priority = contexted_id_list ()
 
     def enter_context (self):
+        """ Enters a context, saves the state to be able to return to the
+            previous level. """
         self.automata_stack.append (self.automaton)
+        self.regexp_priority_stack.append (self.regexp_priority)
         self.current_level += 1
         print "Entered a context, level", self.current_level
     
     def leave_context (self):
+        """ Leaves a context, restores the state. """
         self.automaton = self.automata_stack.pop ()
+        self.regexp_priority = self.regexp_priority_stack.pop ()
         self.current_level -= 1
         print "Left a context, level", self.current_level
 
     def add_match (self, regexp):
+        """ Adds a match to the current context. """
         self.getter.set_stream (regexp)
         auto = self.parser.parse (self.regexp_id)
-        self.regexp_priority_lane.add (self.current_level, self.regexp_id)
+        self.regexp_priority.add (self.current_level, self.regexp_id)
         self.regexp_id += 1
         if self.automaton is None:
             self.automaton = merge (self.current_level, None, auto[0])
@@ -617,44 +627,68 @@ class system (object):
             self.regexp_id - 1
 
     def get_accepting (self, new_state, current_accepted):
-        cur_best = self.regexp_priority_lane.list.index (current_accepted) \
+        """ Finds the accepted match with the highest priority.
+            Here new_state is the state in which the automata is that might be
+            the new acceptance state. current_accepted is the currently accepted
+            regexp id for the current length of the matched sequence. If
+            current_accepted is None, it means that there are no accepted
+            matches at this point. The new state is checked for the regexp with
+            the highest priority, taking into account the current_accepted. """
+        cur_best = self.regexp_priority.list.index (current_accepted) \
             if current_accepted is not None else None
         for state in new_state.state_list:
             if state.accepting:
-                ind = self.regexp_priority_lane.list.index (state.regexp_id)
+                ind = self.regexp_priority.list.index (state.regexp_id)
                 if cur_best is None or ind > cur_best:
                     cur_best = ind
         if cur_best is not None:
-            return self.regexp_priority_lane.list[cur_best]
+            return self.regexp_priority.list[cur_best]
         return None
     
     def match_stream (self, stream):
+        """ Tries to match the collected regexps to the beginning of the given
+            stream. Matches the longest sequence. If several regular expressions
+            accept the same sequence, matches the one with the highest priority
+            according to the order of arrival and context. """
+        if self.automaton is None:
+            # if there's nothing to match - we leave
+            return None
+
         self.getter.set_stream (stream)
         token = self.getter.get_token ()
-        self.current_state_list.append((self.automaton[0], []))
+        current_state_list = []
+        current_state_list.append((self.automaton[0], []))
         accepted_regexp = None
+
         while token is not None:
-            if self.automaton is not None:
-                new_state_list = []
-                current_accepted = None
-                for state, processed_token_list in self.current_state_list:
-                    move_list = filter (lambda (x, y): x.le (token),
-                                    state.paths.iteritems ())
-                    new_token_list = processed_token_list[:]
-                    new_token_list.append (token)
-                    for move in move_list:
-                        new_state = move[1]
-                        current_accepted = self.get_accepting(new_state, 
-                                                              current_accepted)
-                        new_state_list.append((new_state, new_token_list))
-                        if current_accepted is not None:
-                            accepted_regexp = (current_accepted, 
-                                               new_token_list)
-                self.current_state_list = new_state_list
+            new_state_list = []
+            current_accepted = None
+            for state, processed_token_list in current_state_list:
+                # there might be several states active at the same time, as
+                # there might have been several available moves on the
+                # previous symbol.
+                move_list = filter (lambda (x, y): x.le (token),
+                                state.paths.iteritems ())
+                new_token_list = processed_token_list[:]
+                new_token_list.append (token)
+                for move in move_list:
+                    # there might be several moves available because we
+                    # allow adding values to the regular expressions, e.g.
+                    # {id} and {id:foo}.
+                    new_state = move[1]
+                    current_accepted = self.get_accepting(new_state, 
+                                                          current_accepted)
+                    new_state_list.append((new_state, new_token_list))
+                    if current_accepted is not None:
+                        # if we found a longer or a priority match, we
+                        # make it the temporary result.
+                        accepted_regexp = (current_accepted, 
+                                           new_token_list)
+            current_state_list = new_state_list
             token = self.getter.get_token ()
         if accepted_regexp is not None:
             print "\tAccepted regexp", accepted_regexp[0], accepted_regexp[1]
-            return accepted_regexp[0]
+            return (accepted_regexp[0], len (accepted_regexp[1]))
         return None
 
 
@@ -676,13 +710,6 @@ class contexted_id_list(object):
         self.list = []
         self.last_level = None
         self.idx = None
-    
-    def copy (self):
-        rv = type (self) ()
-        rv.list = self.list[:]
-        rv.last_level = self.last_level
-        rv.idx = self.idx
-        return rv
     
     def add (self, level, id):
         if self.last_level != level:
