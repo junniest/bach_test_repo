@@ -166,7 +166,7 @@ def test_case_4 ():
 
 
 def test_case_5 ():
-    """ A test for token types. """
+    """ A test for matching the longest sequence. """
     regexp_1 = [t_m_start(), t_m_lbrace(), t_real(), t_m_pipe(), t_int(),
                 t_m_rbrace(), t_delim_com(), t_m_end()]
     # {match} ( {real} | {int} ) ',' {\match}
@@ -177,7 +177,7 @@ def test_case_5 ():
 
     list_1 = [t_int(2), t_delim_com(), t_int(4), t_delim_com()]
     # 2, 4, - Should match #1
-    
+
     list_2 = [t_int(2), t_delim_com(), t_int(4)]
     # 2, 4 - Should match #0
 
@@ -188,15 +188,63 @@ def test_case_5 ():
     transform_system.match_stream (list_2)
 
 
+def test_case_6 ():
+    """ A test for checking specific matching (with token values) """
+    regexp_1 = [t_m_start(), t_id('foo'), t_m_end()]
+    # {match} {id:foo} {\match}
+    
+    regexp_2 = [t_m_start(), t_id(), t_m_end()]
+    # {match} {id} {\match}
+
+    list_1 = [t_id()]
+    # {id} - Should match #1
+    
+    list_2 = [t_id('foo')]
+    # {id:foo} - Should match #0
+
+    transform_system = system ()
+    transform_system.add_match (regexp_1)
+    transform_system.add_match (regexp_2)
+    transform_system.match_stream (list_1)
+    transform_system.match_stream (list_2)
+
+
+def test_case_7 ():
+    """ A test for checking specific matching (with token values) """
+    regexp_1 = [t_m_start(), t_id('foo'), t_int(), t_delim_col(), t_m_end()]
+    # {match} {id:foo} {int} ';' {\match}
+    
+    regexp_2 = [t_m_start(), t_id(), t_int(), t_delim_col(),
+                t_int(), t_m_asterisk(), t_m_end()]
+    # {match} {id} {int} ';' {int} * {\match}
+    
+    list_1 = [t_id('foo'), t_int(4), t_delim_col()]
+    # foo 4; - Should match #0
+
+    list_2 = [t_id(), t_int(4), t_delim_col()]
+    # foo 4; - Should match #1
+
+    list_3 = [t_id('foo'), t_int(4), t_delim_col(), t_int(5)]
+    # foo 4; 5 - Should match #1
+
+    transform_system = system ()
+    transform_system.add_match (regexp_1)
+    transform_system.add_match (regexp_2)
+    transform_system.match_stream (list_1)
+    transform_system.match_stream (list_2)
+    transform_system.match_stream (list_3)
+
+
 def execute_test (test_no):
     globals() ['test_case_' + str (test_no)]()
 
 
 if __name__ == "__main__":
-    for i in xrange(6):
+    for i in xrange (8):
         print
         print "================"
-        execute_test(i)
+        print "Test case", i
+        execute_test (i)
         print "================"
 
 # vim: set ts=4 sw=4 sts=4 et

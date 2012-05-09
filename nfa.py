@@ -414,21 +414,17 @@ class node_dfa_m (object):
             make path merging easier (no need to recalculate paths for each 
             single dfa state, but only for 2 existing states). """
         self.paths = {}
-        self.state_list = contexted_state_list ()
+        self.state_list = []
         self.level = level
         self.merged_state = merged_state
         self.single_state = single_state
 
-    def get_accepting(self):
-        """ Gets the first accepting state in the dfa state list. """
-        return self.state_list.get_accepting ()
-
     def rearrange (self):
         """ The method merges the states together in a single list. """
         if self.merged_state is not None:
-            self.state_list = self.merged_state.state_list.copy ()
+            self.state_list = self.merged_state.state_list[:]
         if self.single_state is not None:
-            self.state_list.add (self.level, self.single_state)
+            self.state_list.append (self.single_state)
         return self
 
     def __repr__ (self):
@@ -595,6 +591,7 @@ class system (object):
         self.current_state_list = []
         self.current_level = 0
         self.automata_stack = []
+        self.regexp_priority_lane = contexted_id_list ()
 
     def enter_context (self):
         self.automata_stack.append (self.automaton)
@@ -609,6 +606,7 @@ class system (object):
     def add_match (self, regexp):
         self.getter.set_stream (regexp)
         auto = self.parser.parse (self.regexp_id)
+        self.regexp_priority_lane.add (self.current_level, self.regexp_id)
         self.regexp_id += 1
         if self.automaton is None:
             self.automaton = merge (self.current_level, None, auto[0])
@@ -618,6 +616,18 @@ class system (object):
         print "Added a regexp, level", self.current_level, ", id", \
             self.regexp_id - 1
 
+    def get_accepting (self, new_state, current_accepted):
+        cur_best = self.regexp_priority_lane.list.index (current_accepted) \
+            if current_accepted is not None else None
+        for state in new_state.state_list:
+            if state.accepting:
+                ind = self.regexp_priority_lane.list.index (state.regexp_id)
+                if cur_best is None or ind > cur_best:
+                    cur_best = ind
+        if cur_best is not None:
+            return self.regexp_priority_lane.list[cur_best]
+        return None
+    
     def match_stream (self, stream):
         self.getter.set_stream (stream)
         token = self.getter.get_token ()
@@ -626,16 +636,20 @@ class system (object):
         while token is not None:
             if self.automaton is not None:
                 new_state_list = []
+                current_accepted = None
                 for state, processed_token_list in self.current_state_list:
-                    moves = filter (lambda (x, y): x.le (token),
+                    move_list = filter (lambda (x, y): x.le (token),
                                     state.paths.iteritems ())
-                    if moves:
-                        processed_token_list.append (token)
-                        new_state = moves[0][1]
-                        i = new_state.get_accepting()
-                        new_state_list.append((new_state, processed_token_list))
-                        if i is not None:
-                            accepted_regexp = (i, processed_token_list[:])
+                    new_token_list = processed_token_list[:]
+                    new_token_list.append (token)
+                    for move in move_list:
+                        new_state = move[1]
+                        current_accepted = self.get_accepting(new_state, 
+                                                              current_accepted)
+                        new_state_list.append((new_state, new_token_list))
+                        if current_accepted is not None:
+                            accepted_regexp = (current_accepted, 
+                                               new_token_list)
                 self.current_state_list = new_state_list
             token = self.getter.get_token ()
         if accepted_regexp is not None:
@@ -645,49 +659,38 @@ class system (object):
 
 """ ==== States grouped by contexts ==== """
 
-class contexted_state_list(object):
+class contexted_id_list(object):
     """
-        >>> n1 = node_dfa([]); n1.regexp_id = 1
-        >>> n2 = node_dfa([]); n2.regexp_id = 2
-        >>> n3 = node_dfa([]); n3.regexp_id = 3
-        >>> n4 = node_dfa([]); n4.regexp_id = 4
-        >>> n5 = node_dfa([]); n5.regexp_id = 5
-        >>> l = contexted_state_list()
-        >>> l.add(0, n1)
-        >>> l.add(0, n2)
-        >>> l.add(1, n3)
-        >>> l.add(1, n4)
-        >>> l.add(2, n5)
-        >>> [node.state.regexp_id for node in l.list]
+        >>> l = contexted_id_list()
+        >>> l.add(0, 1)
+        >>> l.add(0, 2)
+        >>> l.add(1, 3)
+        >>> l.add(1, 4)
+        >>> l.add(2, 5)
+        >>> [node for node in l.list]
         [2, 1, 4, 3, 5]
         """
-
+    
     def __init__(self):
         self.list = []
         self.last_level = None
         self.idx = None
-
+    
     def copy (self):
         rv = type (self) ()
         rv.list = self.list[:]
         rv.last_level = self.last_level
         rv.idx = self.idx
         return rv
-
-    def add (self, level, state):
+    
+    def add (self, level, id):
         if self.last_level != level:
             self.last_level = level
             self.idx = -1
-            self.list.append(state)
+            self.list.append(id)
         else:
-            self.list.insert(self.idx, state)
+            self.list.insert(self.idx, id)
             self.idx -= 1
-
-    def get_accepting (self):
-        for state in self.list[::-1]:
-            if state.accepting:
-                return state.regexp_id
-        return None
     
     def __repr__ (self):
         return repr (self.list)
