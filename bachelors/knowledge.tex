@@ -2,30 +2,37 @@
 Šajā nodaļā ir aprakstīti galvenie jēdzieni, kas nepieciešami darba izpratnei un kas lietoti darba izstrādes gaitā. 
 
 \subsection{Bezkonteksta gramatikas}
-Bezkonteksta gramatika satur vārdnīcu no simboliem un pārrakstīšanas likumu kopu. Vārdnīca sastāv no termināliem un neterminālem simboliem, un viens no netermināļem ir gramatikas sākuma simbols. Pārrakstītājas likumi ir izskatā \verb|A| $\Rightarrow$ \verb|b|, kur \verb|A| ir viens no netermināliem simboliem, bet b ir neterminālu un terminālu simbolu virkne. Kad kāda likuma kreisē puse parādās apstādāmo simbolu rindā, rinda var tikt pārrakstīta aizvietojot kreisēs puses netermināli ar labo likuma daļu. \verb|A| $\Rightarrow$ \verb|b| parāda, ka \verb|A| var tikt pārveidots virknē \verb|b| atkārtoti pārrakstot to lietojot gramatikas likumus. Visu terminālu simbolu virkņu kopa ir saukta par gramatikas ģenerēto valodu. \cite{Shutt:AdaptiveGrammars}
+Bezkonteksta gramatika satur vārdnīcu no simboliem un pārrakstīšanas likumu kopu. Vārdnīca sastāv no termināliem un neterminālem simboliem, un viens no netermināļem ir gramatikas sākuma simbols. Pārrakstītājas likumi ir izskatā \verb|A| $\Rightarrow$ \verb|b|, kur \verb|A| ir viens no netermināliem simboliem, bet b ir neterminālu un terminālu simbolu virkne. Kad kāda likuma kreisē puse parādās apstādāmo simbolu rindā, rinda var tikt pārrakstīta aizvietojot kreisēs puses netermināli ar labo likuma daļu. \verb|A| $\xRightarrow[]{*}$ \verb|b| parāda, ka \verb|A| var tikt pārveidots virknē \verb|b| daudzas reizes atkārtoti pārrakstot to lietojot gramatikas likumus. Visu terminālu simbolu virkņu kopa ir saukta par gramatikas ģenerēto valodu. \cite{Shutt:AdaptiveGrammars}
+
 Programmēšanas valodas ir jēdzienu sistēma, kas ļauj aprakstīt algoritmus. Šai sistēmai jābūt viennozīmīgi aprakstāmai un saprotamai programmētajam. Tātad ir nepieciešams apraksts, kas ļauj saprotami un pārskatāmi izveidot bāzes struktūras valodai.
+
 Bezkonteksta gramatikas izgudroja N. Homskis, kas plānoja lietot tos lai aprakstītu reālās cilvēku valodas. Šinī jomā bezkonteksta gramatikas netiek lietotas, jo dabiskās valodas ir pārāk sarežģītas, tomēr šīs gramatikas tiek lietotas lai aprakstītu programmēšanas valodu sintaksi. Programmēšanas valodas globālā līmenī nav kontekst-neatkarīgas, bet tomēr tēs ir neatkarīgas lokāli, un kaut arī ne visas programmēšanas valodu īpašības var aprakstīt ar bezkonteksta gramatikām, tos ir ērti lietot lai parādīt valodas konstrukciju struktūru.
+
 Svarīgāka bezkonteksta gramatiku īpašība ir tas, ka tos var mehāniski pārveidot parsētājos, kas ir sistēma, kas skenējot programmas tekstu izveido programmas struktūru. Šī struktūra tālāk ir reprezentēta abstraktās sintakses koka (AST, Abstract Syntax Tree) veidā un  var tikt kompilēta izpildāmā kodā. \cite{Hopcroft:IntroAutomataTheory}
 
 \fixme{Vienkāršas valodiņas gramatikas piemērs (Vai to vispār vajag?)}
 
 (Zemāk - šīs ir ka piemērs ko nevar, es neplānoju skaidrot visu, bet ar šo es gribēju parādīt, ka tiešām ne visu var.)
 Starp īpašībām, kuras nevar aprakstīt ar bezkonteksta gramatikām ir leksiskais tvērums (lexical scope) un statiskā tipizācija (static typing).
-\fixme{Piemēram, viena no valodas īpašībām, ko nevar aprakstīt ar bezkonteksta gramatikām ir tipu sakritības jēdziens.} Piemēram kodu šādā fragmentā: \verb|int a; a = 3.4;| ar bezkonteksta gramatikām izsekot nevarēs, jo par to gramatikas līmenī ir zināms tikai tas, ka tas ir kaut kāds identifikators, bet pie kura tipa tas pieder, zināms nav.
 
 \subsection{Parsētāji}
+
+\fixme{Uzrakstīt!}
 Vairākums parsētāju mūsdienās aktuālākam valodām (piemēram C/C++) ir rakstīti manuāli. 
 Parsētāju tipi - LR, LL, to trūkumi
 \fixme{paskaidrot, no nozīmē reducēt gramatikas likumus}
 
 \subsection{Regulārās izteiksmes}
+\fixme{Uzrakstīt!}
 Regulārās izteiksmes, kas tie ir un ko ar tām var darīt.
 
 \subsection{Priekšprocesori}
+\fixme{Uzrakstīt!}
 Kas tie ir un to iespējas.
 
 \subsection{Tokeni}
 Pirmā programmas kompilēšanas fāze ir leksiskā analīze jeb skanēšana. Tās laikā leksiskais analizators lasa ieejas simbolu virkni (programmas izejas tekstu) un veido jēdzīgas simbolu grupas, kas ir sauktas par leksēmām. Katrai leksēmai leksiskais analizators izveido speciālu objektu, kas tiek saukts par tokenu. Katram tokenam ir glabāts tokena tips, ko lieto parsētājs lai izveidotu programmas struktūru. Ja ir nepieciešams, tiek glabāta arī tokena vērtība, parasti tā ir norāde uz elementu simbolu tabulā, kurā glabājas informācija par tokenu - tips, nosaukums. Simbolu tabula ir nepieciešama tālākā kompilatora darbā lai paveiktu semantisko analīzi un koda ģenerāciju. Šajā darbā vienkāršības dēļ tiks uzskatīts, ka tokena vērtības ailītē glabāsies   leksēma, ko nolasīja analizators. Tālāk tokeni tiks apzimēti šādā veidā:
+
 \begin{verbatim}
 {token-type : token-value}
 \end{verbatim}
@@ -44,14 +51,16 @@ Piemēram apskatīsim nelielu programmas izejas koda gabalu - \verb|sum = item +
 Tātad izejas kods \verb|sum = item1 + 5| pēc leksiskās analīzes tiks pārveidots tokenu plūsmā \verb|{id:sum}, {=}, {id:item1}, {+}, {int:5}|. \cite{DragonBook}
 
 \subsection{Pseido-tokeni}
-Šī darba ietvaros tiek lietots jēdziens pseido-tokens
+\fixme{Uzrakstīt!}
+Šī darba ietvaros tiek lietots jēdziens pseido-tokens, kas ir citu tokenu grupa.
 
-Tālāk darbā tiks lietotas šādas notācijas pseido-tokenu aprakstam: \verb|{expr}|, \verb|{id}|, \verb|{int}|, \verb|{real}|. Pseido-tokenu vērtība tiek apzīmēta sekojoši: \verb|{id:foo}|. Šāds apzīmējums nozīmē, ka tas ir tokens ar tipu \verb|id| un ar vērtību \verb|foo|.
+Tālāk darbā tiks lietotas šādas notācijas pseido-tokenu aprakstam: \verb|{expr}|, \verb|{id}|, \verb|{int}|, \verb|{real}|. Pseido-tokenu vērtība tiek apzīmēta sekojoši: \verb|{id:foo}|. %Šāds apzīmējums nozīmē, ka tas ir tokens ar tipu \verb|id| un ar vērtību \verb|foo|.
 
-\subsection{Programmas konteksti}
-Programmas konteksts (pēc Wikipedia) ir vismazākā datu kopa, ko vajag saglabāt programmas darbības pārtraukuma gadījumā, lai varētu atjaunot programmas darbu. Bet pašas programmas iekšienē var eksistēt lokālie konteksti, ko ievieš, piemēram, figūriekavas C/C++ gadījumā. Tad mainīgie, kas tiek definēti vispārīgā programmas kontekstā (globālie mainīgie), var tikt pārdefinēti mazākajā kontekstā (piemēram, kaut kādas funkcijas vai klases robežās) un iegūst lielāku prioritāti. Tas nozīmē, ka ja tiek lietots šāds pārdefinēts mainīgais, tas tiek uzskatīts par lokālu un tiek lietots lokāli līdz specifiska konteksta beigām, nemainot globālā mainīgā vērtību.
+\subsection{Programmas tvērumi}
+\fixme{Scope, not context}
+Programmas tvērums ir programmas bloks, kurā definēti mainīgo nosaukumi vai citi identifikatori ir lietojami, un kurā to definīcijas ir spēkā. Programmas ietvaros tvērumus ievieš, piemēram, figūriekavas, C/C++ gadījumā. Tad mainīgie, kas tiek definēti vispārīgā programmas kontekstā (globālie mainīgie), var tikt pārdefinēti mazākajā kontekstā (piemēram, kaut kādas funkcijas vai klases robežās) un iegūst lielāku prioritāti. Tas nozīmē, ka ja tiek lietots šāds pārdefinēts mainīgais, tas tiek uzskatīts par lokālu un tiek lietots lokāli līdz specifiska konteksta beigām, nemainot globālā mainīgā vērtību.
 
-Konteksta piemērs:
+Tvēruma piemērs:
 \begin{verbatim}
 int a = 0;
 int b = 1;
@@ -61,17 +70,11 @@ int main() {
     b += a;
 }
 \end{verbatim}
-Šajā piemērā \verb|a| ir definēta gan globāli, gan lokāli. Kad tiek izpildīta rindiņa \verb|a++;|, lokāla mainīgā vērtība tiks samazināta uz 3, jo \verb|a| ir pārdefinēts ar vērtību 2. Globālais \verb|a| tā ara paliks ar vērtību 0. Un kad tiks izpildīta rindiņa \verb|b += a;|, \verb|b| pieņems vērtību 4. Konteksta iekša tiks samainīta globālā mainīgā \verb|b| vērtība, jo tas netika pārdefinēts.
-
-Tālāk termins koda konteksts tiks lietots tieši šajā nozīmē. 
+Šajā piemērā \verb|a| ir definēta gan globāli, gan lokāli. Kad tiek izpildīta rindiņa \verb|a++;|, lokāla mainīgā vērtība tiks samazināta uz 3, jo \verb|a| ir pārdefinēts ar vērtību 2. Globālais \verb|a| tā ara paliks ar vērtību 0. Un kad tiks izpildīta rindiņa \verb|b += a;|, \verb|b| pieņems vērtību 4. Tvēruma iekšā tiks samainīta globālā mainīgā \verb|b| vērtība, jo tas netika pārdefinēts.
 
 \subsection{\label{subsec:dynamicgrammars}Dinamiskas gramatikas}
+\fixme{Uzrakstīt!}
 Dinamiskas vai adaptīvās gramatikas ir gramatiskais formālisms, kas ļauj modificēt gramatikas likumu kopu ar gramatikas rīkiem. \cite{Shutt:AdaptiveGrammars}
 
 Dinamiskas gramatikas, kas tās ir. Fakti par to, ka tās jau ir pētītas un reāli implementējamas un lietojamas. Reālais labums no tām.
 \fixme{No otras puses kāpēc tās daudz nepētīja un daudz reāli nelieto.} Tās vispārīgā gadījumā ir nekontrolējamas.
-
-
-\subsection{Tipu teorija (?)}
-Varbūt šī nodaļa nav vajadzīga?
-īss tipu teorijas pārskats
