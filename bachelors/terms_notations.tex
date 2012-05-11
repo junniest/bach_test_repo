@@ -1,2 +1,26 @@
 \section {Termini un apzīmējumi}
 Šeit būs aprakstīti termini, saīsinājumi un, ja būs nepieciešamība, apzīmējumi.
+
+\subsection{Regulārās izteiksmes}
+\fixme{Uzrakstīt!}
+Regulārās izteiksmes, kas tie ir un ko ar tām var darīt.
+
+\subsection{Priekšprocesori}
+\fixme{Uzrakstīt!}
+Kas tie ir un to iespējas.
+
+\subsection{Programmas tvērumi}
+
+Programmas tvērums ir programmas bloks, kurā definēti mainīgo nosaukumi vai citi identifikatori ir lietojami, un kurā to definīcijas ir spēkā. Programmas ietvaros tvērumus ievieš, piemēram, figūriekavas, C/C++ gadījumā. Tad mainīgie, kas tiek definēti vispārīgā programmas kontekstā (globālie mainīgie), var tikt pārdefinēti mazākajā kontekstā (piemēram, kaut kādas funkcijas vai klases robežās) un iegūst lielāku prioritāti. Tas nozīmē, ka ja tiek lietots šāds pārdefinēts mainīgais, tas tiek uzskatīts par lokālu un tiek lietots lokāli līdz specifiska konteksta beigām, nemainot globālā mainīgā vērtību.
+
+Tvēruma piemērs:
+\begin{verbatim}
+int a = 0;
+int b = 1;
+int main() {
+    int a = 2;
+    a++;
+    b += a;
+}
+\end{verbatim}
+Šajā piemērā \verb|a| ir definēta gan globāli, gan lokāli. Kad tiek izpildīta rindiņa \verb|a++;|, lokāla mainīgā vērtība tiks samazināta uz 3, jo \verb|a| ir pārdefinēts ar vērtību 2. Globālais \verb|a| tā ara paliks ar vērtību 0. Un kad tiks izpildīta rindiņa \verb|b += a;|, \verb|b| pieņems vērtību 4. Tvēruma iekšā tiks samainīta globālā mainīgā \verb|b| vērtība, jo tas netika pārdefinēts.
