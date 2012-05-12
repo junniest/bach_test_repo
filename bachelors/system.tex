@@ -3,7 +3,7 @@ Ka var redzēt no nodaļas~\ref{subsec:dynamicgrammars}, pašmodificējošās gr
 
 Vēl viena problēma adaptīvo gramatiku lietošanā ir tas, ka tā nevar tikt pielietotas valodām, kurām jau eksistē kompilatori, bez attiecīgas parsētāju modifikācijas. Bet tā kā mūsdienīgo valodu gramatikas ir diezgan sarežģītas, parsētāju pārrakstīšana un dinamisko izmaiņu iespējas pievienošana var kļūt par lieku spēku tērēšanu. Visērtākais veids, kā ļaut programmētājam modificēt valodas gramatiku ir izveidot papildus sistēmu, kas to varēs nodrošināt ar minimālām izmaiņām jau eksistējošā parsētājā.
 
-Šīs darbs piedāvā uzbūves principus sistēmai, kas tiek domāta ka palīgrīks parsētājam un kura dos iespēju programmētājam dinamiski paplašināt valodas iespējas ar makro valodas palīdzību. Šī makro valoda ļaus izveidot jaunas valodas konstrukcijas no jau eksistējošām vienībām ar regulāro izteiksmju un vienkāršas funkcionālās valodas palīdzību. Parsētāja darba laikā makro sastapšanas reizes tiks apstrādātas ar funkcionālo valodu. Apstrādes rezultāts - jauna pseido-tokenu virkne, kas var tikt atpazīta ar jau eksistējošo gramatiku - aizvietos attiecīgu koda gabalu. Nekādas pavisam jaunas konstrukcijas šī makro sistēma nejaus izveidot, lai paliktu savietojamība ar sākotnējo gramatiku, tomēr tā ļaus atvieglot programmētāja darbu dodot iespēju aizstāt kodā sarežģītas konstrukcijas ar vienkāršākām. 
+Šīs darbs piedāvā uzbūves principus sistēmai, kas tiek domāta ka palīgrīks parsētājam un kura dos iespēju programmētājam dinamiski paplašināt valodas iespējas ar makro valodas palīdzību. Šī makro valoda ļaus izveidot jaunas valodas konstrukcijas no jau eksistējošām vienībām. Tas tiks realizēts analizējot kodu ar ierakstītiem šabloniem un apstrādājot atrastās pseido-tokenu virknes, transformējot tos citās struktūrās, kas varēs tikt atpazītas ar sākotnējo valodas gramatiku. Apstrādes rezultāts - jauna pseido-tokenu virkne - aizvietos attiecīgu koda gabalu. Nekādas pavisam jaunas konstrukcijas šī makro sistēma nejaus izveidot, lai paliktu savietojamība ar sākotnējo gramatiku, tomēr tā ļaus atvieglot programmētāja darbu dodot iespēju aizstāt kodā sarežģītas konstrukcijas ar vienkāršākām. 
 
 Šīs sistēmas galvenais mērķis ir piedāvāt iespēju modificēt valodas sintaksi programmas rakstīšanas gaitā, nebojājot jau eksistējošo konstrukciju darbu. Sistēma ieviesīs pašmodificēšanos uz pārrakstīšanas bāzes, kas vienlaikus nodrošinās modifikācijas un parsētāja nemainīgumu. Tajā pašā laikā sistēma būs stabila pret kļūdām dēļ tā, ka tā strādās tikai konkrētās gramatikas produkcijas ietvaros un tā, ka tā pārbaudīs tipus jaunizveidotām virknēm.
 
@@ -122,11 +122,44 @@ Funkcija \verb|type|, savukārt, ļaus pārbaudīt tokenu tipu, kas var būt nep
 
 Lai būtu iespēja apstādināt rekursiju, šī valoda arī ļaus izpildīt aritmētiskās operācijas ar veseliem skaitļiem. Tas dos iespēju izveidot skaitītājus un izveidot rekursijas izejas nosacījumus.
 
-\fixme{Fixed till here}
-
 \subsubsection{\label{syste_typesystem}Tipu sistēma}
 
-\fixme{Uzrakstīt}
+Kā bija redzams figūrā~\ref{fig:matchsyntax}, katrā makro pusē ir atrodams produkcijas nosaukums, \verb|[prod1]| un \verb|[prod2]|. Tas tiek darīts tādēļ, lai kontrolētu, kad dotais makro ir pārbaudīts, un kāda tipa izejas virkni tas radīs. Abas šīs atzīmes ir rādītas tipu kontroles sistēmas dēļ.
+
+Katrs atsevišķs makro strādā konkrētas gramatikas produkcijas ietvaros, \verb|[prod1]| dotā makro gadījumā. Tas nodrošinās to, ka katrs no makro tiks izpildīts pareizajā vietā un visas konstrukcijas tiks apstrādātas. 
+
+% Apskatīsim sekojošu makro piemēru - \verb|match [\int] {int} {!} → [\int] factorial({int})|. Pieņemsim, ka funkcija \verb|factorial(x)| rēķina dotā skaitļa faktoriālu. Apskatīsim sekojošo koda gabalu \verb|3! + 4! + x!|. Tā kā dotais makro strādā tikai produkcijā \verb|\int|, dotā simbolu virkne tiks pakāpeniski transformēta uz \verb|6 + 14 + x!|. Izteiksme \verb|x!| paliks tāda pati, jo makro šablons neatpazīs \verb|x| ka veselā skaitļa \verb|{int:x}| tokenu, bet gan ka identifikatora \verb|{id:x}| tokenu. Bet izteiksmes \verb|3!| un \verb|4!| tiks atpazītas ka skaitļi, tāpēc tās arī tiks pārrakstītas.
+% и шо это даёт?
+
+Otrais tips, \verb|[prod2]|, atzīmē to, ka pēc transformācijas procesa beigām mums jāsaņem tieši šādai produkcijai korektu izteiksmi. Tātad ir jāparbauda tas, ka funkcijas \verb|f(v)| rezultāts attiecībā uz atrasto tokenu virkni, ir atļauta ieejas virkne priekš produkcijas \verb|prod2|.
+
+Lai to paveikt ir nepieciešams izveidot pseido-tokenu regulāro izteiksmi produkcijai \verb|prod2|. Tālāk ir nepieciešams izsecināt funkcijas \verb|f| no virknes \verb|v| rezultāta tipu.
+
+Šajā darbā netiks apskatīts jautājums, kādā veidā tiks izveidota regulārā izteiksme priekš katras gramatikas produkcijas. To varētu izveidot programmētājs, vai, varbūt tā varētu tikt izveidota automātiski. Ir svarīgi pieminēt, ka pāreja no gramatikas likuma uz regulāro izteiksmi noved pie kādas informācijas zaudēšanas. Piemēram, nav iespējams uzkonstruēt precīzu regulāro izteiksmi valodai:
+
+\begin{verbatim}
+A :=  aAb | ab
+\end{verbatim}
+
+Tomēr ir iespējams izveidot regulāro izteiksmi kas iekļaus sevī gramatikas aprakstīto valodu, piemēram, \verb|a+b+|. Makro lietotā transformācijas shēma tiks atzīta par pareizo, ja ir iespējams pierādīt, ka produkciju aprakstošā regulārā izteiksme atpazīst arī valodu, ko veido \verb|f(v)|.
+
+Ir viegli pamanīt, ka regulārās izteiksmes izveido dabisku tipu hierarhiju. Valoda, kura var tikt atpazīta ar regulāro izteiksmi $r_1$, var tikt iekļauta citas regulārās izteiksmes $r_2$ atpazītās valodā apakškopas veidā. Piemēram, regulārās izteiksmes \verb|a+| valoda ir atpazīstama arī ar regulāro izteiksmi \verb|a*|, bet \verb|a*| atpazīst vēl papildus tukšu simbolu virkni. Šādai tipu hierarhijai uz regulārām izteiksmēm eksistē arī super-tips, ko uzdod regulārā izteiksme \verb|.*| - $\top$. Ir acīmredzami, ka $\forall t_i \in R, t_i \sqsubseteq \top$, kur $R$ ir visu regulāro izteiksmju kopa.
+
+Ir svarīgi izveidot procedūru, kas ļaus izsecināt, vai $r_1 {\sqsubseteq} r_2$. Ir zināms, ka ir iespējams katrai regulārai izteiksmei uzbūvēt minimālu akceptējošu galīgu determinētu automātu. Šīs automāts atpazīs precīzi to pašu valodu, ko atpazīst regulārā izteiksme. Tas nozīmē, ka no $r_1 \sqsubseteq r_2 \Rightarrow seko min (det (r_1)) \sqsubseteq min (det (r_2))$. Diviem minimāliem automātiem $A_1$ un $A_2$, $A_1 \sqsubseteq A_2$ nozīmē, ka eksistē kaut kāds attēlojums $\Psi$ no $A_1$ stāvokļiem uz $A_2$ stāvokļiem, tāds, ka:
+
+\[
+    Start (A_1) \to Start (A_2) \in \Psi
+\]
+\[
+    \forall s \in States (A_1) \forall e \in Edges (s),
+    \Psi (Transition (s, e)) = Transition (\Psi (s), e)
+\]
+
+Šeit $States (x)$ apzīmē automāta $x$ stāvokļu kopu, $Edges (s) apzīmē pseido-tokenu kopu, kas atzīmē no stāvoļa $s$ izejošās šķautnes. $Transition(s, t)$, savukārt, apzīmē stāvokli, kas ir sasniedzams no $s$ pārejot pa šķautni, kas atzīmēta ar pseido-tokenu $t$.
+
+Otra svarīga īpašība, kas tiks lietota šajā tipu pārbaudīšanas sistēmā ir tas, ka transformāciju valoda ir statiski tipizējama un tā satur ļoti ierobežotu iebūvēto funkciju skaitu. Katrai no šīm iebūvētām funkcijām ir iespējams izveidot to aprakstošo regulāro izteiksmi. Piemēram, regulārā izteiksme funkcijai $head (x)$ var tikt izveidota ka visu to šķautņu kopa, kas iziet no $x$ aprakstošā automāta sākuma stāvokļa.
+
+Var redzēt, ka šāda tipu pārbaudīšanas sistēma tik tiešam ir teorētiski iespējama. Sīkāka informācija par tipu sistēmu ir saņemama pie Eq kompilatora izstrādes komandas.
 
 \subsection{Sistēmas sakars ar priekšprocesoriem}
 Ir divu veidu priekšprocesori - leksiskie un sintaktiskie. Leksiskie priekšprocesori tiek palaisti pirms pirmkoda parsēšanas un nezin neko par apstrādājamas valodas sintaksi (piem. C/C++ priekšprocesors). No otras puses sintaktiskie priekšprocesori tiek palaisti pēc parsera darbības un apstrādā sintaktiskos kokus, ko uzbūvē parsētājs. Dēļ aprakstāmās sistēmas īpašībām šajā darbā netiks apskatīti sintaktiskie priekšprocesori, jo sistēmas īpašība ir tāda, ka līdz tas darba izpildei parsētājs nevar uzbūvēt sintaktisko koku.
