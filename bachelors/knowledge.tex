@@ -40,7 +40,7 @@ Piemēram apskatīsim nelielu programmas izejas koda gabalu - \verb|sum = item +
 
 Tātad izejas kods \verb|sum = item1 + 5| pēc leksiskās analīzes tiks pārveidots tokenu plūsmā \verb|{id:sum}, {=}, {id:item1}, {+}, {int:5}|. \cite{DragonBook}
 
-Šī darbā arī tiek lietots jēdziens pseido-tokens. Pseido-tokens ir citu tokenu grupa, kas tiek aizvietota ar vienu objektu. Tas var tikt darīts, lai vienreiz noparsētu izteiksmi nevajadzētu apstrādāt vēlreiz. Tokenu aizvietošana ar pseido-tokeniem notiek gramatikas likumu reducēšanas brīdī. Kad, piemēram, tokenu virkne \verb|{id:a} '+' {id:b}| tiek atpazīta ka derīga izteiksme gramatikas ietvaros, tā var tikt aizvietota ar pseido-tokenu \verb|{expr:a + b}.
+Šī darbā arī tiek lietots jēdziens pseido-tokens. Pseido-tokens ir citu tokenu grupa, kas tiek aizvietota ar vienu objektu. Tas var tikt darīts, lai vienreiz noparsētu izteiksmi nevajadzētu apstrādāt vēlreiz. Tokenu aizvietošana ar pseido-tokeniem notiek gramatikas likumu reducēšanas brīdī. Kad, piemēram, tokenu virkne \verb|{id:a} '+' {id:b}| tiek atpazīta ka derīga izteiksme gramatikas ietvaros, tā var tikt aizvietota ar pseido-tokenu \verb|{expr:a + b}|.
 
 \subsection{\label{subsec:dynamicgrammars}Par dinamiskām gramatikām}
 
