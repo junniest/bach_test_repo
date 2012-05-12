@@ -24,3 +24,6 @@ int main() {
 }
 \end{verbatim}
 Šajā piemērā \verb|a| ir definēta gan globāli, gan lokāli. Kad tiek izpildīta rindiņa \verb|a++;|, lokāla mainīgā vērtība tiks samazināta uz 3, jo \verb|a| ir pārdefinēts ar vērtību 2. Globālais \verb|a| tā ara paliks ar vērtību 0. Un kad tiks izpildīta rindiņa \verb|b += a;|, \verb|b| pieņems vērtību 4. Tvēruma iekšā tiks samainīta globālā mainīgā \verb|b| vērtība, jo tas netika pārdefinēts.
+
+\subsection{Type inference}
+\fixme{Uzrakstīt!}

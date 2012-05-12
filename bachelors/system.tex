@@ -95,48 +95,36 @@ match [{expr}] v = {id:foo} {(} {expr} ( {,} {expr} ) * {)}
 \caption{\label{fig:matchsample2}Makro piemērs \#2}
 \end{figure}
 
-\fixme{Rewritten till here}
+\subsection{\label{subsec:system_qualities}Transformācijas pieeja}
 
-\subsection{\label{subsec:system_qualities}Sistēmas īpašības}
-Šī nodaļa aprakstīs, kā mēs gribam realizēt gramatikas pašmodificēšanos, lai izmaiņas būtu kontrolētas.
-Mēs gribam norobežot modificēšanas iespējas
+Šī nodaļa satur aprakstu par to, kā tiek plānots izveidot programmētājam saprotamu transformēšanas mehānismu un kontrolēt to iespējas.
 
-\subsubsection{Funkcionālā valoda $T$}
-Lai varētu izpildīt atrastās tokenu virknes apstrādi un modificēšanu ir nepieciešams kaut kāds papildus rīks. Par šo rīku tika izvēlēta vienkārša funkcionāla valoda. Tā tika izvēlēta tāpēc, ka tās funkcijām nepiemīt blakusefekti, tātad to izpilde nevarēs samainīt eksistējošos datus. Valoda, kuras funkcijām ir blakusefekti, varētu sabojāta parsētāja darbu.
+Ir nepieciešams izveidot mehānismu, kas ļaus transformēt makro kreisās puses akceptētu pseido-tokenu virkni, izveidojot virkni, kas to aizvietos. Lai to izdarītu ir nepieciešama kaut kāda programmēšanas valoda, par kuru ies runa apakšnodaļā~\ref{system_funclanguage}.
 
-Šī minimālistiska funkcionālā valoda tika nosaukta par $T$, un tā tiks lietota lai aprakstītu plānotas tokenu virknes transformācijas iespējas. Valodas gramatika ir parādīta figūrā~\ref{fig:tlanguagegrammar}
+Ir plānots, ka transformāciju sistēma varēs atpazīt nepareizi sastādītus makro šablonus lietojot tipu kontroles pieeju. Šīs pieejas bāzes principi ir aprakstīti apakšnodaļā~\ref{system_typesystem}. Jāņem vērā tas, ka lai šī sistēma varētu tikt pielietota, izvēlētai transformāciju valodai jāpiemīt tipu secināšanas (\emph{type inference}) īpašībai.
 
-\begin{figure}
-\begin{verbatim}
-program         → ( function ) *
-function        → id '::' fun_type id id * '=' expr
-fun_type        → (type | '(' fun_type ')') '->' fun_type
-expr            → id | expr expr | let_expr | if_expr | builtin
-let_expr        → 'let' id '=' expr (',' id '=' expr) * 'in' expr
-if_expr         → 'if' cond_expr 'then' expr 'else' expr
-cond_expr       → 'type' expr '==' type | expr
-builtin         → 'cons' expr  (expr | 'nil') 
-                  | 'head' expr | 'tail' expr | 'value' expr
-                  | pseudo_token '[' expr ']' | number
-                  | + | - | ...
-type            → pseudotoken_regexp | int | regexp_t
-\end{verbatim}
-\caption{\label{fig:tlanguagegrammar}$T$ valodas gramatika}
-\end{figure}
+\subsubsection{\label{system_funclanguage}Tokenu virkņu apstrāde}
+Lai varētu izpildīt atrastās tokenu virknes apstrādi un modificēšanu ir nepieciešams kaut kāds papildus rīks. Šīs rīks varētu būt kaut kāda programmēšanas valoda. Šādai pieejai ir divas iespējas - imperatīvā valoda vai funkcionālā valoda.
 
-%\fixme{Kas ir regexp\_t?}
+Šīm uzdevumam varētu lietot kādu no imperatīvam programmēšanas valodām, piemēram C, vienkārši izveidojot saskarni ar tās valodas kompilatoru. Bet vairākumam šādu valodu nav tipu secināšanas iespējas. Tipu secināšana C valodas gadījumā arī ir apgrūtināta ar rādītāju mainīgiem, kuru tipus nevar droši izrēķināt parsēšanas laikā. Lai varētu ieviest stingrās tipu izsecināšanas iespējas, vajadzēs ierobežot valodas iespējas, tātad modificēt eksistējošo kompilatoru vai kaut kā citādāk ierobežot pieejamo konstrukciju kopu.
 
-Galvenais šīs valodas pielietojums ir dot iespēju apstaigāt pseido-tokenu virkni, kura tika atzīta par sakrītošu ar atbilstošu šablonu. Lai to darīt, tā dos iespēju lietot rekursiju un dažas iebūvētās funkcijas - saraksta pirmā elementa funkciju \verb|head|, saraksta astes funkciju \verb|tail| un objektu pāra izveidošanas funkciju \verb|cons|. Funkcija \verb|cons| funkcionālo valodu kontekstā strādā kā saraksta izveidošanas funkcija, jo saraksts \verb|list(1, 2, 3)| tiek reprezentēta ka \verb|cons(1, cons(2, cons(3, nil)))|, kur \verb|nil| ir speciāls tukšs objekts.
+Varētu lietot arī vienu no jau eksistējošām funkcionālām valodām ar tipu secināšanas īpašību, kas piemīt vairākumam funkcionālo valodu. Tomēr arī funkcionālām valodām ir daudz iezīmju, kas nav nepieciešami dotā uzdevuma risināšanai. Piemēram, slinkā rēķināšana šajā gadījumā nav nepieciešama, jo programmas izpildes laikā visas vērtības jau būs zināmas un slinkie aprēķini nebūs vajadzīgi. Vēl viena ērtā funkcionālo valodu īpašība ir tas, ka tās funkcijām nepiemīt blakusefekti, tātad to izpilde nevarēs samainīt eksistējošos datus. Valoda, kuras funkcijām ir blakusefekti, varētu sabojāta parsētāja darbu.
 
-\fixme{Paskaidrot sintaksi (if\_expr, let\_expr, ...)}
+Šīs sistēmas implementācijā tika izvēlēts papildus izveidot vienkāršu funkcionālu valodu, kura būs statiski tipizējama. Tātad visiem šīs valodas mainīgajiem varēs izsecināt piederību pie tipa un pie kaut kāda virstipa, kas tiks lietots lai nodrošināt transformāciju korektību.
+
+Galvenais šīs valodas pielietojums ir dot iespēju apstaigāt pseido-tokenu virkni, kura tika atzīta par sakrītošu ar atbilstošu šablonu. Lai to darīt, tā dos iespēju lietot rekursiju un dažas iebūvētās funkcijas - saraksta pirmā elementa funkciju \verb|head|, saraksta astes funkciju \verb|tail| un objektu pāra izveidošanas funkciju \verb|cons|. Funkcija \verb|cons| funkcionālo valodu kontekstā strādā kā saraksta izveidošanas funkcija, jo saraksts \verb|list(1, 2, 3)| tiek reprezentēta ka \verb|cons(1, cons(2, cons(3, nil)))|, kur \verb|nil| ir speciāls tukšs objekts. Valoda saturēs arī \verb|if| konstrukciju, kas ļaus pārbaudīt dažādus nosacījumus.
 
 Lai būtu iespēja apstādināt rekursiju, šī valoda arī ļaus izpildīt aritmētiskās operācijas ar veseliem skaitļiem. Tas dos iespēju izveidot skaitītājus un izveidot rekursijas izejas nosacījumus.
 
-Ir plānots, ka šī valoda arī ļaus izpildīt daļēju novērtējumu izteiksmēm, tur kur būs nepieciešams. Tas nozīmē, ka valodai jāsatur saskarne, kas ļaus piekļūt pie tokena vērtības. Šim mērķim ir domāta funkcija \verb|value|, kas ir pielietojama pseido-tokeniem ar skaitlisku vērtību, piemēram, lai dabūt skaitli \verb|5| no pseido-tokena \verb|{int:5}|. Lai izveidotu jaunu tokenu ar izrēķinātu vērtību, tiks lietota sintakse \verb|pseudo_token[value]|, kur \verb|pseudo_token| ir izveidojamā tokena tips un \verb|value| ir vērtība, piemēram, \verb|int[10]|.
+Tiek plānots, ka šī valoda arī ļaus izpildīt daļēju novērtējumu izteiksmēm, tur kur būs nepieciešams. Tas nozīmē, ka valodai jāsatur saskarne, kas ļaus piekļūt pie tokena vērtības. Šim mērķim ir domāta funkcija \verb|value|, kas ir pielietojama pseido-tokeniem ar skaitlisku vērtību, piemēram, lai dabūt skaitli \verb|5| no pseido-tokena \verb|{int:5}|. Valoda arī ļaus izveidot jaunus tokenus ar izrēķinātu vērtību.
 
 Funkcija \verb|type|, savukārt, ļaus pārbaudīt tokenu tipu, kas var būt nepieciešams transformācijas procesā, piemēram, lai atpazīt kādu operatoru.
 
-\subsubsection{Tipu sistēma}
+Lai būtu iespēja apstādināt rekursiju, šī valoda arī ļaus izpildīt aritmētiskās operācijas ar veseliem skaitļiem. Tas dos iespēju izveidot skaitītājus un izveidot rekursijas izejas nosacījumus.
+
+\fixme{Fixed till here}
+
+\subsubsection{\label{syste_typesystem}Tipu sistēma}
 
 \fixme{Uzrakstīt}
 
