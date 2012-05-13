@@ -1,30 +1,86 @@
 \section{Prototipa realizācija}
+
+\fixme{This is just random text right now.}
+
 Lai ilustrētu šādas transformāciju sistēmas izstrādes iespējamību, tika izstrādāts sakrišanu meklēšanas mehānisma prototips. Šī nodaļa apraksta prototipa vispārīgās īpašības un pieejas, kas tika lietotas tā realizācijā. Prototips vienkāršības un izstrādes ātruma dēļ tika rakstīts Python valodā, kas ir skriptu valoda, un tāpēc prototips ir viegli palaižams un atkļūdojams uz jebkuras mašīnas ar uzstādītu 2.7.0 Python versiju.
 
 Šīs nodaļas apakšnodaļa~\ref{subsec:solution_problems} savukārt apraksta problēmas ar kurām saskārās darba autors un izņēmumus, kas pagaidām netiek implementēti prototipā.
 
 \fixme{Pārrakstīt atkarībā no satura}
 
+\subsection{\label{subsec:solution_syntax}Atļautā makro sintakse}
+
+Kā jau bija pateikts, makro pieejamā regulāro izteiksmju sintakse ir minimāla. Tā atļauj lietot \verb|*| lai identificēt tokenu virknes un \verb/|/ lai izvēlēties starp dažiem tokenu tipiem.
+
+Prototips arī ļauj veidot regulārās izteiksmes ar specificētu tokenu vai pseido-tokenu vērtībām. Piemēram, regulārā izteiksme \verb|{id:foo}| sagaidīs tieši identifikatoru \verb|foo|, bet izteksme \verb|{id}| sagaidīs jebkuru identifikatoru.
+
 \subsection{\label{subsec:solution_approach}Vispārīgā pieeja}
-Šī apakšnodaļa apraksta sistēmas prototipa darbību virkni un prototipa iespējas uz doto brīdi. Šeit ir tikai vispārīgi aprakstīta darba gaita, bez pamatojumiem, kāpēc šāda rīcība ir izvēlēta, bet apakšnodaļā~\ref{subsec:solution_motivation} tiks sīkāk aprakstīts, kāpēc tas tika izveidots tieši šādi.
+Šī apakšnodaļa vispārīgi apraksta sistēmas prototipa darbību virkni.
 
-Prototips imitē darbu reālajā vidē, saņemot pa vienam tokenus no ieejas plūsmas no klases, kas imitē leksera darbu. Tā kā šī sistēma nav parsētājs, tā neapstrādā tokenus, kas neattiecās uz sistēmas darbu. Tas nozīmē, ka kamēr sistēmā neeksistē neviena regulārā izteiksme, tā palaiž garām tokenus un neapstrādā tos. Tiklīdz tiek sastapts makro sākuma tokens, prototips uzsāk regulārās izteiksmes parsēšanu. Parsēšanas procesā tiek izveidots nedeterminēts galīgs automāts. Tālāk šīs automāts tiek determinēts un minimizēts, tātad katra regulāra izteiksme tiek pārveidota minimālajā determinētā automātā, tātad ir optimizēta pēc izpildes laika.
+Prototips imitē darbu reālajā vidē, saņemot pa vienam tokenus no ieejas plūsmas no klases, kas imitē leksera darbu. Tā kā šī sistēma nav parsētājs, tā neapstrādā tokenus, kas neattiecās uz sistēmas darbu. Tas nozīmē, ka kamēr sistēmā neeksistē neviena regulārā izteiksme, tā palaiž garām tokenus un neapstrādā tos. Tiklīdz tiek sastapts makro sākuma tokens, prototips uzsāk regulārās izteiksmes parsēšanu. Parsēšanas procesā tiek izveidots galīgs automāts, kas akceptē regulārās izteiksmes uzdotās virknes.
 
-Tikko parādās vismaz divas regulārās izteiksmes, sistēma sapludina kopā to determinētos automātus, kas tiek darīts lai samazinātu tokenu virknes sakrišanas atrašanas laiku. Tā izteiksme, kas tika ielasīta agrāk būs ar lielāku prioritāti nekā tā, kas ir ielasīta vēlāk. Tātad ja secīgi tiks ielasītas divas izteiksmes \verb|{id} '(' ')'| un \verb|{id} '(' ({real}*) ')'|, tad ielasot virkni \verb|{id:foo} '(' ')'| tiks akceptēta pirmā izteiksme. Gadījumā, ja izteiksmes tiks ielasītas pretējā secībā, pirmā izteiksme nekad netiks atpazīta, jo otrā izteiksme pārklāj visas pirmās izteiksmes korektās ieejas.
+\fixme{ALALAL}
 
-Sistēma arī ļauj veidot regulārās izteiksmes ar specifiskām tokenu vērtībām. Piemēram, regulārā izteiksme \verb|{id:foo}| sagaidīs tieši identifikatoru \verb|foo|, bet izteksme \verb|{id}| sagaidīs jebkuru identifikatoru.
-
-Prototips strādā pēc $greedy$ principa - tas akceptē visgarāko iespējamo šablona sakritību. Ja eksistē divi šabloni, kas dod sakritību ar vienādu garumu, tad tiek ņemtas vērā prioritātes. Tas var notikt, ja eksistē divi šabloni, viens no kuriem satur vērtības prasību tokenam, bet otrs - nesatur. Ja tiek ielasītas divas izteiksmes  \verb|{id:foo} '(' {real}* ')'| un \verb|{id} '(' {real}* ')'|, tad virkne \verb|{id:foo} '(' {real:4.5} ')'| derēs abiem šabloniem. Bet tā kā šablons \\ \verb|{id:foo} '(' {real}* ')'| tika ielasīts pirmais, tieši tas arī būs akceptēts.
-
-Viena no galvenām šīs sistēmas īpašībām ir iespēja atšķirt programmatūras tvērumus. Ja sistēma darba gaitā sastapās ar konteksta sākuma simbolu, tā izveido eksistējošā automāta kopiju un tālāk tvēruma makro pievieno šai kopijai. Tvēruma iekšienē strādā tādi paši likumi par izteiksmju prioritātēm - izteiksme, kas bija agrāk ir ar lielāku prioritāti. Bet makro, kas ir specifiski tvērumam ir ar lielāku prioritāti nekā vispārīgāki makro. Tātad jā pēc kārtas atnāks \verb|{id} '(' ')'|, tvēruma sākuma tokens un \verb|{id} '(' {real}* ')' |, tad otrā tvēruma ietvaros virkne \verb|{id:foo} '(' ')'| tiks akceptēta ar otro regulāro izteiksmi. Pēc izejas no tvēruma tā specifiskais automāts tiek izmests ārā un darbs tiek turpināts ar automātu no iepriekšējā tvēruma līmeņa.
-
-Tvērumu pārvalde ir implementēta šādā veidā, jo sapludinātā automāta atbrīvošana no vairs nevajadzīgiem pamestā tvēruma stāvokļiem ir diezgan darbietilpīgs uzdevums. Ja $n$ ir tvēruma regulāro izteiksmju daudzums un $m$ - maksimālais nesapludinātā automāta garums, tad dzēšanai būs vajadzīgs vismaz $O(n*m)$ laiks. 
-
-Tad, kad atnāk kaut kādi tokeni, kas neatzīmē makro sākšanās, sistēma izpilda pārejas starp sapludinātā automāta stāvokļiem un atceras tokenus, kurus jau ir nolasījusi. Sistēma atrod garāko virkni, kas atbilst kādam no šabloniem un tad atgriež tās identifikatoru un nolasīto tokenu virkni, lai turpmāk transformēšanas mehānisms varētu pārstrādāt to jaunajā virknē.
+Tad, kad atnāk kaut kādi tokeni, kas neatzīmē makro sākšanās, sistēma izpilda pārejas starp automātu stāvokļiem, meklējot sakrišanas, un atceras tokenus, kurus jau ir nolasījusi. Sistēma atrod garāko virkni, kas atbilst kādam no šabloniem un tad atgriež tās identifikatoru un nolasīto tokenu virkni, lai turpmāk transformēšanas mehānisms varētu pārstrādāt to jaunajā virknē.
 
 Pieņemot, ka transformēšanas sistēma ir izstrādāta, tālākā darba gaita būs sekojoša. Transformēšanas sistēma aizstāv ielasīto virkni ar citu, kas ir konstruēta pēc akceptētās regulārās izteiksmes noteikumiem. Tad sakrišanas meklēšanas sistēmas darbs tiek uzsākts no aizvietotās virknes sākuma.
 
 Sistēma turpina darbu aprakstītā gaitā līdz ko neviens no šabloniem vairs netiek akceptēts. Pēc sistēmas apstāšanās tiek iegūta jauna tokenu virkne, kas tika apstrādāta attiecīgi kodā ierakstītiem makro. Kad sistēma tiks integrēta ar reālu kompilatoru, tā strādās paralēli ar parsētāju un sistēmas izejas tokenu virkne tiks apstrādāta ar standartiem valodas likumiem.
+
+\subsection{\label{solution_conflictresolving}Makro konfliktu risināšana}
+Makro šablonu konflikti var rasties tad, kad daži makro var tikt akceptēti vienlaikus. Tas var notikt gadījumos, ja divas regulārs izteiksmes akceptē līdzīgas virknes. Zemāk tiks aprakstīts, kā tika izvēlēts risināt dažādas konfliktu situācijas. 
+
+Reālajā situācijā var rasties 3 konfliktu veidi. Pirmais var rasties gadījumā, ja divas izteiksmes atpazīst vienu un to pašu virkni vienā tvērumā. Otrais var rasties gadījumā, ja jaunajā tvērumā parādās šablons, kas ir līdzīgs jau eksistējošam šablonam no vispārīgāka tvēruma. Trešais var rasties tad, kad viena no izteiksmēm akceptē kādu virkni, bet cita akceptē garāku virkni.
+
+\subsubsection{Divu makro konflikts vienā tvērumā.}
+
+Gadījumā, ja viena tvēruma ietvaros eksistē divi šabloni, kas dod sakritību ar vienādu garumu, tad tiek ņemtas vērā prioritātes. Tā izteiksme, kas tika ielasīta agrāk būs ar lielāku prioritāti nekā tā, kas ir ielasīta vēlāk. Tātad ja secīgi tiks ielasītas divas izteiksmes \verb|{id} {(} {)}| un \verb|{id} {(} ( {real} * ) {)}|, tad ielasot virkni \verb|{id:foo} {(} {)}| tiks akceptēta pirmā izteiksme. Gadījumā, ja izteiksmes tiks ielasītas pretējā secībā, pirmā izteiksme nekad netiks atpazīta, jo otrā izteiksme pārklāj visas pirmās izteiksmes korektās ieejas.
+
+\subsubsection{Divu makro konflikts dažādos tvērumos.}
+
+Tvēruma iekšienē strādā tādi paši likumi par izteiksmju prioritātēm - izteiksme, kas bija agrāk ir ar lielāku prioritāti. Bet makro, kas ir specifiski tvērumam ir ar lielāku prioritāti nekā vispārīgāki makro. Tātad, ja pirmajā tvērumā tiks ieviestas makro \verb|1| un \verb|2|, bet otrajā tvērumā tiks ieviestas marko \verb|3| un \verb|4|, to prioritāšu rinda izskatīsies sekojoši: \verb|3, 4, 1, 2|. Pirmie makro ir ar lielāku prioritāti, nekā tie, kas atnāca vēlāk, bet vēlāka tvēruma makro ir ar lielāku prioritāti neka tie, kas atrodami agrākā tvērumā.
+
+\subsubsection{Dažādu virkņu garumu konflikts}
+Prototips strādā pēc $greedy$ principa - tas akceptē visgarāko iespējamo šablona sakritību. Tātad, ja eksistē divi šabloni \verb|{int} {,}| un \verb|({int} {,}) *|, tad tokenu virkne \verb|{int:4} {,} {int:6} {,}| tiks akceptēta ar otru šablonu, neskatoties uz to, ka augstākās prioritātes šablona sakritība tika konstatēta agrāk.
+
+\subsection{\label{subsec:solution_motivation}Realizācijas pamatojums}
+
+Galvenais princips prototipa risinājuma izstrādē bija izveidot to tā, lai jebkurā laika momentā šablonu sakrišanu meklēšanai būtu nepieciešams lineārs laiks un tikai viena pāreja pa tokenu virkni. Šāda pieeja ir izvēlēta ar iedomu, ka makro pievienošana tiks izpildīta tikai vienreiz, bet sakrišanu meklēšana tiks pildīta katrā produkcijā, un, sliktākajā gadījumā, katram tokenam no ieejas plūsmas.
+
+Ielasītās regulārās izteiksmes tiek pārsētas un pārveidotas nedeterminēta galīgā automātā. Tad katrs no nedeterminētiem galīgiem automātiem tiek determinizēts un minimizēts. Tātad katrai regulārai izteiksmei tiek izveidots minimāls determinēts automāts, kurš ir optimizēts gan pēc laika, gan pēc aizņemtās vietas.
+
+Tālāk, lai nodrošinātu visu šablonu pārbaudi, ir nepieciešams apvienot izveidotos automātus. To var izdarīt dažos veidos. Vienkāršākais no tiek būtu glabāt visus galīgos automātus sarakstā. Pieņemsim, ka ir $n$ šabloni, kurus vajag pārbaudīt. Tad automātu saraksts reprezentē nedeterminētu galīgu automātu ar $n$ $\varepsilon$-zariem no sākuma stāvokļa, katrs no kuriem ved pie sākuma stāvokļa vienam no jau izveidotiem determinētiem automātiem.
+
+Cits veids, kā to varētu izpildīt, ir apvienot visus izveidotos šablonu automātus vienā determinētā galīgā automātā. Tieši šīs veids tika izvēlēts šī darba ietvaros un 
+
+Šī darba ietvaros tika nolemts visus automātus apvienot vienā determinēta galīgā automātā, lai pēc iespējas samazināt laiku sakrišanu meklēšanai. Kaut arī automātu apvienošana šādā veidā ir laikietilpīga, tā samazina laika kārtu sakritību meklēšanai. Šāda izvēle ir balstīta uz faktu, ka 
+
+\fixme{Just fixme}
+
+We do not explicitly select a method of operation with joining DFA, we only give the complexities of the proposed variants. This is because the optimal solu-
+tion selection should be based on the practical uses of the system. It is impossible to state, without any actual examples, what will be more time-e↵ective during execution. Even though the second option is time-consuming when adding and removing matches, the dramatic improvement in execution time might come from the fact that match count is relatively small, but the automaton execution will, at worst cases, be performed for every token in the source text.
+
+
+Diemžēl pilnībā lineāra laika sakrišanu meklēšana nav iespējama tādēļ, ka prototips dod iespēju lietot makro ar tokenu vērtībām. Piemēram, eksistē 2 makro, viens no kuriem vēlās saņemt tokenu \verb|{id}|, un otrs \verb|{id:foo}|. Gadījumā, kad sakrišanu meklēšanas procesā parādās tokens \verb|{id:foo}|, automātam nav iespējas izsecināt, kurš no ceļiem novedīs pie garākas sakritības. Tādēļ tas iet pa abiem ceļiem vienlaikus, saglabājot abus stāvokļus.
+
+Automātu minimizēsana ir diezgan darbietilpīga operācija (sk.~\ref{subsubsec:prototype_minimization}), tāpēc tā tiek izpildīta tikai uz atsevišķiem automātiem. Liels automāts nebūs minimāls, jo dažādu minimālu automātu apvienošana negarantē šo faktu, bet tā kā apvienota automāta stāvokļu daudzums var būt ļoti liels, minimizēšanas izpilde var būt neefektīva.
+
+\subsection{Kāpēc neder jau uzrakstītas bibliotēkas}
+
+Šīm uzdevumam 
+Kāpēc šīm uzdevumam neder jau eksistējošas regulāro izteiksmju bibliotēkas. Kāpēc  neder vispārpieņemtie automātu apvienošanas algoritmi.
+Regulāro izteiksmju dzinēji strādā ar tekstu, nevis ar tokeniem, nav vērts mēģināt pielāgot. Automātu apvienošana - visur aprakstītās pieejas nesaglabā, pie kāda no automātiem pieder katrs stāvoklis, it īpaši akceptējošie stāvokļi. Mums ir svarīgi zināt, kāds no automātiem ir akceptēts, jo no tā ir atkarīgs, kura no produkcijām tiks lietota. 
+
+
+
+We do not explicitly select a method of operation with joining DFA, we only give the complexities of the proposed variants. This is because the optimal solu-
+tion selection should be based on the practical uses of the system. It is impossible to state, without any actual examples, what will be more time-e↵ective during execution. Even though the second option is time-consuming when adding and removing matches, the dramatic improvement in execution time might come from the fact that match count is relatively small, but the automaton execution will, at worst cases, be performed for every token in the source text.
+
+
+
+Tādēļ, ka aprakstītā pieeja mēģina pēc iespējas minimizēt meklēšanas laiku, tā neatļauj veidot atrasto tokenu grupēšanu, kā tas ir parasti pieņemts regulārās izteiksmēs. Atpakaļnorādes ($backreferences$) uz tokenu grupām nav atļautas.
+
+Tomēr nepieciešamības gadījumā ir apskatīta arī tāda iespēja. Tas varētu tikt izpildīts, determinizējot tikai automāta stāvokļus grupu iekšienē, pēc tam ar $\varepsilon$-pārejām secīgi savienojot grupu automātu akceptējošus un sākuma stāvokļus. Automāts nebūs pilnīgi determinizēts, tikai grupu ietvaros, bet tad būs pieejamas atrasto tokenu grupas. Tomēr šāda pieeja neatļauj sapludināt dažus automātus vienā, jo šāda procedūra sabojās grupēšanu.
 
 \subsection{Lietotie algoritmi}
 \label{subsec:solution_algorithms}
@@ -32,19 +88,20 @@ Sistēma turpina darbu aprakstītā gaitā līdz ko neviens no šabloniem vairs 
 \subsubsection{Determinizācija}
 \fixme{Uzrakstīt!}
 
-\subsubsection{Minimizācija}
+\subsubsection{\label{subsubsec:prototype_minimization}Minimizācija}
 \fixme{Uzrakstīt!}
 
 \subsubsection{Apvienošana}
 \fixme{Uzrakstīt!}
 
-\subsection{\label{subsec:solution_motivation}Realizācijas pamatojums}
-\fixme{Uzrakstīt!}
+\subsubsection{Sakrišanu meklēšana}
+\fixme{Uzrakstīt}
 
-Kāpēc sapludina visu kopā, kāpēc minimizē?
+\subsubsection{Tvērumi}
 
-Kāpēc šīm uzdevumam neder jau eksistējošas regulāro izteiksmju bibliotēkas. Kāpēc  neder vispārpieņemtie automātu apvienošanas algoritmi.
-Regulāro izteiksmju dzinēji strādā ar tekstu, nevis ar tokeniem, nav vērts mēģināt pielāgot. Automātu apvienošana - visur aprakstītās pieejas nesaglabā, pie kāda no automātiem pieder katrs stāvoklis, it īpaši akceptējošie stāvokļi. Mums ir svarīgi zināt, kāds no automātiem ir akceptēts, jo no tā ir atkarīgs, kura no produkcijām tiks lietota. 
+Viena no galvenām šīs sistēmas īpašībām ir iespēja atšķirt programmatūras tvērumus. Ir dažādi veidi, kā var izveidot automātus, kas atšķirtu atsevišķu tvērumu makro. Viens no veidiem varētu būt tāds - katram tvērumam izveidot automātu rindu, kur tvērumam specifiskākie automāti tiks pārbaudīti pirmie. Bet gadījumā, ja ir $n$ iekļautie tvērumi un nepieciešamais makro ir atrodams pirmajā automātā, būs jāizpilda vismaz $n$ meklēšanas, līdz ko pareizais šablons tiks atrasts. Atstājot tikai vienu aktīvu automātu vienā laika brīdī, arī ir dažas iespējas. Varētu visus šablonus likt vienā automātā kopā, un tad pēc izejas no tvēruma attiecīgos šablonus dzēst ārā. Tas nozīmētu, ka katram tvērumam jāatceras makro, kas tika pievienoti, un jāprot dzēst daļu no stāvokļiem ārā no automāta. Bet stāvokļu dzēšana ir laikietilpīga operācija, jo tās izpildīšanai būs nepieciešams apstaigāt visu lielo automātu, dzēšot no tā nevajadzīgos stāvokļus.
+
+Tāpēc tika izvēlēta sekojoša pieeja. Ja prototips darba gaitā sastapās ar tvēruma sākuma simbolu, tas izveido eksistējošā automāta kopiju un ieliek to kaudzē. Tad automātam tiek pievienotas tvēruma makro. Izejot no tvēruma tā specifiskais automāts tiek izmests ārā un darbs tiek turpināts ar pēdējo automātu no kaudzes, kas atbilst iepriekšējam tvērumam. Šādā veidā jebkurā laika brīdī aktīvs ir tikai viens sakrišanu meklēšanas automāts.
 
 \subsection{\label{subsec:solution_problems}Izņēmumi}
 
