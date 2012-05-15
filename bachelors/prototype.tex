@@ -17,11 +17,9 @@ Prototips arī ļauj veidot regulārās izteiksmes ar specificētu tokenu vai ps
 \subsection{\label{subsec:solution_approach}Vispārīgā pieeja}
 Šī apakšnodaļa vispārīgi apraksta sistēmas prototipa darbību virkni.
 
-Prototips imitē darbu reālajā vidē, saņemot pa vienam tokenus no ieejas plūsmas no klases, kas imitē leksera darbu. Tā kā šī sistēma nav parsētājs, tā neapstrādā tokenus, kas neattiecās uz sistēmas darbu. Tas nozīmē, ka kamēr sistēmā neeksistē neviena regulārā izteiksme, tā palaiž garām tokenus un neapstrādā tos. Tiklīdz tiek sastapts makro sākuma tokens, prototips uzsāk regulārās izteiksmes parsēšanu. Parsēšanas procesā tiek izveidots galīgs automāts, kas akceptē regulārās izteiksmes uzdotās virknes.
+Prototips imitē darbu reālajā vidē, saņemot pa vienam tokenus no ieejas plūsmas. Tokenu plūsmas saskarne imitē leksera darbu. Kamēr prototips nav saņēmis nevienu regulāro izteiksmi, tas ignorē tokenu plūsmas apstrādes izsaukumus. Tiklīdz prototipam tiek padota tokenu regulārā izteiksme, tas uzsāk regulārās izteiksmes parsēšanu. Parsēšanas procesā tiek izveidots galīgs automāts, kas akceptē regulārās izteiksmes uzdotās virknes.
 
-\fixme{ALALAL}
-
-Tad, kad atnāk kaut kādi tokeni, kas neatzīmē makro sākšanās, sistēma izpilda pārejas starp automātu stāvokļiem, meklējot sakrišanas, un atceras tokenus, kurus jau ir nolasījusi. Sistēma atrod garāko virkni, kas atbilst kādam no šabloniem un tad atgriež tās identifikatoru un nolasīto tokenu virkni, lai turpmāk transformēšanas mehānisms varētu pārstrādāt to jaunajā virknē.
+Tad, kad atnāk tokenu apstrādes pieprasījums, sistēma izpilda pārejas starp automātu stāvokļiem, meklējot sakrišanas, un atceras tokenus, kurus jau ir nolasījusi. Sistēma atrod garāko virkni, kas atbilst kādam no šabloniem un tad atgriež tās identifikatoru un nolasīto tokenu virkni, lai turpmāk transformēšanas mehānisms varētu pārstrādāt to jaunajā virknē.
 
 Pieņemot, ka transformēšanas sistēma ir izstrādāta, tālākā darba gaita būs sekojoša. Transformēšanas sistēma aizstāv ielasīto virkni ar citu, kas ir konstruēta pēc akceptētās regulārās izteiksmes noteikumiem. Tad sakrišanas meklēšanas sistēmas darbs tiek uzsākts no aizvietotās virknes sākuma.
 
@@ -51,42 +49,53 @@ Ielasītās regulārās izteiksmes tiek pārsētas un pārveidotas nedeterminēt
 
 Tālāk, lai nodrošinātu visu šablonu pārbaudi, ir nepieciešams apvienot izveidotos automātus. To var izdarīt dažos veidos. Vienkāršākais no tiek būtu glabāt visus galīgos automātus sarakstā. Pieņemsim, ka ir $n$ šabloni, kurus vajag pārbaudīt. Tad automātu saraksts reprezentē nedeterminētu galīgu automātu ar $n$ $\varepsilon$-zariem no sākuma stāvokļa, katrs no kuriem ved pie sākuma stāvokļa vienam no jau izveidotiem determinētiem automātiem.
 
-Cits veids, kā to varētu izpildīt, ir apvienot visus izveidotos šablonu automātus vienā determinētā galīgā automātā. Tieši šīs veids tika izvēlēts šī darba ietvaros un 
-
-Šī darba ietvaros tika nolemts visus automātus apvienot vienā determinēta galīgā automātā, lai pēc iespējas samazināt laiku sakrišanu meklēšanai. Kaut arī automātu apvienošana šādā veidā ir laikietilpīga, tā samazina laika kārtu sakritību meklēšanai. Šāda izvēle ir balstīta uz faktu, ka 
-
-\fixme{Just fixme}
-
-We do not explicitly select a method of operation with joining DFA, we only give the complexities of the proposed variants. This is because the optimal solu-
-tion selection should be based on the practical uses of the system. It is impossible to state, without any actual examples, what will be more time-e↵ective during execution. Even though the second option is time-consuming when adding and removing matches, the dramatic improvement in execution time might come from the fact that match count is relatively small, but the automaton execution will, at worst cases, be performed for every token in the source text.
-
+Cits veids, kā to varētu izpildīt, ir apvienot visus izveidotos šablonu automātus vienā determinētā galīgā automātā. Tieši šīs veids tika izvēlēts šī darba ietvaros lai pēc iespējas samazinātu laiku sakrišanu meklēšanai. Kaut arī automātu apvienošana šādā veidā ir laikietilpīga, tā samazina laika kārtu sakritību meklēšanai. Šāda izvēle ir balstīta uz faktu, ka makro daudzums būs samērā neliels, bet gan sakrišanu meklēšanas izsaukums var notikt katras produkcijas ietvaros, t.i. katra tokena apstrādē.
 
 Diemžēl pilnībā lineāra laika sakrišanu meklēšana nav iespējama tādēļ, ka prototips dod iespēju lietot makro ar tokenu vērtībām. Piemēram, eksistē 2 makro, viens no kuriem vēlās saņemt tokenu \verb|{id}|, un otrs \verb|{id:foo}|. Gadījumā, kad sakrišanu meklēšanas procesā parādās tokens \verb|{id:foo}|, automātam nav iespējas izsecināt, kurš no ceļiem novedīs pie garākas sakritības. Tādēļ tas iet pa abiem ceļiem vienlaikus, saglabājot abus stāvokļus.
 
-Automātu minimizēsana ir diezgan darbietilpīga operācija (sk.~\ref{subsubsec:prototype_minimization}), tāpēc tā tiek izpildīta tikai uz atsevišķiem automātiem. Liels automāts nebūs minimāls, jo dažādu minimālu automātu apvienošana negarantē šo faktu, bet tā kā apvienota automāta stāvokļu daudzums var būt ļoti liels, minimizēšanas izpilde var būt neefektīva.
+Automātu minimizēšana ir diezgan darbietilpīga operācija (sk.~\ref{subsubsec:prototype_minimization}), tāpēc tā tiek izpildīta tikai uz atsevišķiem automātiem. Liels automāts nebūs minimāls, jo dažādu minimālu automātu apvienošana negarantē šo faktu, bet tā kā apvienota automāta stāvokļu daudzums var būt ļoti liels, minimizēšanas izpilde var būt neefektīva. Tā kā minimizēšana samazina tikai automāta aizņemto vietu, nevis apstaigāšanas laiku, to var neieverot.
 
 \subsection{Kāpēc neder jau uzrakstītas bibliotēkas}
 
-Šīm uzdevumam 
-Kāpēc šīm uzdevumam neder jau eksistējošas regulāro izteiksmju bibliotēkas. Kāpēc  neder vispārpieņemtie automātu apvienošanas algoritmi.
-Regulāro izteiksmju dzinēji strādā ar tekstu, nevis ar tokeniem, nav vērts mēģināt pielāgot. Automātu apvienošana - visur aprakstītās pieejas nesaglabā, pie kāda no automātiem pieder katrs stāvoklis, it īpaši akceptējošie stāvokļi. Mums ir svarīgi zināt, kāds no automātiem ir akceptēts, jo no tā ir atkarīgs, kura no produkcijām tiks lietota. 
+Šinī darbā aprakstītai apstrādei neder jau izstrādātas regulāro izteiksmju bibliotēkas, kaut arī ir izstrādātas daudzas bibliotēkas, gan parastās, gan ar līdzīgu pieeju, ko apskata šīs darbs (piem.~\cite{RE2}, kas lieto automātu teoriju lai paātrinātu apstrādes laiku). Tās neder tādēļ, ka regulāro izteiksmju dzinēji strādā ar tekstu, nevis ar tokeniem. Tie arī parasti piedāvā daudz vairāk funkcionalitātes, nekā ir nepieciešams, piemēram, meklēšana no virknes sākuma. Citu programmētāju rakstītā koda pārstrāde aizņemtu vairāk laika nekā tā izveidošana pilnīgi no jauna.
 
+Jau eksistējošās bibliotēkas nepiedāvā iespēju apvienot visus automātus viena vienīgā. Eksistējošie apvienošanas risinājumi, savukārt, pēc apvienošanas neņem vērā, tieši kāda regulārā izteiksme uz doto brīdi ir akceptējoša. Šī darba ietvaros šīs informācijas saglabāšana ir būtiska, jo no tās ir atkarīgs, kāda no transformācijām ir lietota. 
 
+Apvienošanas pieeja parasti ir lietota lielu datu plūsmu apstrādē, piemēram, meklējot infekcijas pazīmes plūsmā. Tad izstrādātās regulārās izteiksmes ir optimizētas un apvienotas vienā automāta. Šādā gadījumā nav nozīmes, kura no izteiksmēm ir akceptēta, jo galvenais ir identificēt draudu pazīmes. 
 
-We do not explicitly select a method of operation with joining DFA, we only give the complexities of the proposed variants. This is because the optimal solu-
-tion selection should be based on the practical uses of the system. It is impossible to state, without any actual examples, what will be more time-e↵ective during execution. Even though the second option is time-consuming when adding and removing matches, the dramatic improvement in execution time might come from the fact that match count is relatively small, but the automaton execution will, at worst cases, be performed for every token in the source text.
+\subsection{\label{subsec:solution_algorithms}Lietotie algoritmi}
 
+Šī apakšnodaļa apraksta pieejas un algoritmus, kas tika lietoti prototipa realizācijā. Kā jau bija teikts, meklēšanas laika optimizācijai tika izvēlēta pieeja, kur visi regulāro izteiksmju automāti tiek sapludināti kopā.
 
+Visu automātu pārejas pa zariem notiek nevis pa kādu simbolu, bet gan pa tokeniem.
 
-Tādēļ, ka aprakstītā pieeja mēģina pēc iespējas minimizēt meklēšanas laiku, tā neatļauj veidot atrasto tokenu grupēšanu, kā tas ir parasti pieņemts regulārās izteiksmēs. Atpakaļnorādes ($backreferences$) uz tokenu grupām nav atļautas.
+\subsubsection{Regulāro izteiksmju pārveidošana nedeterminētā galīgā automātā}
 
-Tomēr nepieciešamības gadījumā ir apskatīta arī tāda iespēja. Tas varētu tikt izpildīts, determinizējot tikai automāta stāvokļus grupu iekšienē, pēc tam ar $\varepsilon$-pārejām secīgi savienojot grupu automātu akceptējošus un sākuma stāvokļus. Automāts nebūs pilnīgi determinizēts, tikai grupu ietvaros, bet tad būs pieejamas atrasto tokenu grupas. Tomēr šāda pieeja neatļauj sapludināt dažus automātus vienā, jo šāda procedūra sabojās grupēšanu.
+Regulāro izteiksmju translēšana uz nedeterminētu galīgu automātu ir diezgan vienkārša. Ir nepieciešams tikai pārveidot galvenos kontroles elementus. Tā kā uz doto brīdi prototips atbalsta tikai ierobežotu regulāro izteiksmju sintaksi, to ir vienkārši izdarīt.
 
-\subsection{Lietotie algoritmi}
-\label{subsec:solution_algorithms}
+Nedeterminēts galīgs automāts (NGA) veselai regulārai izteiksmei ir izveidots to daļējiem automātiem katrai regulārās izteiksmes daļai. Katram operatoram tiek piekārtota attiecīga konstrukcija. Daļējiem automātiem nav akceptējošu stāvokļu, tiem ir pārejas uz nekurieni, kuras vēlāk tiks lietotas lai savienotu automāta daļas. Pilnīga automāta būvēšanas process beigsies ar akceptējošā stāvokļa pievienošanu palikušajām pārejām.
+
+NGA vienam tokenam ${token}$ izskatīsies sekojoši:
+\fixme{picture}
+
+NGA divu automātu konkatenācijai $e_1 e_2$  izskatīsies sekojoši:
+\fixme{picture}
+
+NGA izvēlei starp diviem automātiem $e_1 | e_2$ izskatīsies sekojoši:
+\fixme{picture}
+
+NGA priekš konstrukcijas $e_1 *$ izskatīsies sekojoši:
+\fixme{picture}
+
+Tālāk šie automāti tiek apvienoti vienā, piemēram izteiksmei \verb/{id} ({real} | {int}) * {;}/ NGA izskatīsies sekojoši:
+\fixme{picture}
+
+\cite{Cox:RegexpMatchingFast}, \cite{DragonBook}
 
 \subsubsection{Determinizācija}
-\fixme{Uzrakstīt!}
+
+
+\cite{DragonBook}
 
 \subsubsection{\label{subsubsec:prototype_minimization}Minimizācija}
 \fixme{Uzrakstīt!}
@@ -105,10 +114,8 @@ Tāpēc tika izvēlēta sekojoša pieeja. Ja prototips darba gaitā sastapās ar
 
 \subsection{\label{subsec:solution_problems}Izņēmumi}
 
-\fixme{Papildināt}
-
 \subsubsection{Transformācijas}
-Šīs prototips nenodarbojas ar tokenu virkņu transformācijām, jo tā nav sakrišanu meklēšanas mehānisma 
+Šīs prototips nenodarbojas ar tokenu virkņu transformācijām, jo tā nav sakrišanu meklēšanas mehānisma uzdevums. Tālāk 
 
 \subsubsection{Produkcijas}
 Prototipā pagaidām nav implementēta apstrādes dalīšana pa gramatikas produkcijām, visas regulārās izteiksmes ir sapludinātas vienā automāta. Regulāro izteiksmju dalīšana pa tipiem tiks izstrādāta vēlāk, kad tiks uzsākta integrācija un sadarbība ar reālu kompilatoru. Tā varētu tikt implementēta līdzīgi tam, kā tiek realizēti konteksti - pa vienam sapludinātam automātam priekš katra produkcijas tipa.
@@ -116,5 +123,15 @@ Prototipā pagaidām nav implementēta apstrādes dalīšana pa gramatikas produ
 \subsubsection{Tokenu mantošana}
 Sistēma nezin neko par valodas gramatiku. Tieši tāpēc tokens \verb|{real}| netiks uztverts ka \verb|{expr}|, kaut arī racionāls skaitlis ir izteiksme. Tā kā sistēmai jābūt neatkarīgai no valodas gramatikas, šī hierarhija nav iekodējama transformāciju sistēmā. To ir jānodrošina parsētājam, attiecīgi apstrādājot tokenus un apkopojot to nozīmi. Par to arī būs jārūpējas programmētājam rakstot savas makro izteiksmes.
 
+\subsubsection{Regulārās izteiksmes daļu grupēšana}
+
+Tādēļ, ka aprakstītā pieeja mēģina pēc iespējas minimizēt meklēšanas laiku, tā neatļauj veidot atrasto tokenu grupēšanu, kā tas ir parasti pieņemts regulārās izteiksmēs. Atpakaļnorādes ($backreferences$) uz tokenu grupām nav atļautas.
+
+Tomēr nepieciešamības gadījumā ir apskatīta arī tāda iespēja. Tas varētu tikt izpildīts, determinizējot tikai automāta stāvokļus grupu iekšienē, pēc tam ar $\varepsilon$-pārejām secīgi savienojot grupu automātu akceptējošus un sākuma stāvokļus. Automāts nebūs pilnīgi determinizēts, tikai grupu ietvaros, bet tad būs pieejamas atrasto tokenu grupas. Tomēr šāda pieeja neatļauj sapludināt dažus automātus vienā, jo šāda procedūra sabojās grupēšanu.
+
 \subsubsection{Tokenu vērtības}
- Vienlaikus \verb|{id:f}| un \verb|{id}| ievieš nedeterminētību, kaut arī visi automāti sistēmā ir determinizēti.
+Vienlaikus \verb|{id:f}| un \verb|{id}| ievieš nedeterminētību, kaut arī visi automāti sistēmā ir determinizēti.
+
+\subsection{\label{subsec:solution_optimization}Optimizācijas iespējas}
+
+Regulāro izteiksmju optimizēšana netiek izpildīta, jo to ir vērts izpildīt uz regulārām izteiksmēm, kas tiks lietoti daudzas reizes. Darba apskatītā situācijā regulārās izteiksmes tiks lietotas tikai vienas programmas ietvaros un to optimizēšanai nav īpašas jēgas. Tomēr bez reāliem piemēriem nevar izšķirt, vai tas izveidos būtisku paātrinājumu darbā vai nē.
