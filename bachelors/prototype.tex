@@ -71,6 +71,8 @@ Visu automātu pārejas pa zariem notiek nevis pa kādu simbolu, bet gan pa toke
 
 \subsubsection{Regulāro izteiksmju pārveidošana nedeterminētā galīgā automātā}
 
+\fixme{Proof that they have the same computational power}
+
 Regulāro izteiksmju translēšana uz nedeterminētu galīgu automātu ir diezgan vienkārša. Ir nepieciešams tikai pārveidot galvenos kontroles elementus. Tā kā uz doto brīdi prototips atbalsta tikai ierobežotu regulāro izteiksmju sintaksi, to ir vienkārši izdarīt.
 
 Nedeterminēts galīgs automāts (NGA) veselai regulārai izteiksmei ir izveidots to daļējiem automātiem katrai regulārās izteiksmes daļai. Katram operatoram tiek piekārtota attiecīga konstrukcija. Daļējiem automātiem nav akceptējošu stāvokļu, tiem ir pārejas uz nekurieni, kuras vēlāk tiks lietotas lai savienotu automāta daļas. Pilnīga automāta būvēšanas process beigsies ar akceptējošā stāvokļa pievienošanu palikušajām pārejām.
@@ -106,22 +108,69 @@ NGA priekš konstrukcijas $e_1 *$ izskatīsies sekojoši:
 Tālāk šie automāti tiek apvienoti vienā, piemēram izteiksmei \verb/{id} ({real} | {int}) * {;}/ NGA izskatīsies sekojoši:
 \fixme{picture}
 
-Tā tiek izveidots nedeterminēts automāts katrai regulārai izteiksmei.
-
-\cite{Cox:RegexpMatchingFast}, \cite{DragonBook}
+Tā tiek izveidots nedeterminēts automāts katrai regulārai izteiksmei. \cite{Cox:RegexpMatchingFast}, \cite{DragonBook}
 
 \subsubsection{Determinizācija}
 
+Kaut arī daudzām valodām ir vienkāršāk uzbūvēt nedeterminētu galīgu automātu (piemēram, pašām regulārām izteiksmēm tas ir loģiskāk), ir patiess tas, ka katra valoda var tikt aprakstīta gan ar nedeterminētu, gan ar determinētu galīgu automātu. Turklāt, dzīvē sastopamās situācijās DGA parasti satur tik pat daudz stāvokļu, cik ir NGA. Sliktākajā gadījumā, tomēr var gadīties, ka mazākais iespējamais DGA saturēs $2^n$ stāvokļu, kamēr mazākais NGA saturēs $n$ stāvokļus. \footnote{Pieņemsim, ka automāta valoda sastāv no diviem simboliem - {0, 1}. Sliktākais gadījums, kad DGA tiešām saturēs $2^n$ stāvokļus attiecībā pret $n$ NGA stāvokļiem, var rasties tad, kad, piemēram, automāta valodā $n$-tais simbols no virknes beigām ir 1. Tad DGA būs jāprot atcerēties pēdējos $n$ simbolus. Tā kā ir divi ieejas alfabēta simboli, automātam ir jāatceras visas to dažādas $2^n$ kombinācijas.}
 
-\cite{DragonBook}
+Izrādās, ka patiesībā katram NGA eksistē ekvivalents DGA, ko var uzbūvēt ar apakškopu sastādīšanas algoritmu (pierādījumu tam, ka uzbūvētais DGA tik tiešām akceptē to pašu valodu, ko NGA, sk.  \cite{Hopcroft:IntroAutomataTheory}, teorēma 2.11.) Vadošā doma šī algoritmā ir tas, ka katrs determinētā galīgā automāta (DGA) stāvoklis ir kādu NGA stāvokļu kopa. Pēc ieejas virknes $a_1, a_2, ..., a_n$ ielasīšanas DGA atrodas stāvoklī, kas atbilst NGA stāvokļu kopai, kuru var sasniegt apstaigājot virkni $a_1, a_2, ..., a_n$.
+
+\paragraph*{Algoritms 1: NGA transformēšana uz DGA}
+\subparagraph*{Ieeja}NGA $N$.
+\subparagraph*{Izeja}DGA $D$, kas ir ekvivalents $N$.
+\subparagraph{Algoritms} Sākumā algoritms konstruē pāreju tabulu priekš $D$. Katrs $D$ stāvoklis ir $N$ stāvokļu kopa, tātad tabula tiek konstruēta tā, lai $D$ simulētu vienlaikus visas pārejas, ko var izpildīt $N$, saņemot kādu ieejas virkni. Lai automāts kļūtu determinēts, ir nepieciešams atbrīvoties no iespējas atrasties dažos stāvokļos vienlaikus. Tātad vajag atbrīvoties no $\varepsilon$-pārejām, un no daudzkārtīgām pārejām no viena stāvokļa pa vienu ieejas simbolu.
+
+Tabulā~\ref{fig:NGAoperations} var redzēt divas funkcijas, kas ir nepieciešamas NGA apstrādes izpildei. Šīs funkcijas no NGA stāvokļiem un pārejām veido jaunas stāvokļu kopas, kuras veidos DGA stāvokļus.
+
+\begin{table}[htdp]
+  \caption{NGA apstaigāšanas funkcijas}
+  \centering
+  \begin{tabular}{|c|p{400pt}|}
+    \hline
+    Funkcija & Apraksts \\ \hline
+    $\varepsilon-closure (T)$ & 
+    NGA stāvokļu kopa, kas ir sasniedzama lietojot tikai $\varepsilon$-pārejas no visiem stāvokļiem no kopas $T$. \\ \hline
+    $move (T, a)$ & 
+    NGA stāvokļu kopa, kas ir sasniedzama lietojot pārejas pa simbolu $a$ no visiem stāvokļiem no kopas $T$. \\
+    \hline
+  \end{tabular}
+\label{fig:NGAoperations}
+\end{table}
+
+Ir nepieciešams apstrādāt visas tādas $N$ stāvokļu kopas, kuras ir sasniedzamas, $N$ saņemot kaut kādu ieejas virkni. Indukcijas bāzes pieņēmums ir tas, ka pirms darbības uzsākšanas $N$ var atrasties jebkurā no stāvokļiem, kurus var sasniegt pārejot pa $\varepsilon$ bultiņām no $N$ sākuma stāvokļa. Ja $s_0$ ir $N$ sākuma stāvoklis, $D$ sākuma stāvoklis būs $\varepsilon-closure (set (s_0))$. Indukcijai pieņemam, ka $N$ var atrasties $T$ stāvokļu kopā pēc virknes $x$ ielasīšanas. Tad, ja $N$ ielasīs nākamo simbolu $a$, tad $N$ var pārvietoties jebkura no stāvokļiem $move (T, a)$. Taču pēc $a$ ielasīšanas var notikt vēl dažas $\varepsilon$-pārejas, tāpēc pēc virknes $xa$ ielasīšanas $N$ var atrasties jebkurā no stāvokļiem $\varepsilon-closure (move (T, a))$. Algoritms~\ref{} parāda kā šādā veidā var tikt uzkonstruēti visi DGA stāvokļi un tā pāreju tabula.
+
+Automāta $D$ sākuma stāvoklis ir $\varepsilon-closure (set (s_0))$, bet $D$ akceptējošie stāvokļi ir visas tās NGA stāvokļu kopas, kas satur vismaz vienu akceptējošu stāvokli.
+
+\begin{lstlisting}[frame=single]
+$\varepsilon-closure (set (s_0))$ is the only state in $Dstates$, and is unmarked
+while there is an unmarked state $T$ in $Dstates$:
+	mark $T$
+	for each input symbol $a$:
+		$U$ = $\varepsilon-closure (move (T, a))$
+		if $U$ is not in Dstates
+			add $U$ as an unmarked state to $Dstates$
+		$Dtran [T, a] = U$
+\end{lstlisting}
+
+\subparagraph{Sarežģītība} Sarežģītības novērtējums šīm algoritmam ir diezgan nepatīkams. Sliktākajā gadījumā tas būs $O(m^(n+1))$, kur $n$ ir NGA stāvokļu daudzums un $m$ ir ieejas alfabēta simbolu skaits. Algoritms var uzģenerēt līdz $m^n$ DGA stāvokļiem, katram no kuram ir m pārejas. Taču parasti tas tā nenotiek un DGA stāvokļu skaits ir līdzīgs NGA stāvokļu skaitam, un algoritma sarežģītība ir $O(n*m)$.
+
+\cite{DragonBook} \cite{Hopcroft:IntroAutomataTheory}
 
 \subsubsection{\label{subsubsec:prototype_minimization}Minimizācija}
 \fixme{Uzrakstīt!}
 
+
 \subsubsection{Apvienošana}
+
+
 \fixme{Uzrakstīt!}
 
 \subsubsection{Sakrišanu meklēšana}
+Sakrišanu meklēšana NGA sliktākajā gadījumā būs ar sarežģītību $O(n^2*l)$, kur $n$ ir NGA stāvokļu skaits un $l$ - pārbaudāmās virknes elementu skaits. Tas var notikt, kad visi NGA stāvokļi ir aktīvi vienā laika brīdī, un no katra no tiem eksistē $n$ pārejas pa ieejas simbolu uz visiem automāta stāvokļiem.
+
+Tīrā DGA gadījumā sakrišanu pārbaude katram ieejas elementam ir $O(l)$, kur $l$ ir pārbaudāmās virknes garums. 
+
 \fixme{Uzrakstīt}
 
 \subsubsection{Tvērumi}
