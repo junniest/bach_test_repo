@@ -76,19 +76,41 @@ Regulāro izteiksmju translēšana uz nedeterminētu galīgu automātu ir diezga
 Nedeterminēts galīgs automāts (NGA) veselai regulārai izteiksmei ir izveidots to daļējiem automātiem katrai regulārās izteiksmes daļai. Katram operatoram tiek piekārtota attiecīga konstrukcija. Daļējiem automātiem nav akceptējošu stāvokļu, tiem ir pārejas uz nekurieni, kuras vēlāk tiks lietotas lai savienotu automāta daļas. Pilnīga automāta būvēšanas process beigsies ar akceptējošā stāvokļa pievienošanu palikušajām pārejām.
 
 NGA vienam tokenam ${token}$ izskatīsies sekojoši:
-\fixme{picture}
+\begin{figure}[h]
+  \centering
+    \includegraphics[scale=1.5]{pictures/auto_token_1}
+  \caption{Automaton for a*b*}
+  \label{fig:automaton_aastbast}
+\end{figure}
 
 NGA divu automātu konkatenācijai $e_1 e_2$  izskatīsies sekojoši:
-\fixme{picture}
+\begin{figure}[h]
+  \centering
+    \includegraphics[scale=1.5]{pictures/auto_sequence_1}
+  \caption{Automaton for a*b*}
+  \label{fig:automaton_aastbast}
+\end{figure}
 
 NGA izvēlei starp diviem automātiem $e_1 | e_2$ izskatīsies sekojoši:
-\fixme{picture}
+\begin{figure}[h]
+  \centering
+    \includegraphics[scale=1.5]{pictures/auto_or_1}
+  \caption{Automaton for a*b*}
+  \label{fig:automaton_aastbast}
+\end{figure}
 
 NGA priekš konstrukcijas $e_1 *$ izskatīsies sekojoši:
-\fixme{picture}
+\begin{figure}[h]
+  \centering
+    \includegraphics[scale=1.5]{pictures/auto_asterisk_1}
+  \caption{Automaton for a*b*}
+  \label{fig:automaton_aastbast}
+\end{figure}
 
 Tālāk šie automāti tiek apvienoti vienā, piemēram izteiksmei \verb/{id} ({real} | {int}) * {;}/ NGA izskatīsies sekojoši:
 \fixme{picture}
+
+Tā tiek izveidots nedeterminēts automāts katrai regulārai izteiksmei.
 
 \cite{Cox:RegexpMatchingFast}, \cite{DragonBook}
 
