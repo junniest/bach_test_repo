@@ -12,7 +12,7 @@ Lai ilustrētu šādas transformāciju sistēmas izstrādes iespējamību, tika 
 
 Kā jau bija pateikts, makro pieejamā regulāro izteiksmju sintakse ir minimāla. Tā atļauj lietot \verb|*| lai identificēt tokenu virknes un \verb/|/ lai izvēlēties starp dažiem tokenu tipiem.
 
-Prototips arī ļauj veidot regulārās izteiksmes ar specificētu tokenu vai pseido-tokenu vērtībām. Piemēram, regulārā izteiksme \verb|{id:foo}| sagaidīs tieši identifikatoru \verb|foo|, bet izteksme \verb|{id}| sagaidīs jebkuru identifikatoru.
+Prototips arī ļauj veidot regulārās izteiksmes ar specificētu tokenu vai pseido-tokenu vērtībām. Piemēram, regulārā izteiksme \verb|{id:foo}| sagaidīs tieši identifikatoru \verb|foo|, bet izteiksme \verb|{id}| sagaidīs jebkuru identifikatoru.
 
 \subsection{\label{subsec:solution_approach}Vispārīgā pieeja}
 Šī apakšnodaļa vispārīgi apraksta sistēmas prototipa darbību virkni.
@@ -36,7 +36,7 @@ Gadījumā, ja viena tvēruma ietvaros eksistē divi šabloni, kas dod sakritīb
 
 \subsubsection{Divu makro konflikts dažādos tvērumos.}
 
-Tvēruma iekšienē strādā tādi paši likumi par izteiksmju prioritātēm - izteiksme, kas bija agrāk ir ar lielāku prioritāti. Bet makro, kas ir specifiski tvērumam ir ar lielāku prioritāti nekā vispārīgāki makro. Tātad, ja pirmajā tvērumā tiks ieviestas makro \verb|1| un \verb|2|, bet otrajā tvērumā tiks ieviestas marko \verb|3| un \verb|4|, to prioritāšu rinda izskatīsies sekojoši: \verb|3, 4, 1, 2|. Pirmie makro ir ar lielāku prioritāti, nekā tie, kas atnāca vēlāk, bet vēlāka tvēruma makro ir ar lielāku prioritāti neka tie, kas atrodami agrākā tvērumā.
+Tvēruma iekšienē strādā tādi paši likumi par izteiksmju prioritātēm - izteiksme, kas bija agrāk ir ar lielāku prioritāti. Bet makro, kas ir specifiski tvērumam ir ar lielāku prioritāti nekā vispārīgāki makro. Tātad, ja pirmajā tvērumā tiks ieviestas makro \verb|1| un \verb|2|, bet otrajā tvērumā tiks ieviestas makro \verb|3| un \verb|4|, to prioritāšu rinda izskatīsies sekojoši: \verb|3, 4, 1, 2|. Pirmie makro ir ar lielāku prioritāti, nekā tie, kas atnāca vēlāk, bet vēlāka tvēruma makro ir ar lielāku prioritāti neka tie, kas atrodami agrākā tvērumā.
 
 \subsubsection{Dažādu virkņu garumu konflikts}
 Prototips strādā pēc $greedy$ principa - tas akceptē visgarāko iespējamo šablona sakritību. Tātad, ja eksistē divi šabloni \verb|{int} {,}| un \verb|({int} {,}) *|, tad tokenu virkne \verb|{int:4} {,} {int:6} {,}| tiks akceptēta ar otru šablonu, neskatoties uz to, ka augstākās prioritātes šablona sakritība tika konstatēta agrāk.
@@ -114,19 +114,19 @@ Tā tiek izveidots nedeterminēts automāts katrai regulārai izteiksmei. \cite{
 
 Kaut arī daudzām valodām ir vienkāršāk uzbūvēt nedeterminētu galīgu automātu (piemēram, pašām regulārām izteiksmēm tas ir loģiskāk), ir patiess tas, ka katra valoda var tikt aprakstīta gan ar nedeterminētu, gan ar determinētu galīgu automātu. Turklāt, dzīvē sastopamās situācijās DGA parasti satur tik pat daudz stāvokļu, cik ir NGA. Sliktākajā gadījumā, tomēr var gadīties, ka mazākais iespējamais DGA saturēs $2^n$ stāvokļu, kamēr mazākais NGA saturēs $n$ stāvokļus. \footnote{Pieņemsim, ka automāta valoda sastāv no diviem simboliem - {0, 1}. Sliktākais gadījums, kad DGA tiešām saturēs $2^n$ stāvokļus attiecībā pret $n$ NGA stāvokļiem, var rasties tad, kad, piemēram, automāta valodā $n$-tais simbols no virknes beigām ir 1. Tad DGA būs jāprot atcerēties pēdējos $n$ simbolus. Tā kā ir divi ieejas alfabēta simboli, automātam ir jāatceras visas to dažādas $2^n$ kombinācijas.}
 
-Izrādās, ka patiesībā katram NGA eksistē ekvivalents DGA, ko var uzbūvēt ar apakškopu sastādīšanas algoritmu (pierādījumu tam, ka uzbūvētais DGA tik tiešām akceptē to pašu valodu, ko NGA, sk.  \cite{Hopcroft:IntroAutomataTheory}, teorēma 2.11.) Vadošā doma šī algoritmā ir tas, ka katrs determinētā galīgā automāta (DGA) stāvoklis ir kādu NGA stāvokļu kopa. Pēc ieejas virknes $a_1, a_2, ..., a_n$ ielasīšanas DGA atrodas stāvoklī, kas atbilst NGA stāvokļu kopai, kuru var sasniegt apstaigājot virkni $a_1, a_2, ..., a_n$.
+Izrādās, ka patiesībā katram NGA eksistē ekvivalents DGA, ko var uzbūvēt ar apakškopu sastādīšanas algoritmu \footnote{Pierādījumu tam, ka uzbūvētais DGA tik tiešām akceptē to pašu valodu, ko NGA, sk.  \cite{Hopcroft:IntroAutomataTheory}, teorēma 2.11.}. Vadošā doma šī algoritmā ir tas, ka katrs determinētā galīgā automāta (DGA) stāvoklis ir kādu NGA stāvokļu kopa. Pēc ieejas virknes $a_1, a_2, ..., a_n$ ielasīšanas DGA atrodas stāvoklī, kas atbilst NGA stāvokļu kopai, kuru var sasniegt apstaigājot virkni $a_1, a_2, ..., a_n$.
 
-\paragraph*{Algoritms 1: NGA transformēšana uz DGA}
-\subparagraph*{Ieeja}NGA $N$.
-\subparagraph*{Izeja}DGA $D$, kas ir ekvivalents $N$.
-\subparagraph{Algoritms} Sākumā algoritms konstruē pāreju tabulu priekš $D$. Katrs $D$ stāvoklis ir $N$ stāvokļu kopa, tātad tabula tiek konstruēta tā, lai $D$ simulētu vienlaikus visas pārejas, ko var izpildīt $N$, saņemot kādu ieejas virkni. Lai automāts kļūtu determinēts, ir nepieciešams atbrīvoties no iespējas atrasties dažos stāvokļos vienlaikus. Tātad vajag atbrīvoties no $\varepsilon$-pārejām, un no daudzkārtīgām pārejām no viena stāvokļa pa vienu ieejas simbolu.
+\paragraph{Algoritms 1: NGA transformēšana uz DGA}
+\subparagraph{Ieeja:}NGA $N$.
+\subparagraph{Izeja:}DGA $D$, kas ir ekvivalents $N$.
+\subparagraph{Algoritms:} Sākumā algoritms konstruē pāreju tabulu priekš $D$. Katrs $D$ stāvoklis ir $N$ stāvokļu kopa, tātad tabula tiek konstruēta tā, lai $D$ simulētu vienlaikus visas pārejas, ko var izpildīt $N$, saņemot kādu ieejas virkni. Lai automāts kļūtu determinēts, ir nepieciešams atbrīvoties no iespējas atrasties dažos stāvokļos vienlaikus. Tātad vajag atbrīvoties no $\varepsilon$-pārejām, un no daudzkārtīgām pārejām no viena stāvokļa pa vienu ieejas simbolu.
 
 Tabulā~\ref{fig:NGAoperations} var redzēt divas funkcijas, kas ir nepieciešamas NGA apstrādes izpildei. Šīs funkcijas no NGA stāvokļiem un pārejām veido jaunas stāvokļu kopas, kuras veidos DGA stāvokļus.
 
 \begin{table}[htdp]
   \caption{NGA apstaigāšanas funkcijas}
   \centering
-  \begin{tabular}{|c|p{400pt}|}
+  \begin{tabular}{|c|p{350pt}|}
     \hline
     Funkcija & Apraksts \\ \hline
     $\varepsilon-closure (T)$ & 
@@ -138,28 +138,58 @@ Tabulā~\ref{fig:NGAoperations} var redzēt divas funkcijas, kas ir nepieciešam
 \label{fig:NGAoperations}
 \end{table}
 
-Ir nepieciešams apstrādāt visas tādas $N$ stāvokļu kopas, kuras ir sasniedzamas, $N$ saņemot kaut kādu ieejas virkni. Indukcijas bāzes pieņēmums ir tas, ka pirms darbības uzsākšanas $N$ var atrasties jebkurā no stāvokļiem, kurus var sasniegt pārejot pa $\varepsilon$ bultiņām no $N$ sākuma stāvokļa. Ja $s_0$ ir $N$ sākuma stāvoklis, $D$ sākuma stāvoklis būs $\varepsilon-closure (set (s_0))$. Indukcijai pieņemam, ka $N$ var atrasties $T$ stāvokļu kopā pēc virknes $x$ ielasīšanas. Tad, ja $N$ ielasīs nākamo simbolu $a$, tad $N$ var pārvietoties jebkura no stāvokļiem $move (T, a)$. Taču pēc $a$ ielasīšanas var notikt vēl dažas $\varepsilon$-pārejas, tāpēc pēc virknes $xa$ ielasīšanas $N$ var atrasties jebkurā no stāvokļiem $\varepsilon-closure (move (T, a))$. Algoritms~\ref{} parāda kā šādā veidā var tikt uzkonstruēti visi DGA stāvokļi un tā pāreju tabula.
+Ir nepieciešams apstrādāt visas tādas $N$ stāvokļu kopas, kuras ir sasniedzamas, $N$ saņemot kaut kādu ieejas virkni. Indukcijas bāzes pieņēmums ir tas, ka pirms darbības uzsākšanas $N$ var atrasties jebkurā no stāvokļiem, kurus var sasniegt pārejot pa $\varepsilon$ bultiņām no $N$ sākuma stāvokļa. Ja $s_0$ ir $N$ sākuma stāvoklis, $D$ sākuma stāvoklis būs $\varepsilon-closure (set (s_0))$. Indukcijai pieņemam, ka $N$ var atrasties $T$ stāvokļu kopā pēc virknes $x$ ielasīšanas. Tad, ja $N$ ielasīs nākamo simbolu $a$, tad $N$ var pārvietoties jebkura no stāvokļiem $move (T, a)$. Taču pēc $a$ ielasīšanas var notikt vēl dažas $\varepsilon$-pārejas, tāpēc pēc virknes $xa$ ielasīšanas $N$ var atrasties jebkurā no stāvokļiem $\varepsilon-closure (move (T, a))$. Attēls~\ref{fig:det_algorithm} parāda pseido-kodu algoritmam, kā šādā veidā var tikt uzkonstruēti visi DGA stāvokļi un tā pāreju tabula.
 
 Automāta $D$ sākuma stāvoklis ir $\varepsilon-closure (set (s_0))$, bet $D$ akceptējošie stāvokļi ir visas tās NGA stāvokļu kopas, kas satur vismaz vienu akceptējošu stāvokli.
 
-\begin{lstlisting}[frame=single]
-$\varepsilon-closure (set (s_0))$ is the only state in $Dstates$, and is unmarked
-while there is an unmarked state $T$ in $Dstates$:
-	mark $T$
-	for each input symbol $a$:
-		$U$ = $\varepsilon-closure (move (T, a))$
-		if $U$ is not in Dstates
-			add $U$ as an unmarked state to $Dstates$
-		$Dtran [T, a] = U$
-\end{lstlisting}
+\begin{figure}[h]
+  \begin{algorithmic}  \State initially, $\varepsilon-closure (set (s_0))$  is the only state in $Dstates$, and is unmarked  \While{there is an unmarked state $T$ in $Dstates$}      \State mark $T$      \For{each input symbol $a$}          \State $U = \varepsilon-closure (move (T, a))$          \If {$U$ is not in $Dstates$}              \State add $U$ as an unmarked state to $Dstates$          \EndIf          \State $Dtran [T, a] = U$;      \EndFor  \EndWhile  \end{algorithmic}
+  \caption{\label{fig:det_algorithm}Automāta determinizēšanas algoritms}
+\end{figure}
 
-\subparagraph{Sarežģītība} Sarežģītības novērtējums šīm algoritmam ir diezgan nepatīkams. Sliktākajā gadījumā tas būs $O(m^(n+1))$, kur $n$ ir NGA stāvokļu daudzums un $m$ ir ieejas alfabēta simbolu skaits. Algoritms var uzģenerēt līdz $m^n$ DGA stāvokļiem, katram no kuram ir m pārejas. Taču parasti tas tā nenotiek un DGA stāvokļu skaits ir līdzīgs NGA stāvokļu skaitam, un algoritma sarežģītība ir $O(n*m)$.
+\subparagraph{Sarežģītība:} Sarežģītības novērtējums šīm algoritmam ir diezgan nepatīkams. Sliktākajā gadījumā tas būs $O(m^(n+1))$, kur $n$ ir NGA stāvokļu daudzums un $m$ ir ieejas alfabēta simbolu skaits. Algoritms var uzģenerēt līdz $m^n$ DGA stāvokļiem, katram no kuram ir $m$ pārejas. Taču parasti tas tā nenotiek un DGA stāvokļu skaits ir līdzīgs NGA stāvokļu skaitam, un algoritma sarežģītība ir $O(n*m)$.
 
 \cite{DragonBook} \cite{Hopcroft:IntroAutomataTheory}
 
-\subsubsection{\label{subsubsec:prototype_minimization}Minimizācija}
-\fixme{Uzrakstīt!}
+\subsubsection{\label{subsubsec:prototype_minimization}Minimizēšana}
 
+Izveidotais determinēts galīgs automāts var būt neoptimāls pēc stāvokļu skaita. Bet no šī skaitļa ir atkarīgs tālāko soļu izpildes ātrums, jo automātu apvienošanas algoritmiska sarežģītība ir $O(n*m)$, kur $m$ un $n$ ir apvienojamo automātu stāvokļu daudzumi. Tātad ir nepieciešams izveidot automātu, kas atpazīs to pašu valodu un saturēs minimālu iespējamu stāvokļi skaitu.
+
+Var pierādīt, ka katram automātam eksistē ekvivalents minimāls automāts \footnote{Šī fakta pierādījumu sk. ???}. Vēl vairāk, ja eksistē 2 dažādi automāti ar vienādu stāvokļu daudzumu, kas atpazīst vienu un to pašu valodu, tad tie ir vienādi līdz stāvokļu nosaukumiem \footnote{Tā kā stāvokļu nosaukumi neietekmē automāta darbību, divi automāti tiek saukti par vienādiem līdz pat stāvokļu nosaukumiem, ja viens no tiem var tikt pārveidots otrajā vienkārši pārsaucot to stāvokļus.}.
+
+Tālāk teiksim, ka virkne $x$ atšķir stāvokļu $s$ no stāvokļa $t$ tad, kad tikai viens stāvoklis, ko var sasniegt no $t$ un $s$ pa $x$ ir akceptējošs. Tātad divi stāvokļi ir atšķirami tad, kad eksistē tāda virkne, kas viņus atšķir. Jebkurš akceptējošs stāvoklis ir atšķirams no jebkura neakceptējoša stāvokļa ar tukšu virkni (stāvoklis nevar būt akceptējošs un neakceptējoss vienlaikus). Divi neatšķirami stāvokļi ir ekvivalenti. \footnote{\cite{Hopcroft:IntroAutomataTheory} Section 4.4}
+
+\paragraph{Algoritms 2: DGA minimizēšana}
+\subparagraph{Ieeja:}DGA $D$.
+\subparagraph{Izeja:}Jauns DGA $D'$, kas ir minimāls un ekvivalents $D$.
+\subparagraph{Algoritms:} 
+
+Minimizēšanas algoritma vadošā doma ir sadalīt automātu neatšķiramos stāvokļu grupās. Tas izveido ekvivalentu stāvokļu grupas, kas tālāk var tikt apvienotas vienā, izveidojot minimāla automāta stāvokļus.
+
+Minimizēšanas gaitā automāta stāvokļi tiek sadalīti grupās, ko uz doto brīdi algoritms nevar atšķirt. Jebkuri divi stāvokļi no dažādām grupām ir atšķirami. Katrā nākamajā algoritma iterācijā eksistējošās grupas tiek sadalītas mazākajās grupās, gadījumā, ja kādā grupā parādās atšķirami stāvokļi. Algoritms apstājas līdz ko neviena grupa nevar tikt sadalīta sīkāk.
+
+Pirms algoritms uzsāk darbu, stāvokļi tiek sadalīti divās grupās - akceptējošie stāvokļi un neakceptējošie stāvokļi. Šo grupu stāvokļi ir atšķirami ar tukšu virkni. Tālāk tiek pa vienai apstrādātas grupas no pašreizējā sadalījums. Katrai grupai tiek pārbaudīts, vai tās stāvokļi var tikt atšķirti ar kādu ieejas simbolu - vai kāds no ieejas simboliem noved uz divām vai vairākām dažādam stāvokļu grupām. Ja tādi simboli eksistē, tiek izveidotas jaunas grupas, tādas, ka divi stāvokļi atrodas vienā grupā tad un tikai tad, ja tie aiziet uz vienādām grupām pa vienādiem simboliem. Process ir atkārtots visām pašreizējā sadalījuma grupām, tad atkal jaunam sadalījumam, kamēr neviena no grupām vairs nevar tikt sadalīta.
+
+Attēls~\ref{fig:min_algorithm} parāda minimizēšanas algoritmu pseido-kodā.
+
+\begin{figure}[h]
+  \begin{algorithmic}  \State initially, partitioning $\Pi$ contains two groups, $F$ and $S-F$, the accepting and nonaccepting states of $D$, $\Pi_{new}$ is empty  \While{$\Pi_{new}$ is not equal to $\Pi$}
+      \State $\Pi_{new} = \Pi$      \For{each group $G$ of $\Pi$}
+          \State partition $G$ into subgroups such that two states $s$ and $t$ are in the same subgroup if and only if for all input symbols $a$, states $s$ and $t$ have transitions on $a$ to states in the same group of $\Pi$
+          \State replace $G$ in $\Pi_{new}$ by the set of all subgroups formed      \EndFor  \EndWhile
+  \State $\Pi_{final} = \Pi$  \end{algorithmic}
+  \caption{\label{fig:min_algorithm}Automāta minimizēšanas algoritms}
+\end{figure}
+
+Tālāk paliek apstrādāt jaunizveidotās stāvokļu grupas izveidojot jaunu determinētu automātu. Lai to izdarītu, no katras sadalījuma $\Pi_{final}$ grupas tiek izvēlēts grupas pārstāvis. Grupu pārstāvji izveidos jaunus stāvokļus automātam $D'$. Pārējās komponentes minimālam automātam $D'$ tiks iveidotas sekojoši:
+\begin{enumerate}
+\item Automāta $D'$ sākuma stāvoklis ir pārstāvis tai grupai, kura satur automāta $D$ sākuma stāvokli.
+\item Automāta $D'$ akceptējošie stāvokļi ir pārstāvji tām grupām, kuras satur automāta $D$ akceptējošos stāvokļus. Katra no grupām satur vai nu tikai akceptējošus, vai nu tikai neakceptējošus stāvokļus, jo algoritma darba gaitā jaunās grupas tika izveidotas tikai sadalot jau eksistējošas grupas, bet sākuma sadalījums atdalīja šīs stāvokļu klases.
+\item Pieņemsim, ka $s$ ir kādas $\Pi_{final}$ grupas $G$ pārstāvis, un automāts $D$ no stāvokļa $s$ pa ieejas simbolu $a$ pāriet uz stāvokli $t$. Pieņemsim, ka $r$ ir grupas $H$ pārstāvis, $H$ satur $t$. Tad automātā $D'$ ir pāreja no stāvokļa $s$ uz stāvokli $r$ pa ieejas simbolu $a$.
+\end{enumerate}
+
+\subparagraph{Sarežģītība:}
+Šī algoritma sarežģītība ir $O(n^2*l)$, kur $n$ ir sākotnējā automāta stāvokļu daudzums un $l$ ir ieejas alfabēta garums, bet tā kā parasti no katra stāvokļa nav $l$ pāreju, to var neieverot.
 
 \subsubsection{Apvienošana}
 
