@@ -163,7 +163,19 @@ Ir nepieciešams apstrādāt visas tādas $N$ stāvokļu kopas, kuras ir sasnied
 Automāta $D$ sākuma stāvoklis ir $\varepsilon-closure (set (s_0))$, bet $D$ akceptējošie stāvokļi ir visas tās NGA stāvokļu kopas, kas satur vismaz vienu akceptējošu stāvokli. $Dstates$ ir jauna automāta $D$ stāvokļu saraksts un $Dtran$ ir stāvokļu pāreju tabula.
 
 \begin{figure}[h]
-  \begin{algorithmic}  \State initially, $\varepsilon-closure (set (s_0))$  is the only state in $Dstates$, and is unmarked  \While{there is an unmarked state $S$ in $Dstates$}      \State mark $S$      \For{each available oath $t$ from $S$}           \State $U = \varepsilon-closure (move (S, a))$          \If {$U$ is not in $Dstates$}              \State add $U$ as an unmarked state to $Dstates$          \EndIf          \State $Dtran [S, a] = U$;      \EndFor  \EndWhile  \end{algorithmic}
+  \begin{algorithmic}
+  \State initially, $\varepsilon-closure (set (s_0))$  is the only state in $Dstates$, and is unmarked
+  \While{there is an unmarked state $S$ in $Dstates$}
+      \State mark $S$
+      \For{each available oath $t$ from $S$} 
+          \State $U = \varepsilon-closure (move (S, a))$
+          \If {$U$ is not in $Dstates$}
+              \State add $U$ as an unmarked state to $Dstates$
+          \EndIf
+          \State $Dtran [S, a] = U$;
+      \EndFor
+  \EndWhile
+  \end{algorithmic}
   \caption{\label{fig:det_algorithm}Automāta determinizēšanas algoritms}
 \end{figure}
 
@@ -191,11 +203,17 @@ Pirms algoritms uzsāk darbu, stāvokļi tiek sadalīti divās grupās - akcept�
 Attēls~\ref{fig:min_algorithm} parāda minimizēšanas algoritmu pseido-kodā.
 
 \begin{figure}[h]
-  \begin{algorithmic}  \State initially, partitioning $\Pi$ contains two groups, $F$ and $S-F$, the accepting and nonaccepting states of $D$, $\Pi_{new}$ is empty  \While{$\Pi_{new}$ is not equal to $\Pi$}
-      \State $\Pi_{new} = \Pi$      \For{each group $G$ of $\Pi$}
+  \begin{algorithmic}
+  \State initially, partitioning $\Pi$ contains two groups, $F$ and $S-F$, the accepting and nonaccepting states of $D$, $\Pi_{new}$ is empty
+  \While{$\Pi_{new}$ is not equal to $\Pi$}
+      \State $\Pi_{new} = \Pi$
+      \For{each group $G$ of $\Pi$}
           \State partition $G$ into subgroups such that two states $s$ and $t$ are in the same subgroup if and only if for all input symbols $a$, states $s$ and $t$ have transitions on $a$ to states in the same group of $\Pi$
-          \State replace $G$ in $\Pi_{new}$ by the set of all subgroups formed      \EndFor  \EndWhile
-  \State $\Pi_{final} = \Pi$  \end{algorithmic}
+          \State replace $G$ in $\Pi_{new}$ by the set of all subgroups formed
+      \EndFor
+  \EndWhile
+  \State $\Pi_{final} = \Pi$
+  \end{algorithmic}
   \caption{\label{fig:min_algorithm}Automāta minimizēšanas algoritms}
 \end{figure}
 
@@ -240,14 +258,26 @@ To apvienotais automāts ir parādīts attēlā~\ref{fig:auto_merge}.
 
 \begin{figure}[H]
   \centering
-    \includegraphics[scale=1.5]{pictures/auto_merged}
+    \includegraphics[scale=1.5]{pictures/auto_merge}
   \caption{\label{fig:auto_merge}Automats izteiksmei \texttt{\{id\} (\{real\} | \{int\}) *}}
 \end{figure}
 
 Attēls~\ref{fig:uni_algorithm} parāda apvienošanas algoritmu pseido-kodā. $s_0$ ir jaunā automāta $D'$ sākuma stāvoklis, $r_0$ ir $D_1$ sākuma stāvoklis un $t_0$ ir $D_2$ sākuma stāvoklis. $Dstates$ ir automāta $D'$ stāvokļu saraksts, $Dtran$ ir $D'$ pāreju tabula. Funkcija $move (S, t)$ atgriež tos stāvokļus, uz kuriem var nokļūt no $S$ pa tokenu $t$. Tā kā parasti $S$ sastāv no diviem stāvokļiem $r_i$ un $t_i$, tā atgriež pārejas rezultātu no katra no tiem. Rezultāts arī var but tikai viens stāvoklis, gadījumā, ja no kāda $r_i$ un $t_i$ neeksistē pāreja pa doto tokenu.
 
 \begin{figure}[h]
-  \begin{algorithmic}  \State initially, $s_0 = (r_0, t_0)$ is the only state in $Dstates$, and is unmarked  \While{there is an unmarked state $S$ in $Dstates$}      \State mark $S$      \For{each available move $t$ from $S$} \Comment{$S$ is a combination of some states $r_i$ and $t_i$ of $D_1$ and $D_2$, although it might be just a single state from one of the automata.}          \State $U = move (S, t)$          \If {$U$ is not in $Dstates$}              \State add $U$ as an unmarked state to $Dstates$          \EndIf          \State $Dtran [S, t] = U$;      \EndFor  \EndWhile  \end{algorithmic}
+  \begin{algorithmic}
+  \State initially, $s_0 = (r_0, t_0)$ is the only state in $Dstates$, and is unmarked
+  \While{there is an unmarked state $S$ in $Dstates$}
+      \State mark $S$
+      \For{each available move $t$ from $S$} \Comment{$S$ is a combination of some states $r_i$ and $t_i$ of $D_1$ and $D_2$, although it might be just a single state from one of the automata.}
+          \State $U = move (S, t)$
+          \If {$U$ is not in $Dstates$}
+              \State add $U$ as an unmarked state to $Dstates$
+          \EndIf
+          \State $Dtran [S, t] = U$;
+      \EndFor
+  \EndWhile
+  \end{algorithmic}
   \caption{\label{fig:uni_algorithm}Divu automātu apvienošanas algoritms}
 \end{figure}
 
