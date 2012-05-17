@@ -6,18 +6,18 @@ def test_case_0 ():
     regexp_1 = [t_m_start(), t_id(), t_lbrace(), t_m_lbrace(), t_real(),
                 t_m_pipe(), t_int(), t_m_rbrace(), t_m_asterisk(), t_rbrace(),
                 t_m_end()]
-    # {match} {id} '(' ( {real} | {int} ) * ')' {\match}
+    # {match} {id} {(} ( {real} | {int} ) * {)} {\match}
     
     regexp_2 = [t_m_start(), t_id(), t_lbrace(), t_real(),
                 t_rbrace(), t_m_end()]
-    # {match} {id} '(' {real} ')' {\match}
+    # {match} {id} {(} {real} {)} {\match}
     
     list_1 =   [t_id('g'), t_lbrace(), t_real(5.78), t_rbrace()]
     # g(5.78) - Should match #1
     
     regexp_3 = [t_m_start(), t_id(), t_lbrace(), t_real(), 
                 t_rbrace(), t_m_end()]
-    # {match} {id} '(' {real} ')' {\match}
+    # {match} {id} {(} {real} {)} {\match}
     
     list_2 =   [t_id('e'), t_lbrace(), t_real(4.0), t_rbrace()]
     # e(4.0) - Should match #2
@@ -45,14 +45,14 @@ def test_case_1 ():
     """ A test for context switching and matching (depth = 1). """
     regexp_1 = [t_m_start(), t_id(), t_lbrace(), t_real(), t_m_asterisk(),
                 t_rbrace(), t_m_end()]
-    # {match} {id} '(' {real} * ')' {\match}
+    # {match} {id} {(} {real} * {)} {\match}
 
     list_1 =   [t_id('f'), t_lbrace(), t_real(3.5), t_rbrace()]
     # f(3.5) - Should match #0
 
     regexp_2 = [t_m_start(), t_id(), t_lbrace(), t_real(), t_rbrace(),
                 t_m_end()]
-    # {match} {id} '(' {real} ')' {\match}
+    # {match} {id} {(} {real} {)} {\match}
     
     list_2 =   [t_id('g'), t_lbrace(), t_real(5.78), t_rbrace()]
     # g(5.78) - Should match #1
@@ -77,15 +77,15 @@ def test_case_1 ():
 def test_case_2 ():
     """ A test for correct priorities. """
     regexp_1 = [t_m_start(), t_id(), t_lbrace(), t_rbrace(), t_m_end()]
-    # {match} {id} '(' ')' {\match}
+    # {match} {id} {(} {)} {\match}
 
     regexp_2 = [t_m_start(), t_id(), t_lbrace(), t_real(), t_m_asterisk(), 
                 t_rbrace(), t_m_end()]
-    # {match} {id} '(' {real} * ')' {\match}
+    # {match} {id} {(} {real} * {)} {\match}
 
     regexp_3 = [t_m_start(), t_id(), t_lbrace(), t_real(), t_rbrace(),
                 t_m_end()]
-    # {match} {id} '(' {real} ')' {\match}
+    # {match} {id} {(} {real} {)} {\match}
 
     list_1 =   [t_id('f'), t_lbrace(), t_rbrace()]
     # f() - Should match #0
@@ -107,13 +107,13 @@ def test_case_3 ():
                 t_m_lbrace(), t_delim_com(), t_int(), t_m_pipe(), 
                 t_delim_com(), t_real(), t_m_rbrace(), t_m_asterisk(), 
                 t_m_rbrace(), t_rbrace(), t_m_end()]
-    # {match} {id} '(' ( {expr} ( ',' {int} | ',' {real} ) * ) ')' {/match}
+    # {match} {id} {(} ( {expr} ( {,} {int} | {,} {real} ) * ) {)} {/match}
 
     regexp_2 = [t_m_start(), t_id(), t_lbrace(), t_m_lbrace(), t_expr(), 
                 t_m_lbrace(), t_delim_com(), t_int(), t_m_pipe(), 
                 t_delim_com(), t_real(), t_m_rbrace(), t_m_rbrace(), 
                 t_m_asterisk(), t_rbrace(), t_m_end()]
-    # {match} {id} '(' {expr} * ')' {/match}
+    # {match} {id} {(} {expr} * {)} {/match}
 
     list_1 = [t_id('f'), t_lbrace(), t_rbrace(), t_delim_col()]
     # f() - Should match #1
@@ -137,10 +137,10 @@ def test_case_4 ():
     """ A test for token types. """
     regexp_1 = [t_m_start(), t_m_lbrace(), t_real(), t_m_pipe(), t_int(),
                 t_m_rbrace(), t_delim_col(), t_m_end()]
-    # {match} ( {real} | {int} ) ';' {\match}
+    # {match} ( {real} | {int} ) {;} {\match}
 
     regexp_2 = [t_m_start(), t_int(), t_delim_com(), t_m_end()]
-    # {match} {int} ',' {\match}
+    # {match} {int} {,} {\match}
 
     list_1 = [t_int(5), t_delim_col()]
     # 5; - Should match #0
@@ -163,11 +163,11 @@ def test_case_5 ():
     """ A test for matching the longest sequence. """
     regexp_1 = [t_m_start(), t_m_lbrace(), t_real(), t_m_pipe(), t_int(),
                 t_m_rbrace(), t_delim_com(), t_m_end()]
-    # {match} ( {real} | {int} ) ',' {\match}
+    # {match} ( {real} | {int} ) {,} {\match}
         
     regexp_2 = [t_m_start(), t_m_lbrace(), t_int(), t_delim_com(), t_m_rbrace(), 
                 t_m_asterisk(), t_m_end()]
-    # {match} ( {int} ',' ) * {\match}
+    # {match} ( {int} {,} ) * {\match}
 
     list_1 = [t_int(2), t_delim_com(), t_int(4), t_delim_com()]
     # 2, 4, - Should match #1
@@ -207,11 +207,11 @@ def test_case_7 ():
     """ A test for checking specific matching (with token values) and the 
         longest match. """
     regexp_1 = [t_m_start(), t_id('foo'), t_int(), t_delim_col(), t_m_end()]
-    # {match} {id:foo} {int} ';' {\match}
+    # {match} {id:foo} {int} {;} {\match}
     
     regexp_2 = [t_m_start(), t_id(), t_int(), t_delim_col(),
                 t_int(), t_m_asterisk(), t_m_end()]
-    # {match} {id} {int} ';' {int} * {\match}
+    # {match} {id} {int} {;} {int} * {\match}
     
     list_1 = [t_id('foo'), t_int(4), t_delim_col()]
     # foo 4; - Should match #0
@@ -261,7 +261,7 @@ def test_case_9 ():
     # {match} {id} {\match}
     
     regexp_2 = [t_m_start(), t_id(), t_m_asterisk(), t_m_end()]
-    # {match} {id} {\match}
+    # {match} {id} * {\match}
     
     list_1 = [t_id('foo'), t_id()]
     # foo - Should match #1
@@ -297,12 +297,110 @@ def test_case_10 ():
     assert transform_system.match_stream (list_2) is None
 
 
+def test_case_11 ():
+    """ A test for multiple states. """
+    regexp_1 = [t_m_start(), t_id('foo'), t_lbrace(), t_int(1), t_delim_com(), 
+                t_int(2), t_delim_com(), t_int(3), t_rbrace(), t_m_end()]
+    # {match} {id:foo} {(} {int:1} {,} {int:2} {,} {int:3} {)} {\match}
+
+    regexp_2 = [t_m_start(), t_id('foo'), t_lbrace(), t_int(1), t_delim_com(), 
+                t_int(2), t_delim_com(), t_int(), t_rbrace(), t_m_end()]
+    # {match} {id:foo} {(} {int:1} {,} {int:2} {,} {int} {)} {\match}
+
+    regexp_3 = [t_m_start(), t_id('foo'), t_lbrace(), t_int(1), t_delim_com(), 
+                t_int(), t_delim_com(), t_int(), t_rbrace(), t_m_end()]
+    # {match} {id:foo} {(} {int:1} {,} {int} {,} {int} {)} {\match}
+
+    regexp_4 = [t_m_start(), t_id('foo'), t_lbrace(), t_int(), t_delim_com(), 
+                t_int(), t_delim_com(), t_int(), t_rbrace(), t_m_end()]
+    # {match} {id:foo} {(} {int} {,} {int} {,} {int} {)} {\match}
+
+    regexp_5 = [t_m_start(), t_id(), t_lbrace(), t_int(), t_delim_com(), 
+                t_int(), t_delim_com(), t_int(), t_rbrace(), t_m_end()]
+    # {match} {id} {(} {int} {,} {int} {,} {int} {)} {\match}
+
+    list_1 = [t_id('foo'), t_lbrace(), t_int(1), t_delim_com(), t_int(2),
+              t_delim_com(), t_int(3), t_rbrace()]
+    # foo(1, 2, 3) - Should match #0
+    
+    list_2 = [t_id('foo'), t_lbrace(), t_int(1), t_delim_com(), t_int(2),
+              t_delim_com(), t_int(0), t_rbrace()]
+    # foo(1, 2, 0) - Should match #1
+    
+    list_3 = [t_id('foo'), t_lbrace(), t_int(1), t_delim_com(), t_int(0),
+              t_delim_com(), t_int(0), t_rbrace()]
+    # foo(1, 0, 0) - Should match #2
+    
+    list_4 = [t_id('foo'), t_lbrace(), t_int(0), t_delim_com(), t_int(0),
+              t_delim_com(), t_int(0), t_rbrace()]
+    # foo(0, 0, 0) - Should match #3
+
+    list_5 = [t_id('goo'), t_lbrace(), t_int(1), t_delim_com(), t_int(2),
+              t_delim_com(), t_int(3), t_rbrace()]
+    # goo(1, 2, 3) - Should match #4
+    
+    transform_system = matcher ()
+    transform_system.add_match (regexp_1)
+    assert transform_system.match_stream (list_1) == (0, 8)
+    transform_system.add_match (regexp_2)
+    assert transform_system.match_stream (list_1) == (0, 8)
+    transform_system.add_match (regexp_3)
+    assert transform_system.match_stream (list_1) == (0, 8)
+    transform_system.add_match (regexp_4)
+    assert transform_system.match_stream (list_1) == (0, 8)
+    transform_system.add_match (regexp_5)
+    assert transform_system.match_stream (list_1) == (0, 8)
+    assert transform_system.match_stream (list_2) == (1, 8)
+    assert transform_system.match_stream (list_3) == (2, 8)
+    assert transform_system.match_stream (list_4) == (3, 8)
+    assert transform_system.match_stream (list_5) == (4, 8)
+
+def test_case_12 ():
+    """ A test for unmatching lists. """
+    regexp_1 = [t_m_start(), t_id('foo'), t_lbrace(), t_int(), t_delim_com(), 
+                t_real(), t_rbrace(), t_m_end()]
+    # {match} {id:foo} {(} {int} {,} {real} {)} {\match}
+    
+    list_1 = [t_id('foo'), t_lbrace(), t_int(5), t_delim_com(), t_real(4.5)]
+    # foo(5, 4.5 - Should not match, no ending brace
+
+    list_2 = [t_id('foo'), t_lbrace(), t_int(5), t_delim_com(), t_real(4.5),
+              t_delim_com(), t_real(4.6), t_rbrace()]
+    # foo(5, 4.5, 4.6) - Should not match
+    
+    list_3 = [t_id('bar'), t_lbrace(), t_int(5), t_delim_com(), t_real(4.5), 
+              t_rbrace()]
+    # bar(5, 4.6) - Should not match
+
+    list_4 = [t_id('foo'), t_lbrace(), t_int(5), t_delim_com(), t_int(4), 
+                  t_rbrace()]
+    # foo(5, 4) - Should not match
+
+    list_5 = [t_id('foo'), t_lbrace(), t_int(5), t_delim_com(), t_real(4.6), 
+              t_delim_com(), t_rbrace()]
+    # foo(5, 4.6, ) - Should not match
+
+    list_6 = [t_id('foo'), t_lbrace(), t_int(5), t_delim_com(), t_real(4.6), 
+              t_rbrace()]
+    # foo(5, 4.6) - Should match #0
+
+    
+    transform_system = matcher ()
+    transform_system.add_match (regexp_1)
+    assert transform_system.match_stream (list_1) is None
+    assert transform_system.match_stream (list_2) is None
+    assert transform_system.match_stream (list_3) is None
+    assert transform_system.match_stream (list_4) is None
+    assert transform_system.match_stream (list_5) is None
+    assert transform_system.match_stream (list_6) == (0, 6)
+
+
 def execute_test (test_no):
     globals() ['test_case_' + str (test_no)]()
 
 
 if __name__ == "__main__":
-    for i in xrange (11):
+    for i in xrange (13):
         print
         print "================"
         print "Test case", i
