@@ -1,0 +1,47 @@
+\section{Rezultāti}
+
+Šī darba ietvaros tika izstrādāts prototips sakrišanu meklēšanas sistēmai. Šīs nodaļas apakšnodaļa~\ref{sbs:res_testing} apskata testēšanas stratēģijas, kas tika lietotas lai nodrošinātu to, ka prototips strādā pareizi. Apakšnodaļa~\ref{sbs:res_tintegration} apraksta integrēšanas iespējas ar valodas Eq kompilatoru.
+
+\subsection{\label{sbs:res_testing}Prototipa testēšana}
+
+Prototips tika testēts visā izstrādes laikā. Zemāk tiks aprakstīti automātiski palaižamie testi. 
+
+\subsubsection{Stresa testēšana}
+
+Prototips izstrādes laikā tika testēts ar lieliem automātiski ģenerēto datu apjomiem. Tika ģenerētas patvaļīgas (bet korektas) regulāras izteiksmes ar iekavu un \verb|*| un \verb/|/ simbolu palīdzību. Katrai regulārai izteiksmei tika izveidota arī simbolu virkne, ko šai izteiksmei jāprot atpazīt. Tad uz vienas un tās pašas regulārās izteiksmes un simbolu virknes tika palaists gan prototips, kas tolaik apstrādāja simbolus, gan Python iebūvētais regulāro izteiksmju apstrādes mehānisms. Vienā piegājienā tika ģenerēti 500 šādi testi. Prototipa beigu izstrādes posmā visi šādi testi tika veiksmīgi izpildīti.
+
+Diemžēl pagaidām šī pieeja netiek implementēta ar tokenu regulārām izteiksmēm, jo nav iespējams pārbaudīt sistēmas darba ekvivalenci ar kādu citu sistēmu. Tāpēc tika veikta intensīva sistēmas testēšana, lai pārbaudītu pēc iespējas vairāk reālajā darbā iespējamo situāciju. Tomēr šādas stresa pārbaudes parādīja ka pats regulāro izteiksmju apstrādes mehānisms strādā korekti.
+
+\subsubsection{Sistēmas testēšana}
+
+Prototipam tika izveidoti apmēram 20 testi, kas pārbauda to darbību iespējamās situācijās. Tabula~\ref{fig:tests} parāda konceptuālu testu sadalījumu pa grupām. Dažas grupas pārklājas, jo, piemēram, tvērumu pārbaudošie testi pārbauda arī korektas regulāro izteiksmju prioritātes.
+
+\begin{longtable}{|p{90pt}|p{210pt}|p{120pt}|}
+\caption{\label{fig:tests}Prototipa testu sadalījums pa grupām} \\ \hline
+\textbf{Testa nosaukums} & \textbf{Testa apraksts} & \textbf{Kas tiek pārbaudīts} \\ \hline
+\endhead
+\multicolumn{ 3}{|c|}{Testi prioritāšu pārbaudei} \\ \hline
+Testi ar dažiem šabloniem vienā tvērumā & Testu gaitā tiek izveidotas dažādas regulāras izteiksmes, kuru aprakstītās valodas pārklājas. Tās tiek ievietotas vienā tvērumā pēc kārtas. Tad tiek pārbaudīts, ka tokenu saraksts tiek akceptēts ar pareizu šablonu attiecībā pret to prioritātēm. & Vai tiek korekti apstrādātas šablonu prioritātes viena tvēruma ietvaros. \\ \hline
+Testi ar dažiem šabloniem vienā tvērumā, kur kāds no šabloniem akceptē garāku virkni & Testu gaitā tiek izveidotas dažādas regulāras izteiksmes, kuru aprakstītās valodas pārklājas. Tās tiek ievietotas vienā tvērumā pēc kārtas. Tad tiek pārbaudīts, ka tiek akceptēta garākā iespējamā tokenu virkne. & Vai tiek korekti apstrādātas šablonu prioritātes viena tvēruma ietvaros. \\ \hline
+\multicolumn{ 3}{|c|}{Testi tokenu vērtībām} \\ \hline
+Testi ar tokenu vērtībām & Testu gaitā tiek izveidotas dažādas regulārās izteiksmes ar tokenu vērtībām un bez tām. Tiem tiek padotas dažādas tokenu virknes. & Vai tiek korekti apstrādātas šablonu prioritātes un vērtību sakrišanas. \\ \hline
+Testi ar vairākiem pieejamiem stāvokļiem vienlaikus & Testu gaitā tiek izveidotas dažādas regulārās izteiksmes ar tokenu vērtībām. Tiem tiek padotas tokenu virknes ar šādām pašām vērtībām, lai izveidotu situācijas, kad ir pieejami daži stāvokļi vienlaikus. & Vai tiek korekti apstrādātas situācijas, kad parādās nedeterminētība. \\ \hline
+\multicolumn{ 3}{|c|}{Testi tvērumu pārbaudei} \\ \hline
+Testi ar tvērumu iekļaušanas dziļumu 1 & Testu gaitā tiek izveidotas dažas regulāras izteiksmes, kuru aprakstītās valodas pārklājas. Tās tiek ievietotas nultajā un pirmajā tvērumā. Tad tiek pārbaudīti tokenu saraksti. & Vai tiek korekti apstrādāta tvēruma parādīšanās. Vai tiek korekti apstrādātas šablonu prioritātes starp tvērumiem. \\ \hline
+Testi ar tvērumu iekļaušanas dziļumu >1 & Testu gaitā tiek izveidotas dažas regulāras izteiksmes, kuru aprakstītās valodas pārklājas. Tās tiek ievietotas dažādos tvērumos ar dziļumu kas ir lielāks par vienu. Tad tiek pārbaudīti tokenu saraksti. & Vai tiek korekti apstrādāti dažādi tvērumu dziļumi. Vai tiek korekti apstrādātas prioritātes starp tvērumiem. \\ \hline
+Testi ar izeju no tvēruma & Testu gaitā tiek izveidotas dažas regulāras izteiksmes, kas tiek ieliktas nultajā un pirmajā tvērumā. Tiek pārbaudīts, ka pirmā tvēruma šablons atpazīst tokenu virkni. Tālāk pirmais tvērums tiek pamests un tiek pārbaudīts, ka tā šablons vairs nav aktīvs. & Vai pēc izejas no tvēruma attiecīgie šabloni ir noteikti izdzēsti. \\ \hline
+Testi ar izeju no tvēruma un nākamā tvēruma izveidi & Testu gaitā tiek izveidots 1. līmeņa tvērums ar regulārām izteiksmēm. Tiek pārbaudīts, ka pirmā tvēruma šabloni atpazīst tokenu virknes. Tad šīs tvērums tiek pamests un tiek izveidots jauns pirmā līmeņa tvērums. Tiek pārbaudīts, ka vecā tvēruma šabloni ir izmesti, un ka jaunā tvēruma šabloni tiek atpazīti. & Vai pēc izejas no tvēruma attiecīgie šabloni ir izdzēsti un pēc ieejas jaunajā tvērumā tiek akceptēti pareizi šabloni. \\ \hline
+\multicolumn{ 3}{|c|}{Testi bez šablonu sakritībām} \\ \hline
+Testi bez neviena šablona & Testu gaitā tiek izveidota sistēma bez neviena šablona. Tiek pārbaudīts, ka neviena sakritība netiek atrasta. & Vai sistēma korekti apstrādā situāciju, kad nav neviena šablona. \\ \hline
+Testi ar šabloniem un datiem kas nesakrīt & Testu gaitā tiek izveidota sistēma ar dažiem šabloniem. Tad tiek padotas tokenu virknes kuras neder nevienam no eksistējošiem šabloniem. & Vai sistēma korekti apstrādā situāciju, kad neviena sakrišana nav atrasta. \\ \hline
+\end{longtable}
+
+\subsection{\label{sbs:res_tintegration}Prototipa integrēšana Eq}
+
+Prototips pagaidām netiek integrēts Eq valodas kompilatorā, bet tas tiek plānots tuvākajā nākotnē. Tā kā prototips tika izstrādāts bāzējoties uz Eq parsētāja īpašībām, to būs viegli integrēt eksistējošā kodā. Tā darbs ir gandrīz neatkarīgs no parsētāja darba un neietekmēs jau eksistējošo programmu darbību.
+
+Prototips piedāvā saskarni lai uzsākt jauna tvēruma apstrādi (funkcija \verb|enter_context()|), lai pamestu tvērumu (funkcija \verb|leave_context()|), lai pievienotu makro (\verb|add_match(regexp)|) un lai apstaigātu tokenu virkni meklējot sakrišanas (\verb|match_stream(stream)|). Integrēšanai prototipu būs jāpapildina ar iespēju padot produkcijas tipu tokenu virkņu apstrādes funkcijām. Prototipa tokenu saņemšanas funkcijas būs jāpārslēdz uz parsētāja piedāvāto saskarni tokenu dabūšanai.
+
+Prototipam ir nepieciešama vienkārša saskarne no eksistējošā parsētāja. Parsētājam jādot pieeju pie tokenu virknes lasīšanas, kā arī jāprot aizvietot atrastās tokenu virknes ar citām virknēm, iespējams, ar citu garumu. Parsētājam arī jāprot pārstartēt tokenu virknes lasīšanu no aizvietotas virknes sākuma. Uz doto brīdi visas šīs iespējas ir implementētas Eq kompilatorā.
+
+Apvienojot parsētāja un sakritību meklēšanas prototipu būs nepieciešams ievietot prototipa funkciju izsaukumus katras produkcijas apstrādes sākumā. Gadījumos, kas parsētājs sastapās ar tokenu, kas identificē makro sākšanos, būs nepieciešams izsaukt regulārās izteiksmes parsēšanas funkciju. Savukārt, kad tiek apstrādātas citas produkcijas, būs nepieciešams izsaukt sakrišanu meklēšanu. Abu funkciju izsaukumos būs nepieciešams padot arī produkcijas tipu, lai prototips varētu atšķirt, kādu no automātiem papildināt vai lietot sakrišanu atrašanai. Prototipa funkcijas būs jāizsauc ari tvērumu pārslēgšanu brīdī, lai tas varētu implementēt tvērumu makro prioritāšu sadalīšanu.
