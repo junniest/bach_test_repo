@@ -1,0 +1,55 @@
+This is BibTeX, Version 0.99d (TeX Live 2011)
+Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
+The top-level auxiliary file: bachelors.aux
+A level-1 auxiliary file: annotations.aux
+A level-1 auxiliary file: terms_notations.aux
+A level-1 auxiliary file: knowledge.aux
+A level-1 auxiliary file: system.aux
+A level-1 auxiliary file: prototype.aux
+A level-1 auxiliary file: results.aux
+The style file: plain.bst
+Database file #1: bachelors.bib
+Warning--to sort, need author or key in RE2
+Warning--empty journal in Cox:RegexpMatchingFast
+You've used 8 entries,
+            2118 wiz_defined-function locations,
+            557 strings with 5406 characters,
+and the built_in function-call counts, 2302 in all, are:
+= -- 220
+> -- 114
+< -- 1
++ -- 47
+- -- 38
+* -- 150
+:= -- 398
+add.period$ -- 24
+call.type$ -- 8
+change.case$ -- 41
+chr.to.int$ -- 0
+cite$ -- 10
+duplicate$ -- 91
+empty$ -- 178
+format.name$ -- 38
+if$ -- 475
+int.to.chr$ -- 0
+int.to.str$ -- 8
+missing$ -- 8
+newline$ -- 42
+num.names$ -- 14
+pop$ -- 52
+preamble$ -- 1
+purify$ -- 35
+quote$ -- 0
+skip$ -- 64
+stack$ -- 0
+substring$ -- 87
+swap$ -- 13
+text.length$ -- 1
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 28
+warning$ -- 2
+while$ -- 19
+width$ -- 9
+write$ -- 86
+(There were 2 warnings)
