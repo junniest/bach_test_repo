@@ -1,18 +1,18 @@
-\section{\label{s:solution}Prototipa realizācija}
+\section{\label{s:prototype}Prototipa realizācija}
 
 Šī darba ietvaros tika izstrādāts prototips sakrišanu meklēšanas sistēmai. Šī nodaļa apraksta prototipa īpašības, kā arī pieejas un algoritmus, kas tika lietoti tā realizācijā. Prototips vienkāršības un izstrādes ātruma dēļ tika rakstīts Python valodā, un ir viegli palaižams un atkļūdojams uz jebkura datora ar pieejamu 2.7. Python versiju.
 
 Prototips tika izstrādāts ar iedomu pēc iespējas samazināt sakrišanu meklēšanas laiku, jo transformācijas sistēmas izsaukumi notiks katras produkcijas apstrādē.
 
-Šīs nodaļas organizācija ir sekojoša. Apakšnodaļa~\ref{sbs:sol_syntax} īsi apraksta prototipam pieejamu sintaksi. Apakšnodaļa~\ref{sbs:sol_approach} apskata darbību virkni, ko prototips izpilda darba gaitā. Tālāk apakšnodaļa~\ref{sbs:sol_conflictresolving} apskata izvēlētās metodes šablonu konfliktu risināšanai. Apakšnodaļā~\ref{sbs:sol_motivation} ir aprakstīts, kāpēc tika izvēlēta šāda realizācijas pieeja un apakšnodaļa~\ref{sbs:sol_realizations} apskatīts, kāpēc dotajā gadījumā nav derīgi kādi gatavie risinājumi. Apakšnodaļa~\ref{sbs:sol_algorithms} stāsta par realizācijā lietotiem algoritmiem, bet apakšnodaļa~\ref{sbs:sol_problems}, savukārt, apraksta problēmas ar kurām saskārās darba autors un izņēmumus, kas pagaidām netiek implementēti prototipā.
+Šīs nodaļas organizācija ir sekojoša. Apakšnodaļa~\ref{sbs:prot_syntax} īsi apraksta prototipam pieejamu sintaksi. Apakšnodaļa~\ref{sbs:prot_approach} apskata darbību virkni, ko prototips izpilda darba gaitā. Tālāk apakšnodaļa~\ref{sbs:prot_conflictresolving} apskata izvēlētās metodes šablonu konfliktu risināšanai. Apakšnodaļā~\ref{sbs:prot_motivation} ir aprakstīts, kāpēc tika izvēlēta šāda realizācijas pieeja un apakšnodaļa~\ref{sbs:prot_realizations} apskatīts, kāpēc dotajā gadījumā nav derīgi kādi gatavie risinājumi. Apakšnodaļa~\ref{sbs:prot_algorithms} stāsta par realizācijā lietotiem algoritmiem, bet apakšnodaļa~\ref{sbs:prot_problems}, savukārt, apraksta problēmas ar kurām saskārās darba autors un izņēmumus, kas pagaidām netiek implementēti prototipā.
 
-\subsection{\label{sbs:sol_syntax}Atļautā makro sintakse}
+\subsection{\label{sbs:prot_syntax}Atļautā makro sintakse}
 
 Kā jau bija pateikts, makro pieejamā regulāro izteiksmju sintakse ir minimāla. Tā atļauj lietot \verb|*| lai identificēt tokenu virknes un \verb/|/ lai izvēlēties starp dažiem tokenu tipiem.
 
 Prototips arī ļauj veidot regulārās izteiksmes ar specificētu tokenu vai pseido-tokenu vērtībām. Piemēram, regulārā izteiksme \verb|{id:foo}| sagaidīs tieši identifikatoru \verb|foo|, bet izteiksme \verb|{id}| sagaidīs jebkuru identifikatoru. Tas ievieš dažādas problēmas, kas tiks aprakstītas zemāk, bet dod lielāku brīvību šablonu sistēmas lietotājam.
 
-\subsection{\label{sbs:sol_approach}Vispārīgā pieeja}
+\subsection{\label{sbs:prot_approach}Vispārīgā pieeja}
 
 Prototips imitē darbu reālajā vidē, saņemot tokenus no ieejas plūsmas pa vienam no atsevišķas saskarnes. Tokenu plūsmas saskarne imitē leksera darbu. Kamēr prototips nav saņēmis nevienu regulāro izteiksmi, tas ignorē tokenu plūsmas apstrādes izsaukumus. Tiklīdz prototipam atnāk izsaukums apstrādāt tokenu regulāro izteiksmi, tas uzsāk regulārās izteiksmes parsēšanu. Parsēšanas procesā tiek izveidots galīgs automāts, kas akceptē regulārās izteiksmes uzdotās virknes. Katra jauna regulāra izteiksme izveido jaunu automātu.
 
@@ -22,7 +22,7 @@ Pieņemot, ka transformēšanas sistēma ir izstrādāta, tālākā darba gaita 
 
 Sistēma turpina darbu aprakstītā gaitā līdz ko neviens no šabloniem vairs netiek akceptēts. Pēc sistēmas apstāšanās tiek iegūta jauna tokenu virkne, kas tika apstrādāta attiecīgi kodā ierakstītiem makro, ja tika atrastas sakrišanas. Kad sistēma tiks integrēta ar reālu kompilatoru, tā strādās paralēli ar parsētāju un tālāk sistēmas izejas tokenu virkne tiks apstrādāta ar standartiem valodas likumiem.
 
-\subsection{\label{sbs:sol_conflictresolving}Makro konfliktu risināšana}
+\subsection{\label{sbs:prot_conflictresolving}Makro konfliktu risināšana}
 Makro šablonu konflikti var rasties tad, kad daži makro var tikt akceptēti vienlaikus. Tas var notikt gadījumos, ja divas regulārs izteiksmes akceptē līdzīgas virknes. Zemāk tiks aprakstīts, kā tika izvēlēts risināt dažādas konfliktu situācijas. 
 
 Reālajā situācijā var rasties 3 konfliktu veidi. Pirmais var rasties gadījumā, kad divas izteiksmes atpazīst vienu un to pašu virkni vienā tvērumā. Otrais var rasties gadījumā, kad jaunajā tvērumā parādās šablons, kas ir līdzīgs jau eksistējošam šablonam no vispārīgāka tvēruma. Trešais var rasties tad, kad viena no izteiksmēm akceptē kādu virkni, bet cita akceptē garāku virkni.
@@ -38,7 +38,7 @@ Tvēruma iekšienē strādā tādi paši likumi par izteiksmju prioritātēm - i
 \subsubsection{Dažādu virkņu garumu konflikts}
 Prototips strādā pēc mantkārīga (\emph{greedy}) principa - tas akceptē visgarāko iespējamo šablona sakritību. Tātad, ja eksistē divi šabloni \verb|{int} {,}| un \verb|({int} {,}) *|, tad tokenu virkne \verb|{int:4} {,} {int:6} {,}| tiks akceptēta ar otru šablonu, neskatoties uz to, ka augstākās prioritātes šablona sakritība tika konstatēta agrāk.
 
-\subsection{\label{sbs:sol_motivation}Realizācijas pamatojums}
+\subsection{\label{sbs:prot_motivation}Realizācijas pamatojums}
 
 Galvenais princips uz kura bāzējas prototipa izstrāde ir samazināt apstrādes laiku. Tātad prototipa risinājums tika izveidots tā, lai jebkurā laika momentā šablonu sakrišanu meklēšanai būtu nepieciešams lineārs laiks un tikai viena tokenu virknes apstaigāšana. Šāda pieeja ir izvēlēta ar iedomu, ka makro pievienošana tiks izpildīta tikai vienreiz, un to daudzums būs samērā neliels, bet sakrišanu meklēšana tiks pildīta katrā produkcijā, un, sliktākajā gadījumā, katram tokenam no ieejas plūsmas.
 
@@ -48,7 +48,7 @@ Tālāk, lai nodrošinātu visu šablonu pārbaudi vienlaikus un minimizēt mekl
 
 Cits veids, kā to varētu izpildīt, ir apvienot visus izveidotos šablonu automātus vienā determinētā galīgā automātā. Tieši šīs veids tika izvēlēts šī darba ietvaros lai pēc iespējas samazinātu laiku sakrišanu meklēšanai. Kaut arī automātu apvienošana šādā veidā ir laikietilpīga, tā samazina laika kārtu sakritību meklēšanai.
 
-\subsection{\label{sbs:sol_realizations}Kāpēc neder jau uzrakstītas bibliotēkas}
+\subsection{\label{sbs:prot_realizations}Kāpēc neder jau uzrakstītas bibliotēkas}
 
 Eksistē diezgan daudz jau izstrādātu bibliotēku, kas apstrādā regulārās izteiksmes. Piemēram, darbs~\cite{RE2} arī lieto automātu teoriju lai paātrinātu apstrādes laiku. Diemžēl tās nav lietojamas tādēļ, ka visi eksistējošie regulāro strādā tieši ar tekstu un simboliem, nevis ar tokeniem un to virknēm. Eksistējošo bibliotēku pārtulkošana uz tokenu apstrādi būtu darbietilpīgāka nekā jaunā moduļa izveide. Šādas bibliotēkas parasti arī piedāvā daudz vairāk funkcionalitātes, nekā ir nepieciešams, piemēram dažādi kontroles simboli, tādi ka $\^$ - meklēt no virknes sākuma. Tā kā sistēma tiks izsaukta patvaļīgas tokenu virknes vietas apstrādei, šāda veida kontrole nav nepieciešama. Citu programmētāju rakstītā koda apārstrāde un vienkāršošana aizņemtu vairāk laika nekā tā izveidošana pilnīgi no jauna.
 
@@ -56,7 +56,7 @@ Pieejamas regulāro izteiksmju bibliotēkas arī nepiedāvā iespēju apvienot v
 
 %Apvienošanas pieeja parasti ir lietota lielu datu plūsmu apstrādē, piemēram, meklējot infekcijas pazīmes plūsmā. Tad izstrādātās regulārās izteiksmes ir optimizētas un apvienotas vienā automāta. Šādā gadījumā nav nozīmes, kura no izteiksmēm ir akceptēta, jo galvenais ir identificēt draudu pazīmes. 
 
-\subsection{\label{sbs:sol_algorithms}Lietotie algoritmi}
+\subsection{\label{sbs:prot_algorithms}Lietotie algoritmi}
 
 Šī apakšnodaļa apraksta algoritmus, kas tika lietoti prototipa realizācijā. Kā jau bija teikts, meklēšanas laika optimizācijai tika izvēlēta pieeja, kur visi regulāro izteiksmju automāti tiek sapludināti kopā.
 
@@ -181,7 +181,7 @@ Automāta $D$ sākuma stāvoklis ir $\varepsilon-closure (set (s_0))$, bet $D$ a
 
 \subparagraph{Sarežģītība:} Sarežģītības novērtējums šīm algoritmam ir diezgan nepatīkams. Sliktākajā gadījumā tas būs $O(m^(n+1))$, kur $n$ ir NGA stāvokļu daudzums un $m$ ir ieejas alfabēta simbolu skaits. Algoritms var uzģenerēt līdz $m^n$ DGA stāvokļiem, katram no kuram ir $m$ pārejas. Taču parasti tas tā nenotiek un DGA stāvokļu skaits ir līdzīgs NGA stāvokļu skaitam, un algoritma sarežģītība ir $O(n*m)$. \cite{DragonBook, Hopcroft:IntroAutomataTheory}
 
-\subsubsection{\label{sbsbs:sol_minimization}Minimizēšana}
+\subsubsection{\label{sbsbs:prot_minimization}Minimizēšana}
 
 Izveidotais determinēts galīgs automāts var būt neoptimāls pēc stāvokļu skaita. Bet no šī skaitļa ir atkarīgs tālāko soļu izpildes ātrums. Tātad ir nepieciešams izveidot automātu, kas atpazīs to pašu valodu un saturēs minimālu iespējamu stāvokļi skaitu.
 
@@ -299,7 +299,7 @@ Viena no galvenām šīs sistēmas īpašībām ir iespēja atšķirt programmat
 
 Tāpēc tika izvēlēta sekojoša pieeja. Ja prototips darba gaitā sastapās ar tvēruma sākuma simbolu, tas izveido eksistējošā automāta kopiju un ieliek to kaudzē. Tad automātam tiek pievienotas tvēruma makro. Izejot no tvēruma tā specifiskais automāts tiek izmests ārā un darbs tiek turpināts ar pēdējo automātu no kaudzes, kas atbilst iepriekšējam tvērumam. Šādā veidā jebkurā laika brīdī aktīvs ir tikai viens sakrišanu meklēšanas automāts.
 
-\subsection{\label{sbs:sol_problems}Izņēmumi}
+\subsection{\label{sbs:prot_problems}Izņēmumi}
 
 \subsubsection{Transformācijas}
 
