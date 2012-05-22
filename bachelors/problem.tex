@@ -1,30 +1,38 @@
-\section{\label{s:motivation}Darba pamatojums}
+\section{\label{s:motivation}Ievads}
 
-Uz doto brīdi vairākumam mūsdienīgo programmēšanas valodu eksistē standarti. Pateicoties šim faktam, ir iespējams izstrādāt dažādus kompilatorus vienai un tai pašai valodai. Bet šiem standartiem ir jāmainās, lai valodas varētu attīstīties un paplašināt savas iespējas un lietojamību. Dažreiz šīs izmaiņas ir tik nopietnas, ka prasa ievērojamas parsētāja modifikācijas, lai tiktu atbalstītas, bet dažreiz tās ir tikai sintaktiskas, piem. sintaktiskā cukura\footnote{Sintaktiskais cukurs (\emph{syntactic sugar}) ir speciālas konstrukcijas, kas tiek pievienotas lai to padarītu saprotamāku un lasāmāku cilvēkam. Šīs konstrukcijas nemaina valodas funkcionalitāti, bet gan atvieglo tās lietošanu. Izplatīts sintaktiskā cukura piemērs ir C valodas konstrukcija \texttt{a[i]}, kas patiesībā ir \texttt{*(a + i)}.} ieviešana.
+Mūsdienu programmēšanas valodas ir spēcīgi rīki, kas var tikt pielietojami dažādu uzdevumu risināšanai. Abstrakti programmēšanas valodas var sadalīt divās grupās - universālas un domēn-specifiskas valodas. Universālas valodas ir pielietojamas visās sfērās, bet domēn-specifiskas gan tiek veidotas kādas konkrētas uzdevumu klases risināšanai. Kaut arī universālas valodas var tikt lietotas šīs uzdevumu klases risināšanai, tās ne vienmēr ir tikpat izteiksmīgas.
 
-Bieži izmaiņas ir valodas lietotāju iniciētas, jo tikai aktīvi lietojot valodu var izprast, kā tai trūkst, lai tā tiešām kļūtu par ērtu un populāru izstrādes rīku. Piedāvāt savas izmaiņas var dažādos veidos - informējot valodas izstrādātāju par kādas iespējas trūkumu, piedāvājot ielāpus kompilatoram, u.t.t.. Bet jebkādai izmaiņai ir nepieciešams atbalsts un lietotāju kvorums, kas vēlās šo izmaiņu lietot. To ir diezgan grūti dabūt ar šādiem izmaiņu pieprasījumiem.
+Taču parasti tieši universālas programmēšanas valodas tiek lietotas lai risinātu specifiskus uzdevumus, jo ne visiem uzdevumiem eksistē domēn-specifiskas valodas. Domēn-specifiskas valodas ir rīks, ko ir vērts izstrādāt veselai klasei specializētu uzdevumu. Bet to izveide ir liels darbs, ko nav vērts pildīt, lai atrisināt vienu konkrētu uzdevumu.
 
-Tomēr jebkādas, pat nebūtiskas, valodas sintakses izmaiņas parasti prasa kompilatora vai vairāku kompilatoru pārstrādi. Tas notiek tādēļ, ka programmēšanas valodas bieži iekļauj ļoti ierobežotas sintakses mainīšanas iespējas, vai arī neiekļauj šādu iespēju vispār. 
+Gandrīz jebkādas universālas programmēšanas valodas virzošs spēks ir funkcijas un to kompozīcijas. Katra valoda iekļauj sevī kaut kādu bāzes funkcionalitāti, funkciju ietvaru, kuru kompozīcijas un virknes veido programmas. Taču specifisku uzdevumu gadījumā funkciju kompozīcijas nepietiekami apraksta izpildāmo darbību. Dažas darbības ir ērtāk un saprotamāk (tas var būt pieņemts ārpus programmēšanas, reālās dzīves situācijās) attēlot ar citu sintaktisku formu, nevis ar funkciju. Šādas darbības piemērs varētu būt faktoriāla pieraksts - \verb|n!|, kas ir vispārpieņemts apzīmējums.
 
-Šīs darbs apskata iespēju lietot adaptīvo gramatiku principu, lai izvairīties no kompilatora pārstrādes nebūtisku sintakses izmaiņu gadījumā. Tas nozīmē, ka valodai jāsatur konstrukcijas, kas parsēšanas laikā var modificēt un paplašināt pašas valodas sintaksi.
+Viena no šādām sintaktiskām formām ir operatori, tomēr operatoru skaits un pārslogošanas iespējas valodās ir diezgan ierobežotas. To pārslogošana, piemēram, C vidē, neļaus attēlot faktoriālu ar \verb|!| zīmi, jo pārslogojot saglabājas tā prefiksā forma. Tātad operatoru pārslogošana nedod brīvību veidot konstrukcijas, kas varētu paaugstināt valodas izteiksmību. Bet citu rīku, kas varētu to piedāvāt, arī nav, jo programmēšanas valodas bieži iekļauj ļoti ierobežotas sintakses mainīšanas iespējas, vai arī neiekļauj šādu iespēju vispār.
 
-Viens no metodēm, kā varētu izpildīt pašmodificēšanas uzdevumu ir izveidot kross\--kom\-pi\-la\-to\-ru, kas transformētu jauno sintaksi tā, lai standarta kompilators to varētu atpazīt. Bet šīs metodes problēma ir tas, ka lielākas daļas moderno valodu sintaksi ir neiespējams noparsēt lietojot automātiskos rīkus. Zemāk ir piedāvāti daži piemēri gadījumiem no populāras valodas C, kad automātiskā parsēšana ir neiespējama.
+Uz doto brīdi vairākumam mūsdienīgo programmēšanas valodu eksistē standarti. Pateicoties šim faktam, ir iespējams izstrādāt dažādus kompilatorus vienai un tai pašai valodai. Bet sintakses izmaiņu ieviešanas gadījumā ir jāmaina standarts, tātad ir jākorigē arī visi valodas kompilatori. Dažreiz šīs izmaiņas ir tik nopietnas, ka tiešām prasa ievērojamas parsētāja modifikācijas, lai tiktu atbalstītas, bet dažreiz tās ir tikai sintaktiskas, piem. sintaktiskā cukura\footnote{Sintaktiskais cukurs (\emph{syntactic sugar}) ir speciālas konstrukcijas, kas tiek pievienotas lai to padarītu saprotamāku un lasāmāku cilvēkam. Šīs konstrukcijas nemaina valodas funkcionalitāti, bet gan atvieglo tās lietošanu. Izplatīts sintaktiskā cukura piemērs ir C valodas konstrukcija \texttt{a[i]}, kas patiesībā ir \texttt{*(a + i)}.} ieviešana.
+
+%Bieži izmaiņas ir valodas lietotāju iniciētas, jo tikai aktīvi lietojot valodu var izprast, kā tai trūkst, lai tā tiešām kļūtu par ērtu un populāru izstrādes rīku. Piedāvāt savas izmaiņas var dažādos veidos - informējot valodas izstrādātāju par kādas iespējas trūkumu, piedāvājot ielāpus kompilatoram, u.t.t.. Bet jebkādai izmaiņai ir nepieciešams atbalsts un lietotāju kvorums, kas vēlās šo izmaiņu lietot. To ir diezgan grūti dabūt ar šādiem izmaiņu pieprasījumiem.
+
+%Tomēr jebkādas, pat nebūtiskas, valodas sintakses izmaiņas parasti prasa kompilatora vai vairāku kompilatoru pārstrādi. Tas varētu būt vērts tad, kad izmaiņas ir nepieciešamas vairākumam valodas lietotāju, bet gadījumos, kad universālas valodas ir lietotas specifisku uzdevumu risināšanai, tas tā nav.
+
+Šīs darbs izpēta jautājumu, kā dot valodas lietotājam iespēju izteikt kādu tam nepieciešamu funkcionalitāti ar netriviālām sintaktiskām konstrukcijām, nevis ar funkcijām. Tas arī mēģina iznest valodas sintakses izmaiņas uz valodas lietotāja līmeni, t.i. dot lietotājam iespēju sapratnes robežās modificēt valodas sintaksi rakstot programmas. Tas dos iespēju lietotājiem pašiem ieviest izmaiņas, kas ir nepieciešamas, lai paplašināt valodas iespējas un specificēt valodas konstrukcijas pielietošanas domēnam.
+
+Viena no metodēm, kā varētu ļaut lietotājam paplašināt valodas sintaksi ir izveidot kross\--kom\-pi\-la\-to\-ru, kas transformētu jauno sintaksi tā, lai standarta kompilators to varētu atpazīt. Bet šīs metodes problēma ir tas, ka lielākas daļas moderno valodu sintaksi ir neiespējams noparsēt lietojot automātiskos rīkus. Zemāk ir piedāvāti daži piemēri gadījumiem no populāras valodas C, kad automātiskā parsēšana ir neiespējama.
 
 \begin{enumerate}
 \item
 Valodā C lietotājs var nodefinēt patvaļīgu tipu lietojot konstrukciju \verb|typedef|. Šāda veida iespēja padara neiespējamu šādas izteiksmes apstrādi \verb|(x) + 5|, ja vien mēs neesam pārliecināti, kas ir \verb|x| - tips vai mainīgais. Ja \verb|x| ir tips, tad šī izteiksme pārveido izteiksmes \verb|+ 5| vērtību uz tipu \verb|x|. Ja \verb|x| ir mainīgais, tad šī izteiksme nozīmē vienkāršu mainīgā \verb|x| un vērtības \verb|5| saskaitīšanu. 
 \item
-Pieņemsim, ka ir iespēja paplašināt C valodas sintaksi ar infiksu operatoru \verb|++| un pierakstīt konstanšu masīvus \verb|[1, 2, 3]| veidā. Tad izteiksme \verb|a ++ [1]| būtu nepārsējama, jo eksistē vismaz divi to interpretācijas veidi. Tas varētu tikt saprasts ka postfiksā operatora \verb|++| pielietošana mainīgam \verb|a| un tad \verb|a| indeksēšana ar \verb|[1]|. Vai arī tas varētu būt divu masīvu \verb|a| un \verb|[1]| konkatenācija.
+C valodā eksistē operators postfikss operators \verb|++|, kas palielina argumentu par vienu vienību. Pieņemsim, ka ir iespēja paplašināt C valodas sintaksi ar infiksu operatoru \verb|++| un pierakstīt konstanšu masīvus \verb|[1, 2, 3]| veidā. Tad izteiksme \verb|a ++ [1]| būtu nepārsējama, jo eksistē vismaz divi to interpretācijas veidi. Tas varētu tikt saprasts ka postfiksā operatora \verb|++| pielietošana mainīgam \verb|a| un tad \verb|a| indeksēšana ar \verb|[1]|. Vai arī tas varētu būt divu masīvu \verb|a| un \verb|[1]| konkatenācija.
 \end{enumerate}
 
-Dažreiz arī programmatūras koda dalīšana pa tokeniem ir atkarīga no šī koda konteksta, kas padara ne tikai parsēšanas procesu, bet arī leksēšanas procesu neautomatizējamu.
-
-\begin{enumerate}
-\item
-Valoda C++ ļauj lietotājam izveidot ligzdveida veidnes, piemēram, šādas \\ \verb|template <typename foo, list <int>>|. Šajā gadījumā simboli \verb|>>| aizver divas atvērtās grupas pēc kārtas. Lai tas tiešām būtu atpazīts, ka grupu aizvēršana, lekserim jāzin simbolu konteksts, jo parasti simbolu kombinācija \verb|>>| nozīmē operāciju pārbīdei pa labi.
-\item
-Gadījumā, ja lietotājam ir dota iespēja definēt savus operatorus, ieviešot operatoru, kas pārklāj eksistējošos, ir jāmaina leksēšanas likumus. Piemēram, ja lietotājs definē unāru operatoru \verb|+-|, tad izteiksmei \verb|+-5| ir jābūt saprastai ka \verb|(+-, 5)|, nevis ka \verb|(+, -, 5)|.
-\end{enumerate}
+%Dažreiz arī programmatūras koda dalīšana pa tokeniem ir atkarīga no šī koda konteksta, kas padara ne tikai parsēšanas procesu, bet arī leksēšanas procesu neautomatizējamu.
+%
+%\begin{enumerate}
+%\item
+%Valoda C++ ļauj lietotājam izveidot ligzdveida veidnes, piemēram, šādas \\ \verb|template <typename foo, list <int>>|. Šajā gadījumā simboli \verb|>>| aizver divas atvērtās grupas pēc kārtas. Lai tas tiešām būtu atpazīts, ka grupu aizvēršana, lekserim jāzin simbolu konteksts, jo parasti simbolu kombinācija \verb|>>| nozīmē operāciju pārbīdei pa labi.
+%\item
+%Gadījumā, ja lietotājam ir dota iespēja definēt savus operatorus, ieviešot operatoru, kas pārklāj eksistējošos, ir jāmaina leksēšanas likumus. Piemēram, ja lietotājs definē unāru operatoru \verb|+-|, tad izteiksmei \verb|+-5| ir jābūt saprastai ka \verb|(+-, 5)|, nevis ka \verb|(+, -, 5)|.
+%\end{enumerate}
 
 Apskatītie piemēri dod iespēju secināt, ka automātisku parsētāju ģeneratoru lietošana var būt tik pat sarežģīta, ka parsētāja rakstīšana ar rokām. Izrādās, ka daudzām eksistējošām valodām parsētāji arī tiek rakstīti manuāli (piemēram C/C++/ObjectiveC kompilators GNU GCC \cite{GCC}). Tas nozīmē, ka kross-kompilatoru visticamāk būs jāraksta manuāli, risinot eksistējošās gramatikas konfliktus, un oriģinālvalodas ievērojamu izmaiņu gadījumā būs jāpastrādā abi kompilatori, kas nozīmē divreiz vairāk darba. 
 
@@ -38,7 +46,7 @@ Jebkura priekšprocesora viens no galveniem mērķiem ir vienas elementu virknes
 
 Svarīgākā problēma šādai teksta apstrādes pieejai ir tas, ka tai neiespējams pārbaudīt korektumu. Apskatīsim sekojošu C makro piemēru:
 \begin{verbatim}
-#define foo(x, y) x y|
+#define foo(x, y) x y
 \end{verbatim}
 
 Pirmkārt, šādam makro nav iespējams statiski izsecināt rezultātu, jo kaut arī \verb|foo(5, 6)| tiks pārveidots par \verb|5 6|, gan \verb|foo(, 5)|, gan \verb|foo(5, )| tiks pārveidots par \verb|5|. Otrkārt, tā kā komats ir makro daļa, nav iespējams kā pirmo makro argumentu padot virkni \verb|5, 6|. To var izdarīt tikai ievietojot argumentu iekavās, tad \verb|foo((5, 6), 7)|, kas tiks pārveidots par \verb|(5, 6) 7|.
@@ -55,7 +63,11 @@ Var redzēt, ka vispārīgā gadījumā nav iespējams statiski izveidot nekādu
 
 Tomēr pat neņemot vērā korektuma pierādījumu neiespējamību, makro sistēmai trūkst iespēju, lai izveidot jaunas valodas konstrukcijas. Piemēram, būtu dabiski reprezentēt skaitļa moduli ar pierakstu \verb/|a|/. C priekšprocesors, savukārt, ļauj veidot tikai prefiksa formas funkciju makro un konstanšu makro. Jā arī kāda makro sistēma ļautu izveidot minēto pierakstu, parādītos problēmas gadījumos, kad vienam un tam pašam simbolam eksistē dažas nozīmes, piemēram, ar pierakstu \verb/| (a | b) |/, kam jābūt pārveidotam uz \verb/abs(a | b)/.
 
-Apskatītie piemēri parāda, ka ne kross-kompilēšana, ne programmas teksta priekšprocesēšana vispārpieņemtā veidā neder vēlamā rezultāta sasniegšanai. Par šīs problēmas risinājumu varētu kļūt transformācijas sistēma, kas apstrādā nevis programmas tekstu, bet gan programmas tokenu un pseido-tokenu\footnote{Pseido-tokens ir citu tokenu grupa, kas tiek aizvietota ar vienu objektu. Tas var tikt darīts, lai vienreiz noparsētu izteiksmi nevajadzētu apstrādāt vēlreiz. Tokenu aizvietošana ar pseido-tokeniem notiek gramatikas likumu reducēšanas brīdī. Kad, piemēram, tokenu virkne \texttt{{id:a} '+' {id:b}} tiek atpazīta ka derīga izteiksme gramatikas ietvaros, tā var tikt aizvietota ar pseido-tokenu \texttt{{expr:a + b}}.} virknes. Lai padarītu transformācijas sistēmu vairāk spēcīgu un ļautu atpazīt vispārīgākas virknes, tās makro šabloni tiks paplašināti ar regulāro izteiksmju elementiem, joprojām saglabājot iespēju kontrolēt transformāciju korektumu.
+Apskatītie piemēri parāda, ka ne kross-kompilēšana, ne programmas teksta priekšprocesēšana vispārpieņemtā veidā neder vēlamā rezultāta sasniegšanai. Par šīs problēmas risinājumu varētu kļūt transformācijas sistēma, kas apstrādā nevis programmas tekstu, bet gan programmas tokenu un pseido-tokenu\footnote{Pseido-tokens ir citu tokenu grupa, kas tiek aizvietota ar vienu objektu. Tas var tikt darīts, lai vienreiz noparsētu izteiksmi nevajadzētu apstrādāt vēlreiz. Tokenu aizvietošana ar pseido-tokeniem notiek gramatikas likumu reducēšanas brīdī. Kad, piemēram, tokenu virkne \texttt{{id:a} '+' {id:b}} tiek atpazīta ka derīga izteiksme gramatikas ietvaros, tā var tikt aizvietota ar pseido-tokenu \texttt{{expr:a + b}}.} virknes. 
+
+Lai padarītu transformācijas sistēmu vairāk spēcīgu un ļautu atpazīt vispārīgākas virknes, tās makro šabloni tiks paplašināti ar regulāro izteiksmju elementiem,
+
+ joprojām saglabājot iespēju kontrolēt transformāciju korektumu.
 
 Šādā sistēma dos iespēju paplašināt valodu lietotāja līmenī, nevis kompilatora līmenī. Tas arī dos lielāku brīvību izmaiņu izstrādē, jo lietotājiem būs iespēja veidot makro bibliotēkas ar jaunām iespējām un izplatīt tās. Tā varēs būt pielāgota dažādām valodām, jo tā strādās ārpus paplašināmās valodas gramatikas.
 

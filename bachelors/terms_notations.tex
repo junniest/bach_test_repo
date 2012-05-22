@@ -3,8 +3,14 @@
 
 \begin{description}
 \item[Regulārās izteiksmes]
+
+
 \item[Atpakaļnorādes]
+
+
 \item[Priekšprocesors]
+
+
 \item[Tvērums]
 Programmas tvērums ir programmas bloks, kurā definēti mainīgo nosaukumi vai citi identifikatori ir lietojami, un kurā to definīcijas ir spēkā. Programmas ietvaros tvērumus ievieš, piemēram, figūriekavas, C/C++ gadījumā. Tad mainīgie, kas tiek definēti vispārīgā programmas kontekstā (globālie mainīgie), var tikt pārdefinēti mazākajā kontekstā (piemēram, kaut kādas funkcijas vai klases robežās) un iegūst lielāku prioritāti. Tas nozīmē, ka ja tiek lietots šāds pārdefinēts mainīgais, tas tiek uzskatīts par lokālu un tiek lietots lokāli līdz specifiska konteksta beigām, nemainot globālā mainīgā vērtību.
 
@@ -18,10 +24,42 @@ int main() {
     b += a;
 }
 \end{verbatim}
-Šajā piemērā \verb|a| ir definēta gan globāli, gan lokāli. Kad tiek izpildīta rindiņa \verb|a++;|, lokāla mainīgā vērtība tiks samazināta uz 3, jo \verb|a| ir pārdefinēts ar vērtību 2. Globālais \verb|a| tā ara paliks ar vērtību 0. Un kad tiks izpildīta rindiņa \verb|b += a;|, \verb|b| pieņems vērtību 4. Tvēruma iekšā tiks samainīta globālā mainīgā \verb|b| vērtība, jo tas netika pārdefinēts.
+Šajā piemērā \verb|a| ir definēta gan globāli, gan lokāli. Kad tiek izpildīta rindiņa \verb|a++;|, lokāla mainīgā vērtība tiks palielināta līdz vērtībai 3, jo \verb|a| ir pārdefinēts ar vērtību 2. Globālais \verb|a| tā ara paliks ar vērtību 0. Un kad tiks izpildīta rindiņa \verb|b += a;|, \verb|b| pieņems vērtību 4. Tvēruma iekšā tiks samainīta globālā mainīgā \verb|b| vērtība, jo tas netika pārdefinēts.
 
 \item[Tipu izsecināšana]
-\item[$\varepsilon$-pārejas]
-\item[Nedeterminēts galīgs automāts]
-\item[Determinēts galīgs automāts]
+
+
+\item[Nedeterminēts galīgs automāts (nondeterministic finite automaton)]
+
+
+\item[$\varepsilon$-pārejas ($\varepsilon$-transitions)]
+Nedeterminētā galīgā automātā pārejas
+
+
+\item[Determinēts galīgs automāts (deterministic finite automaton)]
+
+
+\item[Parsēšana (parsing)]
+
+
+\item[Daļiņa (token)]
+Pirmajā kompilēšanas stadijā leksiskais analizators sadala tekstu leksēmās (nozīmīgās simbolu secībās) un katrai leksēmai izveido speciālu objektu, kas tiek saukts par daļiņu (angl. \emph{token}). Katrai daļiņai ir glabāts tips, ko lieto parsētājs lai izveidotu programmas struktūru. Ja ir nepieciešams, tiek glabāta arī daļiņas vērtība, parasti tā ir norāde uz elementu simbolu tabulā, kurā glabājas informācija par daļiņu - tips, nosaukums. Simbolu tabula ir nepieciešama tālākā kompilatora darbā lai paveiktu semantisko analīzi un koda ģenerāciju. Šajā darbā vienkāršības dēļ tiks uzskatīts, ka daļiņas vērtības ailītē glabāsies leksēma, ko nolasīja analizators. Tālāk daļiņas tiks apzīmētas šādā veidā:
+
+\begin{verbatim}
+{token-type : token-value}
+\end{verbatim}
+
+Piemēram apskatīsim nelielu programmas izejas koda gabalu - \verb|sum = item + 5|. Šīs izejas kods var tikt sadalīts sekojošās daļiņās:
+\begin{enumerate}
+\item \verb|sum| ir leksēma, kas tiks pārtulkota daļiņā \verb|{id:sum}|. \verb|id| ir daļiņas klase, kas parāda, ka nolasītais tokens ir kaut kāds identifikators. daļiņas vērtībā nonāk identifikatora nosaukums \verb|sum|.
+\item Piešķiršanas operators \verb|=| tiks pārveidots daļiņā \verb|{=}| Šīm daļiņām nav nepieciešams glabāt vērtību, tāpēc otrās daļiņas apraksta komponente ir izlaista. Lai atvieglotu daļiņu virkņu uztveri šī darba ietvaros operatoru daļiņu tipi tiks apzīmēti ar operatoru simboliem, kaut arī pareizāk būtu izveidot korektus daļiņas tipu nosaukumus, piemēram \verb|{assign}|.
+\item Leksēma \verb|item| analoģiski \verb|sum| tiks pārtulkota daļiņā \verb|{id:item}|.
+\item Summas operators \verb|+| tiks pārtulkots daļiņā \verb|{+}|.
+\item Leksēma 5 tiks pārtulkota daļiņā \verb|{int:5}|.
+\end{enumerate}
+
+Tātad izejas kods \verb|sum = item1 + 5| pēc leksiskās analīzes tiks pārveidots daļiņu plūsmā \verb|{id:sum}, {=}, {id:item1}, {+}, {int:5}|. Nolasīto daļiņu virkne tiek padota parsētājam tālākai apstrādei un abstraktā sintaktiskā koka izveidei. \cite{DragonBook}
+
+
+
 \end{description}

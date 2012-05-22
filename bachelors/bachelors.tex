@@ -2,6 +2,10 @@
 \usepackage{polyglossia}
 \setdefaultlanguage{latvian}
 \setotherlanguages{english, russian}
+
+\usepackage[labelfont=it,textfont=bf]{caption}
+\captionsetup[table]{labelsep=newline, justification=raggedleft, singlelinecheck=false}
+
 \usepackage{bacdarbs}
 \usepackage{mathtools}
 \usepackage{fixlatvian}
@@ -20,11 +24,16 @@
 \usepackage{setspace}
 \onehalfspacing
 
+\sloppy
+
 \setmainfont{Times New Roman}
 
 \setcounter{secnumdepth}{4} 
 
 \renewcommand{\thesection}{\arabic{section}}
+
+\renewcommand{\thefigure}{\arabic{section}.\arabic{figure}}\renewcommand{\thetable}{\arabic{section}.\arabic{table}}
+\let\stddsection\section{}\renewcommand\section{ \setcounter{figure}{0}\stddsection}
 
 \newcommand{\kw}[2]{\par\noindent{\small{\em #1\/}: #2}}
 
@@ -49,9 +58,7 @@
 
 \include{terms_notations}
 
-\include{introduction}
-
-%\include{knowledge}
+%\include{introduction}
 
 \include{problem}
 
@@ -66,6 +73,9 @@
 \include{results}
 
 \section{\label{s:conclusions}Secinājumi}
+
+
+Šī darba ietvaros tika izstrādāts šablonu sakrišanu meklēšanas prototips, kas prot meklēt regulāro izteiksmju sakrišanas reizes programmas tokenu un pseido-tokenu virknē. 
 
 Tālāk darbs tik turpināts (šeit var pārfrāzēt Conclusions no raksta melnraksta).
 

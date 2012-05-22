@@ -125,16 +125,16 @@ Tad izveidotie automāti var tikt savienoti un beigās tiem tiek pievienots akce
 \begin{figure}[H]
   \centering
     \includegraphics[scale=1.25]{pictures/auto_full_ex}
-  \caption{\label{fig:auto_full_ex}Automats izteiksmei \texttt{\{id\} (\{real\} | \{int\}) *}}
+  \caption{\label{fig:auto_full_ex}Automats izteiksmei \texttt{\{id\} (\{real\} | \{int\}) * \{;\}}}
 \end{figure}
 
 Tā tiek izveidots nedeterminēts automāts katrai regulārai izteiksmei. \cite{Cox:RegexpMatchingFast}, \cite{DragonBook}
 
 \subsubsection{Determinizācija}
 
-Kaut arī daudzām valodām ir vienkāršāk uzbūvēt nedeterminētu galīgu automātu (piemēram, pašām regulārām izteiksmēm tas ir loģiskāk), ir patiess tas, ka katra valoda var tikt aprakstīta gan ar nedeterminētu, gan ar determinētu galīgu automātu. Turklāt, dzīvē sastopamās situācijās DGA parasti satur tik pat daudz stāvokļu, cik ir NGA. Sliktākajā gadījumā, tomēr var gadīties, ka mazākais iespējamais DGA saturēs $m^n$ stāvokļu ($m$ - ieejas alfabēta elementu skaits), kamēr mazākais NGA saturēs $n$ stāvokļus. \footnote{Pieņemsim, ka automāta valoda sastāv no diviem simboliem - {0, 1}. Sliktākais gadījums, kad DGA tiešām saturēs $2^n$ stāvokļus attiecībā pret $n$ NGA stāvokļiem, var rasties tad, kad, piemēram, automāta valodā $n$-tais simbols no virknes beigām ir 1. Tad DGA būs jāprot atcerēties pēdējos $n$ simbolus. Tā kā ir divi ieejas alfabēta simboli, automātam ir jāatceras visas to dažādas $2^n$ kombinācijas.}
+Kaut arī daudzām valodām ir vienkāršāk uzbūvēt nedeterminētu galīgu automātu (piemēram, pašām regulārām izteiksmēm tas ir loģiskāk), ir patiess tas, ka katra valoda var tikt aprakstīta gan ar nedeterminētu, gan ar determinētu galīgu automātu. Turklāt, dzīvē sastopamās situācijās DGA parasti satur tik pat daudz stāvokļu, cik ir NGA. Sliktākajā gadījumā, tomēr var gadīties, ka mazākais iespējamais DGA saturēs $m^n$ stāvokļu ($m$ - ieejas alfabēta elementu skaits), kamēr mazākais NGA saturēs $n$ stāvokļus\footnote{Pieņemsim, ka automāta valoda sastāv no diviem simboliem - {0, 1}. Sliktākais gadījums, kad DGA tiešām saturēs $2^n$ stāvokļus attiecībā pret $n$ NGA stāvokļiem, var rasties tad, kad, piemēram, automāta valodā $n$-tais simbols no virknes beigām ir 1. Tad DGA būs jāprot atcerēties pēdējos $n$ simbolus. Tā kā ir divi ieejas alfabēta simboli, automātam ir jāatceras visas to dažādas $2^n$ kombinācijas.}.
 
-Izrādās, ka patiesībā katram NGA eksistē ekvivalents DGA, ko var uzbūvēt ar apakškopu sastādīšanas algoritmu \footnote{Pierādījumu tam, ka uzbūvētais DGA tik tiešām akceptē to pašu valodu, ko NGA, sk.  \cite{Hopcroft:IntroAutomataTheory}, teorēma 2.11.}. Vadošā doma šī algoritmā ir tas, ka katrs determinētā galīgā automāta (DGA) stāvoklis ir kādu NGA stāvokļu kopa. Pēc ieejas virknes $a_1, a_2, ..., a_n$ ielasīšanas DGA atrodas stāvoklī, kas atbilst NGA stāvokļu kopai, kuru var sasniegt apstaigājot virkni $a_1, a_2, ..., a_n$.
+Izrādās, ka patiesībā katram NGA eksistē ekvivalents DGA, ko var uzbūvēt ar apakškopu sastādīšanas algoritmu\footnote{Pierādījumu tam, ka uzbūvētais DGA tik tiešām akceptē to pašu valodu, ko NGA, sk.  \cite{Hopcroft:IntroAutomataTheory}, teorēma 2.11.}. Vadošā doma šī algoritmā ir tas, ka katrs determinētā galīgā automāta (DGA) stāvoklis ir kādu NGA stāvokļu kopa. Pēc ieejas virknes $a_1, a_2, ..., a_n$ ielasīšanas DGA atrodas stāvoklī, kas atbilst NGA stāvokļu kopai, kuru var sasniegt apstaigājot virkni $a_1, a_2, ..., a_n$.
 
 \paragraph*{Algoritms 1: NGA transformēšana uz DGA}
 \subparagraph{Ieeja:}NGA $N$.
@@ -185,9 +185,9 @@ Automāta $D$ sākuma stāvoklis ir $\varepsilon-closure (set (s_0))$, bet $D$ a
 
 Izveidotais determinēts galīgs automāts var būt neoptimāls pēc stāvokļu skaita. Bet no šī skaitļa ir atkarīgs tālāko soļu izpildes ātrums. Tātad ir nepieciešams izveidot automātu, kas atpazīs to pašu valodu un saturēs minimālu iespējamu stāvokļi skaitu.
 
-Var pierādīt, ka katram automātam eksistē ekvivalents minimāls automāts \footnote{Šī fakta pierādījumu sk. ???}. Vēl vairāk, ja eksistē 2 dažādi automāti ar vienādu stāvokļu daudzumu, kas atpazīst vienu un to pašu valodu, tad tie ir vienādi līdz stāvokļu nosaukumiem \footnote{Tā kā stāvokļu nosaukumi neietekmē automāta darbību, divi automāti tiek saukti par vienādiem līdz pat stāvokļu nosaukumiem, ja viens no tiem var tikt pārveidots otrajā vienkārši pārsaucot to stāvokļus.}.
+Var pierādīt, ka katram automātam eksistē ekvivalents minimāls automāts\footnote{Šī fakta pierādījumu sk. ???}. Vēl vairāk, ja eksistē 2 dažādi automāti ar vienādu stāvokļu daudzumu, kas atpazīst vienu un to pašu valodu, tad tie ir vienādi līdz stāvokļu nosaukumiem\footnote{Tā kā stāvokļu nosaukumi neietekmē automāta darbību, divi automāti tiek saukti par vienādiem līdz pat stāvokļu nosaukumiem, ja viens no tiem var tikt pārveidots otrajā vienkārši pārsaucot to stāvokļus.}.
 
-Tālāk teiksim, ka virkne $x$ atšķir stāvokļu $s$ no stāvokļa $t$ tad, kad tikai viens stāvoklis, ko var sasniegt no $t$ un $s$ pa $x$ ir akceptējošs. Tātad divi stāvokļi ir atšķirami tad, kad eksistē tāda virkne, kas viņus atšķir. Jebkurš akceptējošs stāvoklis ir atšķirams no jebkura neakceptējoša stāvokļa ar tukšu virkni (stāvoklis nevar būt akceptējošs un neakceptējoss vienlaikus). Divi neatšķirami stāvokļi ir ekvivalenti. \footnote{\cite{Hopcroft:IntroAutomataTheory} nodaļa 4.4}
+Tālāk teiksim, ka virkne $x$ atšķir stāvokļu $s$ no stāvokļa $t$ tad, kad tikai viens stāvoklis, ko var sasniegt no $t$ un $s$ pa $x$ ir akceptējošs. Tātad divi stāvokļi ir atšķirami tad, kad eksistē tāda virkne, kas viņus atšķir. Jebkurš akceptējošs stāvoklis ir atšķirams no jebkura neakceptējoša stāvokļa ar tukšu virkni (stāvoklis nevar būt akceptējošs un neakceptējoss vienlaikus). Divi neatšķirami stāvokļi ir ekvivalenti\footnote{\cite{Hopcroft:IntroAutomataTheory} nodaļa 4.4}.
 
 \paragraph*{Algoritms 2: DGA minimizēšana}
 \subparagraph{Ieeja:}DGA $D$.
@@ -225,7 +225,7 @@ Tālāk paliek apstrādāt jaunizveidotās stāvokļu grupas izveidojot jaunu de
 \end{enumerate}
 
 \subparagraph{Sarežģītība:}
-Šī algoritma sarežģītība ir $O(n^2*l)$, kur $n$ ir sākotnējā automāta stāvokļu daudzums un $l$ maksimāls pāreju daudzums no kāda no stāvokļiem \footnote{Patiesībā $l$ būtu jābūt ieejas alfabēta elementu skaitam. Bet šī darba ietvaros ir atļauts veidot regulārās izteiksmes ar pārejām pa tokeniem ar specificētu vērtību, piemēram \texttt{\{int:5\}}. Tātad īstenībā ieejas alfabēts ir bezgalīgs.}.
+Šī algoritma sarežģītība ir $O(n^2*l)$, kur $n$ ir sākotnējā automāta stāvokļu daudzums un $l$ maksimāls pāreju daudzums no kāda no stāvokļiem\footnote{Patiesībā $l$ būtu jābūt ieejas alfabēta elementu skaitam. Bet šī darba ietvaros ir atļauts veidot regulārās izteiksmes ar pārejām pa tokeniem ar specificētu vērtību, piemēram \texttt{\{int:5\}}. Tātad īstenībā ieejas alfabēts ir bezgalīgs.}.
 
 \subsubsection{Apvienošana}
 
@@ -245,13 +245,13 @@ Apskatīsim piemēru automātu apvienošanai. Attēls~\ref{fig:auto_m_1} parāda
 \begin{figure}[H]
   \centering
     \includegraphics[scale=1.5]{pictures/auto_m_1}
-  \caption{\label{fig:auto_m_1}Automats izteiksmei \texttt{\{id\} (\{real\} | \{int\}) *}}
+  \caption{\label{fig:auto_m_1}Automats izteiksmei \texttt{\{id\}* \{int\}*}}
 \end{figure}
 
 \begin{figure}[H]
   \centering
     \includegraphics[scale=1.5]{pictures/auto_m_2}
-  \caption{\label{fig:auto_m_2}Automats izteiksmei \texttt{\{id\} (\{real\} | \{int\}) *}}
+  \caption{\label{fig:auto_m_2}Automats izteiksmei \texttt{\{id\} \{real\}* \{int\}}}
 \end{figure}
 
 To apvienotais automāts ir parādīts attēlā~\ref{fig:auto_merge}.
@@ -259,7 +259,7 @@ To apvienotais automāts ir parādīts attēlā~\ref{fig:auto_merge}.
 \begin{figure}[H]
   \centering
     \includegraphics[scale=1.5]{pictures/auto_merge}
-  \caption{\label{fig:auto_merge}Automats izteiksmei \texttt{\{id\} (\{real\} | \{int\}) *}}
+  \caption{\label{fig:auto_merge}Automats izteiksmju \texttt{\{id\}* \{int\}*} un \texttt{\{id\} \{real\}* \{int\}} apvienojumam}
 \end{figure}
 
 Attēls~\ref{fig:uni_algorithm} parāda apvienošanas algoritmu pseido-kodā. $s_0$ ir jaunā automāta $D'$ sākuma stāvoklis, $r_0$ ir $D_1$ sākuma stāvoklis un $t_0$ ir $D_2$ sākuma stāvoklis. $Dstates$ ir automāta $D'$ stāvokļu saraksts, $Dtran$ ir $D'$ pāreju tabula. Funkcija $move (S, t)$ atgriež tos stāvokļus, uz kuriem var nokļūt no $S$ pa tokenu $t$. Tā kā parasti $S$ sastāv no diviem stāvokļiem $r_i$ un $t_i$, tā atgriež pārejas rezultātu no katra no tiem. Rezultāts arī var but tikai viens stāvoklis, gadījumā, ja no kāda $r_i$ un $t_i$ neeksistē pāreja pa doto tokenu.
