@@ -1,12 +1,57 @@
 \section{\label{s:system}Transformācijas sistēma}
 
-Šī nodaļa piedāvā uzbūves principus sistēmai, kura ļaus lietotājam dinamiski paplašināt programmēšanas valodas iespējas ar makro valodas palīdzību. Šī makro valoda ļaus izveidot jaunas valodas konstrukcijas no jau eksistējošām vienībām. Sistēma ir projektēta ka virsbūve parsētājam, tā ļaus ieviest sintakses modifikācijas neieviešot nepieciešamību pēc parsētāja izmaiņām. Tā strādās paralēli ar parsētāju, analizējot kodu ar ierakstītiem makro un apstrādājot tokenu virknes.
+Šī nodaļa piedāvā uzbūves principus sistēmai, kura ļaus lietotājam dinamiski paplašināt programmēšanas valodas iespējas ar makro valodas palīdzību. Šī makro valoda ļaus izveidot jaunas valodas konstrukcijas no jau eksistējošām vienībām. Sistēma ir projektēta ka virsbūve parsētājam un strādās paralēli ar parsētāju, analizējot kodu ar ierakstītiem makro un apstrādājot daļiņu virknes.
 
-Šīs sistēmas mērķis ir piedāvāt iespēju modificēt valodas sintaksi programmas rakstīšanas gaitā, nebojājot jau eksistējošo konstrukciju darbu. Sistēma ieviesīs pašmodificēšanos lietojot konstrukciju aizvietošanu, kas vienlaikus nodrošinās gramatikas modifikācijas un parsētāja nemainīgumu. Tajā pašā laikā sistēma būs stabila pret kļūdām dēļ tā, ka tā strādās tikai konkrētās gramatikas produkcijas ietvaros un tā, ka tā pārbaudīs tipus jaunizveidotām virknēm.
+Šīs sistēmas mērķis ir piedāvāt iespēju modificēt valodas sintaksi programmas rakstīšanas gaitā, nebojājot jau eksistējošo konstrukciju darbu. Sistēma ieviesīs pašmodificēšanos lietojot konstrukciju aizvietošanu, kas vienlaikus nodrošinās gramatikas modifikācijas un sākotnējās valodas gramatikas nemainīgumu. Tajā pašā laikā sistēma būs stabila pret kļūdām dēļ tā, ka tā strādās tikai konkrētās gramatikas produkcijas ietvaros un tā, ka tā pārbaudīs tipus jaunizveidotām virknēm.
 
-Sistēmas raksturīga īpašība ir tas, ka tā nav piesaistīta konkrētai programmēšanas valodai. Tā var tikt pielāgota un integrēta dažādu valodu parsētājos, kas atbilst dažiem nosacījumiem.
+Sistēmas raksturīga īpašība ir tas, ka tā nav piesaistīta konkrētai programmēšanas valodai. Uz doto brīdi tā var tikt pielāgota un integrēta dažādu valodu parsētājos, kuru arhitektūra atbilst dažiem nosacījumiem. Tai nav ierobežojumu pret atbalstāmo sintaksi, jo tā strādās ārpus valodas gramatikas.
 
-Tālāk nodaļa ir organizēta sekojoši. Apakšnodaļa~\ref{sbs:sys_approach} vispārīgi apraksta transformācijas pieeju. Apakšnodaļa~\ref{sbs:sys_parserqualities} apraksta īpašības, kuram jāpiemīt parsētājam, lai tas varētu iekļaut transformācijas sistēmu. Apakšnodaļa~\ref{sbs:sys_macrosyntax} apraksta un pamato sistēmas makro sintaksi. Apakšnodaļa~\ref{sbs:sys_qualities} detalizētāk apskata sistēmas sadalījumu uz trim apakšsistēmām un apraksta to sadarbību.
+Tālāk nodaļa ir organizēta sekojoši. Apakšnodaļa~\ref{sbs:sys_architecture} iedod ieskatu plānotā sistēmas arhitektūrā. Apakšnodaļa~\ref{sbs:sys_approach} vispārīgi pamato izvēlēto transformācijas pieeju. Apakšnodaļa~\ref{sbs:sys_parserqualities} apraksta īpašības, kuram jāpiemīt parsētājam, lai tas varētu iekļaut transformācijas sistēmu. Apakšnodaļa~\ref{sbs:sys_macrosyntax} apraksta un pamato sistēmas makro sintaksi. Apakšnodaļa~\ref{sbs:sys_qualities} detalizētāk apskata sistēmas sadalījumu uz trim apakšsistēmām un apraksta to sadarbību.
+
+\subsection{\label{sbs:sys_architecture}Sistēmas arhitektūra}
+
+\subsubsection{Makro ielasīšanas soļi}
+%Makro ielasīšanas process sastāv no $4$ soļiem, kas notiek secīgi. Sistēmas darbam ir nepieciešama sadarbība ar parsētāju un attiecīga parsētāja saskarne. 
+
+\begin{enumerate}
+\item
+Parsētājs atpazīst makro sākšanos un izsauc transformācijas sistēmu.
+\item
+Transformācijas sistēma ielasa makro.
+\item
+Tipu apakšsistēma pārbauda makro tipu korektumu. Ja tipi ir korekti, turpina uz soli~\ref{i:read_ok}. Ja ielasītā makro tipi nav korekti, turpina uz soli~\ref{i:read_notok}
+\item \label{i:read_ok}
+Transformācijas sistēma saglabā makro priekš specifiskas produkcijas, lai tālāk apstrādāt programmu.
+\item \label{i:read_notok}
+Transformācijas sistēma parāda kļūdas paziņojumu par to, ka ielasītā makro tips nesakrīt ar iezīmēto tipu.
+\end{enumerate}
+
+\subsubsection{Makro atpazīšanas soļi}
+
+\begin{enumerate}
+\item
+Parsētājs ienāk kādā no produkciju atpazīšanas funkcijām un izsauc transformācijas sistēmu.
+\item
+Ja transformācijas sistēmā eksistē makro priekš dotas produkcijas, tā sāk makro atpazīšanas procesu ar soli~\ref{i:match_start}. Citādi tā nedara neko un parsētājs turpina darbu ar soli~\ref{i:match_notok}.
+\begin{enumerate}
+\item \label{i:match_start}
+Transformāciju sistēma pārbauda, vai tajā vietā daļiņu virknē, uz kuru rāda parsētājs, ir sekvence no daļiņām, kas atbilst kādam no makro šabloniem. Ja šāda sekvence eksistē, turpina uz soli~\ref{i:match_ok}. Ja šādas sekvences nav, turpina uz soli~\ref{i:match_notok}.
+\item \label{i:match_ok}
+Ielasītā sekvence tiek transformēta attiecīgi makro likumam.
+\item
+Ielasītā sekvence daļiņu virknē tiek aizvietota ar transformēto sekvenci un parsētāja pozīcija tiek uzstādīta uz aizvietotās virknes sākumu. Transformācijas sistēma sāk darbu atkal no soļa~\ref{i:match_start}.
+\end{enumerate}
+\item \label{i:match_notok}
+Parsētājs atjauno darbu no tās pašas vietas daļiņu virknē un sāk gramatikas produkcijas atpazīšanu. %Ja produkcija ir atpazīta, parsētājs turpina darbu no soļa~\ref{i:match_first} ar nākamo produkciju. Ja produkcija nav atpazīta un daļiņu virkne ir beigusies, parsētājs apstājas. Ja produkcija nav atpazīta, parsētājs parāda kļūdas paziņojumu.
+\end{enumerate}
+
+Attēls~\ref{fig:match_algorithm} parāda transformācijas sistēmas palaišanu un darbību virkni diagrammas veidā.
+
+\begin{figure}[h!]
+  \centering
+    \includegraphics[scale=0.4]{pictures/match_algorithm}
+  \caption{\label{fig:match_algorithm}Parsēšanas darba gaita ar iekļauto transformācijas sistēmu}
+\end{figure}
 
 \subsection{\label{sbs:sys_approach}Transformācijas pieeja}
 
@@ -14,21 +59,29 @@ Tālāk nodaļa ir organizēta sekojoši. Apakšnodaļa~\ref{sbs:sys_approach} v
 
 Pirmā problēma, no kuras šī sistēmas izstrādē mēģināja izvairīties ir nekorekta simbolu ar divām nozīmēm apstrāde. Pieņemsim, ka mēs gribam funkciju \verb|abs (x)| apzīmēt ka \verb/| x |/. Apskatīsim izteiksmi \verb/| (a | b) + c|/, kurai vajadzētu tikt pārveidotai par \verb/abs ((a | b) + c)/. Gadījumā, ja transformācijas sistēma apstrādātu tekstu, tā nebūs spējīga pārveidot šādu konstrukciju. Tiks apstrādāti pirmie divi \verb/|/simboli, no \verb/| (a |/, izveidojot nekorektu konstrukciju \verb/abs( (a) b ) + c) |/. Šīs problēmas izvēlētais risinājums ir aprakstīts apakšnodaļā~\ref{sbsbs:sys_texttransform}.
 
-Otrā problēma ir dinamisku gramatiku nekontrolējamība. Dinamiskas gramatikas ir ļoti spēcīgs rīks, kas mūsdienās gandrīz netiek lietots. Tas tā ir tādēļ, ka dodot iespēju lietotājam patvaļīgi pievienot un dzēst gramatikas likumus, tiek zaudēta iespēja kontrolēt izmaiņu korektumu. Robežgadījums varētu būt tad, kad sākotnējā gramatika tiek pilnībā aizvietota ar citu gramatiku. Tad, kaut arī sākotnējā gramatika bija derīga parsēšanai ar eksistējošo algoritmu, jaunai gramatikai var piemīt īpašības, kas neļaus to apstrādāt (piemēram, kreisā rekursija LL parsētāju gadījumā). Šīs problēmas iespējamais risinājums ir apskatīts apakšnodaļā~\ref{sbsbs:sys_dynamicgrammars}.
+Otrā problēma ir dinamisku gramatiku nekontrolējamība. Dinamiskas gramatikas ir ļoti spēcīgs rīks, kas mūsdienās gandrīz netiek lietots. Tas tā ir tādēļ, ka dodot iespēju lietotājam patvaļīgi pievienot un dzēst gramatikas likumus, tiek zaudēta iespēja kontrolēt izmaiņu korektumu. Robežgadījums varētu būt tad, kad sākotnējā gramatika tiek pilnībā aizvietota ar citu gramatiku. Tad, kaut arī sākotnējā gramatika bija derīga parsēšanai ar eksistējošo algoritmu, jaunai gramatikai var piemīt īpašības, kas neļaus to apstrādāt (piemēram, kreisā rekursija LL parsētāju gadījumā). Šīs problēmas izvēlētais risinājums ir apskatīts apakšnodaļā~\ref{sbsbs:sys_dynamicgrammars}.
 
-Trešā problēma ir tas, ka dinamiskumu gramatikas līmenī nav iespējams ieviest jau eksistējošā valodas parsētājā bez ievērojamām izmaiņām. Parsētāja adaptācija, kas ļaus lietotājam modificēt gramatiku, ir sarežģīts darbs, kas dažreiz prasīs parsētāja arhitektūras izmaiņas. Iespēja pievienot valodai dinamiskumu nepārstrādājot parsētāju ir aprakstīta apakšnodaļā~\ref{sbsbs:sys_parsermodifications}.
+Trešā problēma ir tas, ka nav iespējams vienkārši ieviest gramatikas modifikācijas jau eksistējošā valodas parsētāja, ja vien tā arhitektūra no sākuma atbalsta gramatikas izmaiņas. Bet tā kā parasti šāda iespēja netiek iekļauta, visticamāk būs nepieciešamas nopietnas parsētāja adaptācijas. Aprakstāmā sistēma, savukārt, mēģina dot iespēju paplašināt valodas gramatiku bāzējoties uz vienu no plaši lietojamam parsētāju arhitektūrām. Kā tas tiks darīts ir aprakstīts apakšnodaļā~\ref{sbsbs:sys_parsermodifications}.
+
+%dinamiskumu gramatikas līmenī nav iespējams ieviest jau eksistējošā valodas parsētājā bez ievērojamām izmaiņām. Parsētāja adaptācija, kas ļaus lietotājam modificēt gramatiku, ir sarežģīts darbs, kas dažreiz prasīs parsētāja arhitektūras izmaiņas. Iespēja pievienot valodai dinamiskumu nepārstrādājot parsētāju ir aprakstīta apakšnodaļā~\ref{sbsbs:sys_parsermodifications}.
 
 \subsubsection{\label{sbsbs:sys_texttransform}Priekšprocesori}
 
-Ir dažādas pieejas programmu pirmkoda priekšprocesēšanai. Visvairāk izplatītas no tām ir divas pieejas. Viena no pieejām ir sintaktiskā pieeja - sintaktiskie priekšprocesori tiek palaisti pēc parsētāja darbības un apstrādā sintaktiskos kokus, ko uzbūvē parsētājs. Dēļ aprakstāmās sistēmas īpašībām šajā darbā netiks apskatīti sintaktiskie priekšprocesori, jo līdz sistēmas darba izpildei parsētājs nevar uzbūvēt sintaktisko koku. Otra no pieejām ir leksiskā, leksiskie priekšprocesori tiek palaisti pirms pirmkoda parsēšanas un tiek nav zināšanu par apstrādājamas valodas sintaksi (piem. C/C++ priekšprocesors). 
+Ir dažādas pieejas programmu pirmkoda priekšprocesēšanai. Visvairāk izplatītas no tām ir divas pieejas. Viena no pieejām ir sintaktiskā pieeja - sintaktiskie priekšprocesori tiek palaisti pēc parsētāja darbības un apstrādā sintaktiskos kokus, ko uzbūvē parsētājs. Dēļ aprakstāmās sistēmas īpašībām šajā darbā netiks apskatīti sintaktiskie priekšprocesori, jo līdz sistēmas darba izpildei, gadījumā, ja tika ieviestas kaut kādas transformācijas, parsētājs nevar uzbūvēt pareizu sintaktisko koku. Otra no pieejām ir leksiskā, leksiskie priekšprocesori tiek palaisti pirms pirmkoda parsēšanas un tiek nav zināšanu par apstrādājamas valodas sintaksi (piem. C/C++ priekšprocesors). 
 
 Leksiskie priekšprocesori pēc savām īpašībām ir tuvi aprakstāmai sistēmai. Ar makro valodu palīdzību tiem tiek uzdoti koda pārrakstīšanas likumi, un kods tiek pārveidots attiecīgi tām. Bet leksisko priekšprocesoru vislielākais trūkums ir tas, ka tie apstrādā tekstu pa simboliem neievērojot izteiksmju un konstrukciju struktūru. Apskatīsim jau minētu piemēru \verb/abs ((a | b) + c)/. Ar tādu makro sistēmu, kas neievēro koda struktūru, tātad neievēro to, ka patiesībā \verb/(a | b) + c/ ir atomāra konstrukcija izteiksmē, šādu koda gabalu pareizi apstrādāt nevarēs\footnote{C/C++ priekšprocesors vispār neatļaus tādu konstrukciju izveidot, kaut arī šāds pieraksts ir diezgan loģisks no matemātiķu skatu punkta. C/C++ makro sistēma ļauj veidot tikai makro konstantes un prefiksa formas funkcijas.}.
 
 Priekšprocesoru var iemācīt apstrādāt šāda veida konstrukcijas un atpazīt tos, ka atomārās izteiksmes. Bet tas nozīmēs, ka priekšprocesoram būs jāzina apstrādājamas valodas gramatika, kas neatbilst priekšprocesora lomai kompilēšanas procesā un nozīmē ka būs divreiz jāimplementē sintakses atpazīšana.
 
-Lai izvairīties no šīs problēmas tika izvēlēts apstrādāt nevis programmas tekstu, bet gan programmas tokenu un pseido-tokenu virkni, ko daļēji jau apstrādāja parsētājs. Sistēma ir domāta ka virsbūve parsētājam un strādās paralēli ar to. Ielasītie makro tiks atpazīti tokenu virknē un pārveidoti citā tokenu virknē, kas aizvietos iepriekšējo. Tālāk aizvietotā virkne tiks apstrādāta ar sākotnējo valodas gramatiku. Konstrukciju \verb/(a | b) + c/ parsētājs atpazīs ka pseido-tokenu \verb|{expr}|, un sistēmas darbības laikā apstrādājamā plūsmā būs tieši pseido-tokens \verb|expr|.
+Lai izvairīties no šīs problēmas tika izvēlēts apstrādāt nevis programmas tekstu, bet gan programmas daļiņu un pseido-daļiņu virkni, ko daļēji jau apstrādāja parsētājs. Tas nozīmē, ka makro šablonu sintakse būs bāzēta uz daļiņu aprakstiem, nevis uz tekstuālām izteiksmēm. Piemēram, ja ir nepieciešams izveidot šablonu, kas pārveidos funkcijas ar nosaukumu \verb|bar| par funkcijām ar nosaukumu \verb|foo|, makro šablonā būs jāieraksta daļiņa ar tipu \verb|id| un vērtību \verb|bar| - \verb|{id:bar}|. Tad, kad programmas daļiņu virknē tiks atrasta daļiņa ar šādu tipu un vērtību, tā tiks aizvietota ar citu daļiņu \verb|{id:foo}|. Šāda pieeja dod iespēju programmas tekstā meklēt specifiskus daļiņu tipus, nevis specifiskas teksta daļas. Tas dod iespēju meklēt, piemēram, jebkādus identifikatorus, šablonā norādot daļiņu \verb|{id}| bez vērtības. 
 
-Otrā leksiskā tipa priekšprocesoru problēma ir tas, ka tie strādā ārpus programmas tvērumiem. Tas nozīmē, ka tvēruma sākuma tokens (piemeram, figūriekava, C/C++, Java un citu valodu gadījumā) tiek uzskatīts par parastu tekstu un var tikt pārrakstīts. Loģiskāk būtu, ja konkrētā tvērumā definēti makro tiktu mantoti līdzīgi ka mainīgie, kas nozīmē, ka šabloni, kas ir specifiski tvērumam, būtu ar lielāku prioritāti ka tie, kas definēti vispārīgākā tvērumā. 
+Makro šablonu sistēma arī ļauj lietot pseido-daļiņas savu šablonu aprakstos, t.i. ļauj lietot daļiņu \verb|{expr}|. Pseido-daļiņa \verb|{expr}| dotajā sintaksē apzīmē kādu izteiksmi. Tā tiek saukta par pseido-daļiņu tādēļ, ka programmas tekstā tā ir reprezentēta ar citu daļiņu virkni, kaut arī patiesībā tā ir atomāra vienība.
+
+Tā kā aprakstāmā sistēma tiek izstrādāta tā, lai tā varētu darboties nezinot neko par valodas gramatiku, tā nezina, kādas varētu būt izteiksmes dotajā valodā. Tad, kad transformācijas sistēmu makro ir atrodama šāda pseido-daļiņa, sistēma nemēģina pati izsecināt, vai šāda daļiņa ir nolasāma no parsētās virknes. Lietojot speciālu saskarni tā "pajautā" parsētājam, vai sagaidītā pseido-daļiņa ir atrodama sākot no dotās daļiņas virknē. Gadījumā, ja parsētājs var izveidot izteiksmi, tas paziņo par to, un transformācijas sistēma turpina virknes apstrādi. Piemēram, konstrukciju \verb/(a | b) + c/ parsētājs atpazīs ka pseido-daļiņu \verb|{expr}|.
+
+Gadījumā, ja kāds no šabloniem tiks atpazīts ieejas virknē, atpazītā apakšvirkne tiks pārveidota citā apakšvirknē, kas aizvietos iepriekšējo. Tālāk aizvietotā virkne tiks apstrādāta ar sākotnējo valodas gramatiku.
+
+Otrā leksiskā tipa priekšprocesoru problēma ir tas, ka tie strādā ārpus programmas tvērumiem. Tas nozīmē, ka tvēruma sākuma daļiņa (piemēram, figūriekava, C/C++, Java un citu valodu gadījumā) tiek uzskatīts par parastu tekstu un var tikt pārrakstīts. Loģiskāk būtu, ja konkrētā tvērumā definēti makro tiktu mantoti līdzīgi ka mainīgie, kas nozīmē, ka šabloni, kas ir specifiski tvērumam, būtu ar lielāku prioritāti ka tie, kas definēti vispārīgākā tvērumā. 
 
 Sistēmas sakrišanas meklēšanas mehānisms tiks izstrādāts ņemot vērā programmas tvēruma maiņu. Tātad šabloni, kuri tiek ieviesti konkrētā tvērumā, strādās tikai tā ietvaros.
 
@@ -36,7 +89,7 @@ Sistēmas sakrišanas meklēšanas mehānisms tiks izstrādāts ņemot vērā pr
 
 Sistēma adaptē dinamisko gramatiku principu, ieviešot izmaiņu kontroli. Dinamiskas gramatikas vispārīgā gadījumā nekontrolē ieviestās izmaiņas, kas var sabojāt valodas parsējamību.
 
-Transformācijas sistēmas makro nepievieno sistēmai jaunus gramatikas likumus tajā nozīmē, ka tie modificē gramatiku. Tie pievieno jaunu tokenu virknes pārrakstīšanas likumu, kas tiek izpildīts, kad tiek atrasta sakrišana ar makro specificētu šablonu. Tātad jaunās konstrukcijas tokenu virknē ir atpazītas un pārrakstītas uz konstrukcijām, kuras jau ir zināmas parsētājam. Makro sistēma nedos iespēju dzēst eksistējošos likumus no valodas gramatikas.
+Transformācijas sistēmas makro nepievieno sistēmai jaunus gramatikas likumus tajā nozīmē, ka tie modificē gramatiku. Tie pievieno jaunu daļiņu virknes pārrakstīšanas likumu, kas tiek izpildīts, kad tiek atrasta sakrišana ar makro specificētu šablonu. Tātad jaunās konstrukcijas daļiņu virknē ir atpazītas un pārrakstītas uz konstrukcijām, kuras jau ir zināmas parsētājam. Makro sistēma nedos iespēju dzēst eksistējošos likumus no valodas gramatikas.
 
 Lai nodrošinātu gramatikas likumu pievienošanas kontroli, tiek ieviestas dažas tipu specifikācijas. Katrs no makro attiecas uz kādu konkrētu gramatikas produkciju, un nevar tikt pārbaudīts citā parsēšanas brīdī. Katram makro pārrakstīšanas likumam arī ir specificēts tips, kas tiek lietots lai statiski pārliecināties par to, ka transformācija ir korekta dotā tipa ietvaros. Tipu sistēma detalizētāk ir aprakstīta apakšnodaļā~\ref{sbsbs:sys_typesystem}.
 
@@ -49,6 +102,7 @@ Vēl viena svarīga dinamisku gramatiku īpašība ir tas, ka to lietošanai ir 
 Aprakstāmā sistēma, savukārt, ir domāta ka palīgrīks parsētājam. Parsētāju izmaiņas, kas būs nepieciešamas integrēšanai ar sistēmu ir minimālas. Tas dos iespēju lietot to jebkuram parsētājam, kas atbilst dažiem apstrādes nosacījumiem, kas ir apskatīti apakšnodaļā~\ref{sbs:sys_parserqualities}.
 
 Sistēma dos iespēju papildināt valodas sintaksi bez nepieciešamības pilnībā pārstrādāt valodas parsētājus. Tā strādās ārpus valodas gramatikas. Pirms katras produkcijas apstrādes ar standartu valodas gramatiku likumiem tiek izsaukta transformācijas sistēma. 
+
 
 \subsection{\label{sbs:sys_parserqualities}Parsētāju īpašības}
 
@@ -74,7 +128,7 @@ Ja izstrādājamās valodas parsētāja modelis atbilst aprakstītām īpašīb�
 
 \subsection{\label{sbs:sys_macrosyntax}Makro sistēmas sintakse}
 
-Makro izteiksmes strādā stingri kaut kādas produkcijas ietvaros, tāpēc makro sintaksē tiek lietoti tipi, kas tiek apzīmēti ar produkciju nosaukumiem. Tipi tiks lietoti lai nodrošinātu pseido-tokenu virknes korektību sākotnējās gramatikas ietvaros pēc sintakses izmaiņu ieviešanas. Transformāciju sistēma sastāv no \emph{match} makro likumiem un transformāciju funkcijām. Makro kreisā puse satur regulāro izteiksmi no tokeniem un pseido-tokeniem, kas tālāk tiek izmantota lai atrast virkni, kurai šī transformācija ir pielietojama. Makro labā pusē ir atrodamas funkcijas, kas izpilda transformē tās tokenu virknes, kas tiek akceptētas ar makro kreisās puses šablonu.
+Makro izteiksmes strādā stingri kaut kādas produkcijas ietvaros, tāpēc makro sintaksē tiek lietoti tipi, kas tiek apzīmēti ar produkciju nosaukumiem. Tipi tiks lietoti lai nodrošinātu pseido-tokenu virknes korektumu sākotnējās gramatikas ietvaros pēc sintakses izmaiņu ieviešanas. Transformāciju sistēma sastāv no \emph{match} makro likumiem un transformāciju funkcijām. Makro kreisā puse satur regulāro izteiksmi no tokeniem un pseido-tokeniem, kas tālāk tiek izmantota lai atrast virkni, kurai šī transformācija ir pielietojama. Makro labā pusē ir atrodamas funkcijas, kas izpilda transformē tās tokenu virknes, kas tiek akceptētas ar makro kreisās puses šablonu.
 
 Apskatīsim \textit{match} funkciju likumus, kas modificē apstrādājamās gramatikas produkcijas uzvedību. \emph{Match} makro sintakses vispārīgo formu var redzēt attēlā~\ref{fig:matchsyntax}.
 
