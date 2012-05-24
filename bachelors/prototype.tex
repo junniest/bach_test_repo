@@ -8,19 +8,19 @@ Prototips tika izstrādāts ar iedomu pēc iespējas samazināt sakrišanu mekl�
 
 \subsection{\label{sbs:prot_syntax}Atļautā makro sintakse}
 
-Kā jau bija pateikts, makro pieejamā regulāro izteiksmju sintakse ir minimāla. Tā atļauj lietot \verb|*| lai identificēt tokenu virknes un \verb/|/ lai izvēlēties starp dažiem tokenu tipiem.
+Kā jau bija pateikts, makro pieejamā regulāro izteiksmju sintakse ir minimāla. Tā atļauj lietot \verb|*| lai identificēt daļiņu virknes un \verb/|/ lai izvēlēties starp dažiem daļiņu tipiem.
 
-Prototips arī ļauj veidot regulārās izteiksmes ar specificētu tokenu vai pseido-tokenu vērtībām. Piemēram, regulārā izteiksme \verb|{id:foo}| sagaidīs tieši identifikatoru \verb|foo|, bet izteiksme \verb|{id}| sagaidīs jebkuru identifikatoru. Tas ievieš dažādas problēmas, kas tiks aprakstītas zemāk, bet dod lielāku brīvību šablonu sistēmas lietotājam.
+Prototips arī ļauj veidot regulārās izteiksmes ar specificētu daļiņu vai pseido-daļiņu vērtībām. Piemēram, regulārā izteiksme \verb|{id:foo}| sagaidīs tieši identifikatoru \verb|foo|, bet izteiksme \verb|{id}| sagaidīs jebkuru identifikatoru. Tas ievieš dažādas problēmas, kas tiks aprakstītas zemāk, bet dod lielāku brīvību šablonu sistēmas lietotājam.
 
 \subsection{\label{sbs:prot_approach}Vispārīgā pieeja}
 
-Prototips imitē darbu reālajā vidē, saņemot tokenus no ieejas plūsmas pa vienam no atsevišķas saskarnes. Tokenu plūsmas saskarne imitē leksera darbu. Kamēr prototips nav saņēmis nevienu regulāro izteiksmi, tas ignorē tokenu plūsmas apstrādes izsaukumus. Tiklīdz prototipam atnāk izsaukums apstrādāt tokenu regulāro izteiksmi, tas uzsāk regulārās izteiksmes parsēšanu. Parsēšanas procesā tiek izveidots galīgs automāts, kas akceptē regulārās izteiksmes uzdotās virknes. Katra jauna regulāra izteiksme izveido jaunu automātu.
+Prototips imitē darbu reālajā vidē, saņemot daļiņas no ieejas plūsmas pa vienam no atsevišķas saskarnes. Daļiņu plūsmas saskarne imitē leksera darbu. Kamēr prototips nav saņēmis nevienu regulāro izteiksmi, tas ignorē tokenu plūsmas apstrādes izsaukumus. Tiklīdz prototipam atnāk izsaukums apstrādāt tokenu regulāro izteiksmi, tas uzsāk regulārās izteiksmes parsēšanu. Parsēšanas procesā tiek izveidots galīgs automāts, kas akceptē regulārās izteiksmes uzdotās virknes. Katra jauna regulāra izteiksme izveido jaunu automātu.
 
-Tad, kad atnāk tokenu apstrādes pieprasījums, sistēma izpilda pārejas starp automātu stāvokļiem, meklējot sakrišanas, un atceras tokenus, kurus jau ir nolasījusi. Sistēma atrod garāko virkni, kas atbilst kādam no šabloniem un tad atgriež tās identifikatoru un nolasīto tokenu virkni, lai turpmāk transformēšanas mehānisms varētu pārstrādāt to jaunajā virknē.
+Tad, kad atnāk daļiņu apstrādes pieprasījums, sistēma izpilda pārejas starp automātu stāvokļiem, meklējot sakrišanas, un atceras tokenus, kurus jau ir nolasījusi. Sistēma atrod garāko virkni, kas atbilst kādam no šabloniem un tad atgriež tās identifikatoru un nolasīto daļiņu virkni, lai turpmāk transformēšanas mehānisms varētu pārstrādāt to jaunajā virknē.
 
 Pieņemot, ka transformēšanas sistēma ir izstrādāta, tālākā darba gaita būs sekojoša. Transformēšanas sistēma aizstāv ielasīto virkni ar citu, kas ir konstruēta pēc akceptētā makro šablona noteikumiem. Tad sakrišanas meklēšanas sistēmas darbs tiek uzsākts no jauna no aizvietotās virknes sākuma.
 
-Sistēma turpina darbu aprakstītā gaitā līdz ko neviens no šabloniem vairs netiek akceptēts. Pēc sistēmas apstāšanās tiek iegūta jauna tokenu virkne, kas tika apstrādāta attiecīgi kodā ierakstītiem makro, ja tika atrastas sakrišanas. Kad sistēma tiks integrēta ar reālu kompilatoru, tā strādās paralēli ar parsētāju un tālāk sistēmas izejas tokenu virkne tiks apstrādāta ar standartiem valodas likumiem.
+Sistēma turpina darbu aprakstītā gaitā līdz ko neviens no šabloniem vairs netiek akceptēts. Pēc sistēmas apstāšanās tiek iegūta jauna daļiņu virkne, kas tika apstrādāta attiecīgi kodā ierakstītiem makro, ja tika atrastas sakrišanas. Kad sistēma tiks integrēta ar reālu kompilatoru, tā strādās paralēli ar parsētāju un tālāk sistēmas izejas daļiņu virkne tiks apstrādāta ar standartiem valodas likumiem.
 
 \subsection{\label{sbs:prot_conflictresolving}Makro konfliktu risināšana}
 Makro šablonu konflikti var rasties tad, kad daži makro var tikt akceptēti vienlaikus. Tas var notikt gadījumos, ja divas regulārs izteiksmes akceptē līdzīgas virknes. Zemāk tiks aprakstīts, kā tika izvēlēts risināt dažādas konfliktu situācijas. 
@@ -40,7 +40,7 @@ Prototips strādā pēc mantkārīga (\emph{greedy}) principa - tas akceptē vis
 
 \subsection{\label{sbs:prot_motivation}Realizācijas pamatojums}
 
-Galvenais princips uz kura bāzējas prototipa izstrāde ir samazināt apstrādes laiku. Tātad prototipa risinājums tika izveidots tā, lai jebkurā laika momentā šablonu sakrišanu meklēšanai būtu nepieciešams lineārs laiks un tikai viena tokenu virknes apstaigāšana. Šāda pieeja ir izvēlēta ar iedomu, ka makro pievienošana tiks izpildīta tikai vienreiz, un to daudzums būs samērā neliels, bet sakrišanu meklēšana tiks pildīta katrā produkcijā, un, sliktākajā gadījumā, katram tokenam no ieejas plūsmas.
+Galvenais princips uz kura bāzējas prototipa izstrāde ir samazināt apstrādes laiku. Tātad prototipa risinājums tika izveidots tā, lai jebkurā laika momentā šablonu sakrišanu meklēšanai būtu nepieciešams lineārs laiks un tikai viena tokenu virknes apstaigāšana. Šāda pieeja ir izvēlēta ar iedomu, ka makro pievienošana tiks izpildīta tikai vienreiz, un to daudzums būs samērā neliels, bet sakrišanu meklēšana tiks pildīta katrā produkcijā, un, sliktākajā gadījumā, katrai daļiņai no ieejas plūsmas.
 
 Ielasītā regulārā izteiksme tiek pārsēta un pārveidota nedeterminēta galīgā automātā. Tad šablona nedeterminēts galīgs automāts tiek determinēts un minimizēts. Tātad katrai regulārai izteiksmei tiek izveidots minimāls determinēts automāts, kurš ir optimizēts gan pēc apstaigāšanas laika, gan pēc aizņemtās vietas.
 
@@ -48,19 +48,11 @@ Tālāk, lai nodrošinātu visu šablonu pārbaudi vienlaikus un minimizēt mekl
 
 Cits veids, kā to varētu izpildīt, ir apvienot visus izveidotos šablonu automātus vienā determinētā galīgā automātā. Tieši šīs veids tika izvēlēts šī darba ietvaros lai pēc iespējas samazinātu laiku sakrišanu meklēšanai. Kaut arī automātu apvienošana šādā veidā ir laikietilpīga, tā samazina laika kārtu sakritību meklēšanai.
 
-\subsection{\label{sbs:prot_realizations}Kāpēc neder jau uzrakstītas bibliotēkas}
-
-Eksistē diezgan daudz jau izstrādātu bibliotēku, kas apstrādā regulārās izteiksmes. Piemēram, darbs~\cite{RE2} arī lieto automātu teoriju lai paātrinātu apstrādes laiku. Diemžēl tās nav lietojamas tādēļ, ka visi eksistējošie regulāro strādā tieši ar tekstu un simboliem, nevis ar tokeniem un to virknēm. Eksistējošo bibliotēku pārtulkošana uz tokenu apstrādi būtu darbietilpīgāka nekā jaunā moduļa izveide. Šādas bibliotēkas parasti arī piedāvā daudz vairāk funkcionalitātes, nekā ir nepieciešams, piemēram dažādi kontroles simboli, tādi ka $\^$ - meklēt no virknes sākuma. Tā kā sistēma tiks izsaukta patvaļīgas tokenu virknes vietas apstrādei, šāda veida kontrole nav nepieciešama. Citu programmētāju rakstītā koda apārstrāde un vienkāršošana aizņemtu vairāk laika nekā tā izveidošana pilnīgi no jauna.
-
-Pieejamas regulāro izteiksmju bibliotēkas arī nepiedāvā iespēju apvienot visus automātus viena vienīgā. Eksistējošie apvienošanas risinājumi, savukārt, pēc apvienošanas neņem vērā, tieši kāda regulārā izteiksme uz doto brīdi ir akceptējoša. Šī darba ietvaros šīs informācijas saglabāšana ir būtiska, jo no tā ir atkarīgs, kāda no transformācijām ir lietota. 
-
-%Apvienošanas pieeja parasti ir lietota lielu datu plūsmu apstrādē, piemēram, meklējot infekcijas pazīmes plūsmā. Tad izstrādātās regulārās izteiksmes ir optimizētas un apvienotas vienā automāta. Šādā gadījumā nav nozīmes, kura no izteiksmēm ir akceptēta, jo galvenais ir identificēt draudu pazīmes. 
-
 \subsection{\label{sbs:prot_algorithms}Lietotie algoritmi}
 
 Šī apakšnodaļa apraksta algoritmus, kas tika lietoti prototipa realizācijā. Kā jau bija teikts, meklēšanas laika optimizācijai tika izvēlēta pieeja, kur visi regulāro izteiksmju automāti tiek sapludināti kopā.
 
-Visu automātu pārejas pa zariem notiek nevis pa kādu simbolu, bet gan pa attiecīgu tokenu. Regulāro izteiksmju apstrādes gaitā tokeni \verb|{id:foo}| un \verb|{id}| tiek uzskatīti par dažādiem, kaut arī \verb|{id:foo}| ir apakšgadījums tokenam \verb|{id}|. Šīs fakts tiek iegaumēts tikai sakrišanu meklēšanas gaitā.
+Visu automātu pārejas pa zariem notiek nevis pa kādu simbolu, bet gan pa attiecīgu daļiņu. Regulāro izteiksmju apstrādes gaitā daļiņas \verb|{id:foo}| un \verb|{id}| tiek uzskatīti par dažādiem, kaut arī \verb|{id:foo}| ir apakšgadījums daļiņai \verb|{id}|. Šīs fakts tiek iegaumēts tikai sakrišanu meklēšanas gaitā.
 
 Algoritmi, kas tika lietoti prototipa implementācijā tika ņemti no dažādiem literatūras avotiem, kas ir norādīti apakšnodaļās, un adaptēti lietošanai aprakstāmos nolūkos.
 
@@ -72,11 +64,11 @@ Regulāro izteiksmju translēšana uz nedeterminētu galīgu automātu ir diezga
 
 Nedeterminēts galīgs automāts (NGA) veselai regulārai izteiksmei ir izveidots to daļējiem automātiem katrai regulārās izteiksmes daļai. Katram operatoram tiek piekārtota attiecīga konstrukcija. Daļējiem automātiem nav akceptējošu stāvokļu, tiem ir pārejas uz nekurieni, kuras vēlāk tiks lietotas lai savienotu automāta daļas. Pilnīga automāta būvēšanas process beigsies ar akceptējošā stāvokļa pievienošanu palikušajām pārejām. Zemāk tiek parādīti automāti katrai no regulārās izteiksmes iespējamām sastāvdaļām.
 
-Attēlā~\ref{fig:auto_token} ir parādīts NGA vienam tokenam ${token}$.
+Attēlā~\ref{fig:auto_token} ir parādīts NGA vienai daļiņai ${token}$.
 \begin{figure}[H]
   \centering
     \includegraphics[scale=1.5]{pictures/auto_token}
-  \caption{\label{fig:auto_token}Automāts vienam tokenam}
+  \caption{\label{fig:auto_token}Automāts vienai daļiņai}
 \end{figure}
 
 Attēlā~\ref{fig:auto_sequence} ir parādīts NGA divu automātu konkatenācijai $e_1 e_2$.
@@ -97,7 +89,7 @@ Attēlā~\ref{fig:auto_asterisk} ir parādīts NGA priekš konstrukcijas $e_1 *$
 \begin{figure}[H]
   \centering
     \includegraphics[scale=1.5]{pictures/auto_asterisk}
-  \caption{\label{fig:auto_asterisk}Automats automātu virknei}
+  \caption{\label{fig:auto_asterisk}Automāts automātu virknei}
 \end{figure}
 
 Tālāk šie automāti tiek apvienoti vienā, un beigās tiek pievienots akceptējošais stāvoklis.
@@ -107,19 +99,19 @@ Apskatīsim piemēru - izteiksmi \verb/{id} ({real} | {int}) */. Sākumā tiek i
 \begin{figure}[H]
   \centering
     \includegraphics[scale=1.5]{pictures/auto_token_id}
-  \caption{\label{fig:auto_token_id}Automats tokenam \texttt{\{id\}}}
+  \caption{\label{fig:auto_token_id}Automāts daļiņai \texttt{\{id\}}}
 \end{figure}
 
 \begin{figure}[H]
   \centering
     \includegraphics[scale=1.5]{pictures/auto_or_ex}
-  \caption{\label{fig:auto_or_ex}Automats izteiksmei \texttt{\{real\} | \{int\}}}
+  \caption{\label{fig:auto_or_ex}Automāts izteiksmei \texttt{\{real\} | \{int\}}}
 \end{figure}
 
 \begin{figure}[H]
   \centering
     \includegraphics[scale=1.5]{pictures/auto_asterisk_ex}
-  \caption{\label{fig:auto_asterisk_ex}Automats izteiksmei \texttt{(\{real\} | \{int\}) *}}
+  \caption{\label{fig:auto_asterisk_ex}Automāts izteiksmei \texttt{(\{real\} | \{int\}) *}}
 \end{figure}
 
 Tad izveidotie automāti var tikt savienoti un beigās tiem tiek pievienots akceptējošais stāvoklis (attēls~\ref{fig:auto_full_ex}).
@@ -127,7 +119,7 @@ Tad izveidotie automāti var tikt savienoti un beigās tiem tiek pievienots akce
 \begin{figure}[H]
   \centering
     \includegraphics[scale=1.25]{pictures/auto_full_ex}
-  \caption{\label{fig:auto_full_ex}Automats izteiksmei \texttt{\{id\} (\{real\} | \{int\}) * \{;\}}}
+  \caption{\label{fig:auto_full_ex}Automāts izteiksmei \texttt{\{id\} (\{real\} | \{int\}) * \{;\}}}
 \end{figure}
 
 Tā tiek izveidots nedeterminēts automāts katrai regulārai izteiksmei. \cite{Cox:RegexpMatchingFast}, \cite{DragonBook}
@@ -180,7 +172,7 @@ Automāta $D$ sākuma stāvoklis ir $\varepsilon-closure (set (s_0))$, bet $D$ a
       \EndFor
   \EndWhile
   \end{algorithmic}
-  \caption{\label{fig:det_algorithm}Automāta determinizēšanas algoritms}
+  \caption{\label{fig:det_algorithm}Automāta determinēšanas algoritms}
 \end{figure}
 
 \subparagraph{Sarežģītība:} Sarežģītības novērtējums šīm algoritmam ir diezgan nepatīkams. Sliktākajā gadījumā tas būs $O(m^(n+1))$, kur $n$ ir NGA stāvokļu daudzums un $m$ ir ieejas alfabēta simbolu skaits. Algoritms var uzģenerēt līdz $m^n$ DGA stāvokļiem, katram no kuram ir $m$ pārejas. Taču parasti tas tā nenotiek un DGA stāvokļu skaits ir līdzīgs NGA stāvokļu skaitam, un algoritma sarežģītība ir $O(n*m)$. \cite{DragonBook, Hopcroft:IntroAutomataTheory}
@@ -191,7 +183,7 @@ Izveidotais determinēts galīgs automāts var būt neoptimāls pēc stāvokļu 
 
 Var pierādīt, ka katram automātam eksistē ekvivalents minimāls automāts\footnote{Šī fakta pierādījumu sk.~\cite{Bassino:ComplexityMinimization}}. Vēl vairāk, ja eksistē 2 dažādi automāti ar vienādu stāvokļu daudzumu, kas atpazīst vienu un to pašu valodu, tad tie ir vienādi līdz stāvokļu nosaukumiem\footnote{Tā kā stāvokļu nosaukumi neietekmē automāta darbību, divi automāti tiek saukti par vienādiem līdz pat stāvokļu nosaukumiem, ja viens no tiem var tikt pārveidots otrajā vienkārši pārsaucot to stāvokļus.}.
 
-Tālāk teiksim, ka virkne $x$ atšķir stāvokļu $s$ no stāvokļa $t$ tad, kad tikai viens stāvoklis, ko var sasniegt no $t$ un $s$ pa $x$ ir akceptējošs. Tātad divi stāvokļi ir atšķirami tad, kad eksistē tāda virkne, kas viņus atšķir. Jebkurš akceptējošs stāvoklis ir atšķirams no jebkura neakceptējoša stāvokļa ar tukšu virkni (stāvoklis nevar būt akceptējošs un neakceptējoss vienlaikus). Divi neatšķirami stāvokļi ir ekvivalenti\footnote{\cite{Hopcroft:IntroAutomataTheory} nodaļa 4.4}.
+Tālāk teiksim, ka virkne $x$ atšķir stāvokļu $s$ no stāvokļa $t$ tad, kad tikai viens stāvoklis, ko var sasniegt no $t$ un $s$ pa $x$ ir akceptējošs. Tātad divi stāvokļi ir atšķirami tad, kad eksistē tāda virkne, kas viņus atšķir. Jebkurš akceptējošs stāvoklis ir atšķirams no jebkura neakceptējoša stāvokļa ar tukšu virkni (stāvoklis nevar būt akceptējošs un neakceptējošs vienlaikus). Divi neatšķirami stāvokļi ir ekvivalenti\footnote{\cite{Hopcroft:IntroAutomataTheory} nodaļa 4.4}.
 
 Algoritms ir paņemts no~\cite{DragonBook}.
 
@@ -223,7 +215,7 @@ Attēls~\ref{fig:min_algorithm} parāda minimizēšanas algoritmu pseido-kodā.
   \caption{\label{fig:min_algorithm}Automāta minimizēšanas algoritms}
 \end{figure}
 
-Tālāk paliek apstrādāt jaunizveidotās stāvokļu grupas izveidojot jaunu determinētu automātu. Lai to izdarītu, no katras sadalījuma $\Pi_{final}$ grupas tiek izvēlēts grupas pārstāvis. Grupu pārstāvji izveidos jaunus stāvokļus automātam $D'$. Pārējās komponentes minimālam automātam $D'$ tiks iveidotas sekojoši:
+Tālāk paliek apstrādāt jaunizveidotās stāvokļu grupas izveidojot jaunu determinētu automātu. Lai to izdarītu, no katras sadalījuma $\Pi_{final}$ grupas tiek izvēlēts grupas pārstāvis. Grupu pārstāvji izveidos jaunus stāvokļus automātam $D'$. Pārējās komponentes minimālam automātam $D'$ tiks izveidotas sekojoši:
 \begin{enumerate}
 \item Automāta $D'$ sākuma stāvoklis ir pārstāvis tai grupai, kura satur automāta $D$ sākuma stāvokli.
 \item Automāta $D'$ akceptējošie stāvokļi ir pārstāvji tām grupām, kuras satur automāta $D$ akceptējošos stāvokļus. Katra no grupām satur vai nu tikai akceptējošus, vai nu tikai neakceptējošus stāvokļus, jo algoritma darba gaitā jaunās grupas tika izveidotas tikai sadalot jau eksistējošas grupas, bet sākuma sadalījums atdalīja šīs stāvokļu klases.
@@ -251,13 +243,13 @@ Apskatīsim piemēru automātu apvienošanai. Attēls~\ref{fig:auto_m_1} parāda
 \begin{figure}[H]
   \centering
     \includegraphics[scale=1.5]{pictures/auto_m_1}
-  \caption{\label{fig:auto_m_1}Automats izteiksmei \texttt{\{id\}* \{int\}*}}
+  \caption{\label{fig:auto_m_1}Automāts izteiksmei \texttt{\{id\}* \{int\}*}}
 \end{figure}
 
 \begin{figure}[H]
   \centering
     \includegraphics[scale=1.5]{pictures/auto_m_2}
-  \caption{\label{fig:auto_m_2}Automats izteiksmei \texttt{\{id\} \{real\}* \{int\}}}
+  \caption{\label{fig:auto_m_2}Automāts izteiksmei \texttt{\{id\} \{real\}* \{int\}}}
 \end{figure}
 
 To apvienotais automāts ir parādīts attēlā~\ref{fig:auto_merge}.
@@ -265,10 +257,10 @@ To apvienotais automāts ir parādīts attēlā~\ref{fig:auto_merge}.
 \begin{figure}[H]
   \centering
     \includegraphics[scale=1.5]{pictures/auto_merge}
-  \caption{\label{fig:auto_merge}Automats izteiksmju \texttt{\{id\}* \{int\}*} un \texttt{\{id\} \{real\}* \{int\}} apvienojumam}
+  \caption{\label{fig:auto_merge}Automāts izteiksmju \texttt{\{id\}* \{int\}*} un \texttt{\{id\} \{real\}* \{int\}} apvienojumam}
 \end{figure}
 
-Attēls~\ref{fig:uni_algorithm} parāda apvienošanas algoritmu pseido-kodā. $s_0$ ir jaunā automāta $D'$ sākuma stāvoklis, $r_0$ ir $D_1$ sākuma stāvoklis un $t_0$ ir $D_2$ sākuma stāvoklis. $Dstates$ ir automāta $D'$ stāvokļu saraksts, $Dtran$ ir $D'$ pāreju tabula. Funkcija $move (S, t)$ atgriež tos stāvokļus, uz kuriem var nokļūt no $S$ pa tokenu $t$. Tā kā parasti $S$ sastāv no diviem stāvokļiem $r_i$ un $t_i$, tā atgriež pārejas rezultātu no katra no tiem. Rezultāts arī var but tikai viens stāvoklis, gadījumā, ja no kāda $r_i$ un $t_i$ neeksistē pāreja pa doto tokenu.
+Attēls~\ref{fig:uni_algorithm} parāda apvienošanas algoritmu pseido-kodā. $s_0$ ir jaunā automāta $D'$ sākuma stāvoklis, $r_0$ ir $D_1$ sākuma stāvoklis un $t_0$ ir $D_2$ sākuma stāvoklis. $Dstates$ ir automāta $D'$ stāvokļu saraksts, $Dtran$ ir $D'$ pāreju tabula. Funkcija $move (S, t)$ atgriež tos stāvokļus, uz kuriem var nokļūt no $S$ pa tokenu $t$. Tā kā parasti $S$ sastāv no diviem stāvokļiem $r_i$ un $t_i$, tā atgriež pārejas rezultātu no katra no tiem. Rezultāts arī var būt tikai viens stāvoklis, gadījumā, ja no kāda $r_i$ un $t_i$ neeksistē pāreja pa doto daļiņu.
 
 \begin{figure}[H]
   \begin{algorithmic}
@@ -295,9 +287,9 @@ Sakrišanu meklēšana NGA sliktākajā gadījumā būs ar sarežģītību $O(n^
 
 Tīrā DGA gadījumā sakrišanu pārbaude katram ieejas elementam ir $O(l)$, kur $l$ ir pārbaudāmās virknes garums. 
 
-Diemžēl pilnībā lineāra laika sakrišanu meklēšana nav iespējama tādēļ, ka prototips dod iespēju lietot makro ar tokenu vērtībām. Piemēram, eksistē 2 makro, viens no kuriem gaida tokenu \verb|{id}|, un otrs \verb|{id:foo}|. Gadījumā, kad sakrišanu meklēšanas procesā parādās tokens \verb|{id:foo}|, automātam nav iespējas izsecināt, kurš no ceļiem novedīs pie garākas sakritības. Tādēļ tas iet pa abiem ceļiem vienlaikus, saglabājot abus stāvokļus.
+Diemžēl pilnībā lineāra laika sakrišanu meklēšana nav iespējama tādēļ, ka prototips dod iespēju lietot makro ar tokenu vērtībām. Piemēram, eksistē 2 makro, viens no kuriem gaida tokenu \verb|{id}|, un otrs \verb|{id:foo}|. Gadījumā, kad sakrišanu meklēšanas procesā parādās daļiņa \verb|{id:foo}|, automātam nav iespējas izsecināt, kurš no ceļiem novedīs pie garākas sakritības. Tādēļ tas iet pa abiem ceļiem vienlaikus, saglabājot abus stāvokļus.
 
-Kaut arī tas ievieš nedeterminētību, tā var parādīties tikai augstāk minētā gadījumā un izveidot ne vairāk ka 2 ceļus vienlaikus. Tātad kaut arī nedeterminētība pastāv, tai ir ļoti maza iespējamība un maza ietekme uz sakrišanu meklēšanas laiku.
+Kaut arī tas ievieš nenoteiktību, tā var parādīties tikai augstāk minētā gadījumā un izveidot ne vairāk ka 2 ceļus vienlaikus. Tātad kaut arī nenoteiktība pastāv, tai ir ļoti maza iespējamība un maza ietekme uz sakrišanu meklēšanas laiku.
 
 \subsubsection{Tvērumi}
 
@@ -313,26 +305,70 @@ Izstrādātais prototips nenodarbojas ar tokenu virkņu transformācijām, jo t�
 
 \subsubsection{Produkcijas}
 
-Prototipā pagaidām nav implementēta apstrādes dalīšana pa gramatikas produkcijām, visas regulārās izteiksmes ir sapludinātas vienā automāta. Regulāro izteiksmju dalīšana pa tipiem tiks ieviesta vēlāk, kad tiks uzsākta integrācija un sadarbība ar reālu parsētāju. Tā varētu tikt implementēta līdzīgi tam, kā tiek realizēti konteksti - pa vienam sapludinātam automātam priekš katra produkcijas tipa.
+Prototipā pagaidām nav implementēta apstrādes dalīšana pa gramatikas produkcijam, visas regulārās izteiksmes ir sapludinātas vienā automāta. Regulāro izteiksmju dalīšana pa tipiem tiks ieviesta vēlāk, kad tiks uzsākta integrācija un sadarbība ar reālu parsētāju. Tā varētu tikt implementēta līdzīgi tam, kā tiek realizēti konteksti - pa vienam sapludinātam automātam priekš katra produkcijas tipa.
 
-\subsubsection{Tokenu klašu mantošana}
+\subsubsection{Daļiņu klašu mantošana}
 
-Sistēmai nav nekādas informācijas par valodas gramatiku. Tieši tāpēc tokens \verb|{real}| netiks uztverts ka \verb|{expr}|, kaut arī racionāls skaitlis ir izteiksme. Tā kā sistēmai jābūt neatkarīgai no valodas gramatikas, šī hierarhija nav iekodējama transformāciju sistēmā. To ir jānodrošina parsētājam, attiecīgi apstrādājot tokenus un apkopojot to nozīmi. Par to arī būs jārūpējas sistēmas lietotājam rakstot savas makro izteiksmes.
+Sistēmai nav nekādas informācijas par valodas gramatiku. Tieši tāpēc daļiņa \verb|{real}| netiks uztverta ka \verb|{expr}|, kaut arī racionāls skaitlis ir izteiksme. Tā kā sistēmai jābūt neatkarīgai no valodas gramatikas, šī hierarhija nav iekodējama transformāciju sistēmā. To ir jānodrošina parsētājam, attiecīgi apstrādājot tokenus un apkopojot to nozīmi. Par to arī būs jārūpējas sistēmas lietotājam rakstot savas makro izteiksmes.
 
 \subsubsection{Regulārās izteiksmes daļu grupēšana}
 
-Tādēļ, ka aprakstītā pieeja mēģina pēc iespējas minimizēt meklēšanas laiku, tā neatļauj veidot atrasto tokenu grupēšanu, kā tas ir parasti pieņemts regulārās izteiksmēs. Tokenu grupēšana un atpakaļnorādes (\emph{backreferences}) uz tokenu grupām nav atļautas.
+Tādēļ, ka aprakstītā pieeja mēģina pēc iespējas minimizēt meklēšanas laiku, tā neatļauj veidot atrasto tokenu grupēšanu, kā tas ir parasti pieņemts regulārās izteiksmēs. Daļiņu grupēšana un atpakaļnorādes (\emph{backreferences}) uz tokenu grupām nav atļautas.
 
 Tomēr ja parādīsies nepieciešamība, ir apskatīta arī pieeja, kas dos šādu iespēju. Tas varētu tikt izpildīts, determinējot tikai automāta stāvokļus grupu iekšienē, pēc tam ar $\varepsilon$-pārejām secīgi savienojot grupu automātu akceptējošus un sākuma stāvokļus. Automāts būs determinēts tikai grupu ietvaros, bet tad būs pieejamas atrasto tokenu grupas. Tomēr šāda pieeja neatļaus sapludināt dažus automātus vienā, jo sapludināšanas procedūra sabojās grupēšanu.
 
-\subsubsection{Sapludinātā automāta minimizācija}
+\subsubsection{Sapludinātā automāta minimizēšana}
 
 Automātu minimizēšana ir diezgan darbietilpīga operācija, tāpēc tā tiek izpildīta tikai uz atsevišķiem automātiem. Apvienotais visu šablonu automāts var nebūt minimāls, jo dažādu minimālu automātu apvienošana negarantē šo faktu. Bet tā kā apvienota automāta stāvokļu daudzums var būt ļoti liels, minimizēšanas izpilde var būt neefektīva. Tā kā minimizēšana samazina tikai automāta aizņemto vietu, nevis apstaigāšanas laiku, to šajā gadījumā var izlaist. Sapludinātā automāta minimizēšanu apgrūtina arī tas fakts, ka to stāvokļus vajadzēs atšķirt arī pēc tā fakta, kāds no šabloniem ir akceptēts, nevis tikai pēc tā, vai stāvoklis ir akceptējošs.
 
 \subsection{\label{subsec:solution_optimization}Optimizācijas iespējas}
 
-Regulāro izteiksmju optimizēšana uz doto brīdi netiek izpildīta, jo to ir vērts izpildīt uz regulārām izteiksmēm, kas tiks lietoti daudzas reizes. Darba apskatītā situācijā regulārās izteiksmes tiks lietotas tikai vienas programmas ietvaros un to optimizēšanai nav īpašas jēgas. Tomēr bez reāliem piemēriem nevar izšķirt, vai tas izveidos būtisku paātrinājumu šādā konkrētā gadījumā vai nē. Dažas regulāro izteiksmju pārrakstīšanas pieejas ir aprakstītas \cite{Yu:FMR}.
+Regulāro izteiksmju optimizēšana uz doto brīdi netiek izpildīta, jo to ir vērts izpildīt uz regulārām izteiksmēm, kas tiks lietoti daudzas reizes. Darba apskatītā situācijā regulārās izteiksmes tiks lietotas tikai vienas programmas ietvaros un to optimizēšanai nav īpašas jēgas. Tomēr bez reāliem piemēriem nevar izšķirt, vai tas izveidos būtisku paātrinājumu šādā konkrētā gadījumā vai nē. Dažas regulāro izteiksmju pārrakstīšanas pieejas, kas varētu būt lietotas tālākā izstrādē ir aprakstītas \cite{Yu:FMR}.
 
-Dažreiz divu automātu sapludināšana var izraisīt pārāk lielu stāvokļu daudzumu rašanos. Ja reālajā situācijā tas ietekmēs apstrādes laiku, vai parādīsies nepieciešamība ierobežot automāta aizņemto laiku, var apskatīt iespēju glabāt dažus automātus viena vietā. \cite{Yu:FMR}
+Dažreiz divu automātu sapludināšana var izraisīt pārāk lielu stāvokļu daudzumu rašanos. Ja reālajā situācijā tas ietekmēs apstrādes laiku, vai parādīsies nepieciešamība ierobežot automāta aizņemto laiku, var apskatīt iespēju glabāt dažus automātus ar stāvokļu skaitu robežu, nevis tikai vienu. Šāda pieejā arī ir aprakstīta avotā \cite{Yu:FMR}.
 
-Minimizēšanas algoritmu var aizvietot ar citu, ātrāku algoritmu, piemēram, Hopkrofta minimizēšanas algoritmu, kura izpildes laiks ir $O(n$ log $n$ $l)$, kur $n$ ir automāta stāvokļu daudzums un $l$ ir ieejas alfabēta elementu daudzums.\cite{Berstel:MA}
+Minimizēšanas algoritmu var aizvietot ar citu, ātrāku algoritmu, piemēram, Hopkrofta minimizēšanas algoritmu, kura izpildes laiks ir $O(n$ log $n)$, kur $n$ ir automāta stāvokļu daudzums. \cite{Berstel:MA}
+
+\subsection{\label{sbs:res_testing}Prototipa testēšana}
+
+Prototips tika testēts visā izstrādes laikā. Zemāk tiks aprakstīti automātiski palaižamie testi. 
+
+\subsubsection{Stresa testēšana}
+
+Prototips izstrādes laikā tika testēts ar lieliem automātiski ģenerēto datu apjomiem. Tika ģenerētas patvaļīgas regulāras izteiksmes ar iekavu un \verb|*| un \verb/|/ simbolu palīdzību. Katrai regulārai izteiksmei tika izveidota arī simbolu virkne, ko šai izteiksmei jāprot atpazīt. Tad uz vienas un tās pašas regulārās izteiksmes un simbolu virknes tika palaists gan prototips, kas tolaik apstrādāja simbolus, gan Python iebūvētais regulāro izteiksmju apstrādes mehānisms. Vienā piegājienā tika ģenerēti 500 šādi testi. Prototipa beigu izstrādes posmā visi šādi testi tika veiksmīgi izpildīti.
+
+Diemžēl pagaidām šī pieeja netiek implementēta ar daļiņu regulārām izteiksmēm, jo nav iespējams pārbaudīt sistēmas darba ekvivalenci ar kādu citu sistēmu. Tāpēc tika veikta intensīva sistēmas testēšana, lai pārbaudītu pēc iespējas vairāk reālajā darbā iespējamo situāciju. Tomēr šādas stresa pārbaudes parādīja ka pats regulāro izteiksmju apstrādes mehānisms strādā korekti.
+
+\subsubsection{Sistēmas testēšana}
+
+Prototipam tika izveidoti apmēram 20 testi, kas pārbauda to darbību iespējamās situācijās. Tabula~\ref{fig:tests} parāda konceptuālu testu sadalījumu pa grupām. Dažas grupas pārklājas, jo, piemēram, tvērumu pārbaudošie testi pārbauda arī korektas regulāro izteiksmju prioritātes.
+
+\begin{longtable}{|p{90pt}|p{210pt}|p{120pt}|}
+\caption{\label{fig:tests}Prototipa testu sadalījums pa grupām} \\ \hline
+\textbf{Testa nosaukums} & \textbf{Testa apraksts} & \textbf{Kas tiek pārbaudīts} \\ \hline
+\endhead
+\multicolumn{ 3}{|c|}{Testi prioritāšu pārbaudei} \\ \hline
+Testi ar dažiem šabloniem vienā tvērumā & Testu gaitā tiek izveidotas dažādas regulāras izteiksmes, kuru aprakstītās valodas pārklājas. Tās tiek ievietotas vienā tvērumā pēc kārtas. Tad tiek pārbaudīts, ka daļiņu saraksts tiek akceptēts ar pareizu šablonu attiecībā pret to prioritātēm. & Vai tiek korekti apstrādātas šablonu prioritātes viena tvēruma ietvaros. \\ \hline
+Testi ar dažiem šabloniem vienā tvērumā, kur kāds no šabloniem akceptē garāku virkni & Testu gaitā tiek izveidotas dažādas regulāras izteiksmes, kuru aprakstītās valodas pārklājas. Tās tiek ievietotas vienā tvērumā pēc kārtas. Tad tiek pārbaudīts, ka tiek akceptēta garākā iespējamā daļiņu virkne. & Vai tiek korekti apstrādātas šablonu prioritātes viena tvēruma ietvaros. \\ \hline
+\multicolumn{ 3}{|c|}{Testi daļiņu vērtībām} \\ \hline
+Testi ar daļiņu vērtībām & Testu gaitā tiek izveidotas dažādas regulārās izteiksmes ar daļiņu vērtībām un bez tām. Tiem tiek padotas dažādas daļiņu virknes. & Vai tiek korekti apstrādātas šablonu prioritātes un vērtību sakrišanas. \\ \hline
+Testi ar vairākiem pieejamiem stāvokļiem vienlaikus & Testu gaitā tiek izveidotas dažādas regulārās izteiksmes ar daļiņu vērtībām. Tiem tiek padotas daļiņu virknes ar šādām pašām vērtībām, lai izveidotu situācijas, kad ir pieejami daži stāvokļi vienlaikus. & Vai tiek korekti apstrādātas situācijas, kad parādās nenoteiktība. \\ \hline
+\multicolumn{ 3}{|c|}{Testi tvērumu pārbaudei} \\ \hline
+Testi ar tvērumu iekļaušanas dziļumu 1 & Testu gaitā tiek izveidotas dažas regulāras izteiksmes, kuru aprakstītās valodas pārklājas. Tās tiek ievietotas nultajā un pirmajā tvērumā. Tad tiek pārbaudīti daļiņu saraksti. & Vai tiek korekti apstrādāta tvēruma parādīšanās. Vai tiek korekti apstrādātas šablonu prioritātes starp tvērumiem. \\ \hline
+Testi ar tvērumu iekļaušanas dziļumu >1 & Testu gaitā tiek izveidotas dažas regulāras izteiksmes, kuru aprakstītās valodas pārklājas. Tās tiek ievietotas dažādos tvērumos ar dziļumu kas ir lielāks par vienu. Tad tiek pārbaudīti daļiņu saraksti. & Vai tiek korekti apstrādāti dažādi tvērumu dziļumi. Vai tiek korekti apstrādātas prioritātes starp tvērumiem. \\ \hline
+Testi ar izeju no tvēruma & Testu gaitā tiek izveidotas dažas regulāras izteiksmes, kas tiek ieliktas nultajā un pirmajā tvērumā. Tiek pārbaudīts, ka pirmā tvēruma šablons atpazīst daļiņu virkni. Tālāk pirmais tvērums tiek pamests un tiek pārbaudīts, ka tā šablons vairs nav aktīvs. & Vai pēc izejas no tvēruma attiecīgie šabloni ir noteikti izdzēsti. \\ \hline
+Testi ar izeju no tvēruma un nākamā tvēruma izveidi & Testu gaitā tiek izveidots 1. līmeņa tvērums ar regulārām izteiksmēm. Tiek pārbaudīts, ka pirmā tvēruma šabloni atpazīst daļiņu virknes. Tad šīs tvērums tiek pamests un tiek izveidots jauns pirmā līmeņa tvērums. Tiek pārbaudīts, ka vecā tvēruma šabloni ir izmesti, un ka jaunā tvēruma šabloni tiek atpazīti. & Vai pēc izejas no tvēruma attiecīgie šabloni ir izdzēsti un pēc ieejas jaunajā tvērumā tiek akceptēti pareizi šabloni. \\ \hline
+\multicolumn{ 3}{|c|}{Testi bez šablonu sakritībām} \\ \hline
+Testi bez neviena šablona & Testu gaitā tiek izveidota sistēma bez neviena šablona. Tiek pārbaudīts, ka neviena sakritība netiek atrasta. & Vai sistēma korekti apstrādā situāciju, kad nav neviena šablona. \\ \hline
+Testi ar šabloniem un datiem kas nesakrīt & Testu gaitā tiek izveidota sistēma ar dažiem šabloniem. Tad tiek padotas daļiņu virknes kuras neder nevienam no eksistējošiem šabloniem. & Vai sistēma korekti apstrādā situāciju, kad neviena sakrišana nav atrasta. \\ \hline
+\end{longtable}
+
+\subsection{\label{sbs:res_tintegration}Prototipa integrēšana Eq}
+
+Prototips pagaidām netiek integrēts Eq valodas kompilatorā, bet tas tiek plānots tuvākajā nākotnē. Tā kā prototips tika izstrādāts bāzējoties uz Eq parsētāja īpašībām, to būs viegli integrēt eksistējošā kodā. Tā darbs ir gandrīz neatkarīgs no parsētāja darba un neietekmēs jau eksistējošo programmu darbību.
+
+Prototips piedāvā saskarni lai uzsākt jauna tvēruma apstrādi (funkcija \verb|enter_context()|), lai pamestu tvērumu (funkcija \verb|leave_context()|), lai pievienotu makro (\verb|add_match(regexp)|) un lai apstaigātu daļiņu virkni meklējot sakrišanas (\verb|match_stream(stream)|). Integrēšanai prototipu būs jāpapildina ar iespēju padot produkcijas tipu daļiņu virkņu apstrādes funkcijām. Prototipa daļiņu saņemšanas funkcijas būs jāpārslēdz uz parsētāja piedāvāto saskarni daļiņu dabūšanai.
+
+Prototipam ir nepieciešama vienkārša saskarne no eksistējošā parsētāja. Parsētājam jādot pieeju pie daļiņu virknes lasīšanas, kā arī jāprot aizvietot atrastās daļiņu virknes ar citām virknēm, iespējams, ar citu garumu. Parsētājam arī jāprot pārstartēt daļiņu virknes lasīšanu no aizvietotas virknes sākuma. Prototipam nepieciešamā saskarne ir implementēta Eq parsētājā.
+
+Apvienojot parsētāja un sakritību meklēšanas prototipu būs nepieciešams ievietot prototipa funkciju izsaukumus katras produkcijas apstrādes sākumā. Gadījumos, kas parsētājs sastapās ar daļiņu, kas identificē makro sākšanos, būs nepieciešams izsaukt regulārās izteiksmes parsēšanas funkciju. Savukārt, kad tiek apstrādātas citas produkcijas, būs nepieciešams izsaukt sakrišanu meklēšanu. Abu funkciju izsaukumos būs nepieciešams padot arī produkcijas tipu, lai prototips varētu atšķirt, kādu no automātiem papildināt vai lietot sakrišanu atrašanai. Prototipa funkcijas būs jāizsauc ari tvērumu pārslēgšanu brīdī, lai tas varētu implementēt tvērumu makro prioritāšu sadalīšanu.
