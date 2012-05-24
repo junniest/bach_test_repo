@@ -34,14 +34,15 @@
 
 \renewcommand{\thefigure}{\arabic{section}.\arabic{figure}}\renewcommand{\thetable}{\arabic{section}.\arabic{table}}
 \let\stddsection\section{}\renewcommand\section{ \setcounter{figure}{0}\stddsection}
+\renewcommand\section{ \setcounter{table}{0}\newpage\stddsection}
 
 \newcommand{\kw}[2]{\par\noindent{\small{\em #1\/}: #2}}
 
-\nosaukums{Ar regulārām izteiksmēm paplašinātu gramatiku dinamiska parsēšana.}
+\nosaukums{Ar regulārām izteiksmēm paplašinātu gramatiku dinamiska parsēšana}
 \darbatips{Bakalaura}
 \autors{Jūlija Pečerska}
 \vadvards{Guntis Arnicāns}
-\vadinfo{LU docents}
+\vadinfo{profesors Dr. dat.}
 \gads{2012}
 \univer{Latvijas Universitāte}
 \fakul{Datorikas}
@@ -58,7 +59,7 @@
 
 \include{terms_notations}
 
-%\include{introduction}
+\include{introduction}
 
 \include{problem}
 
@@ -66,18 +67,20 @@
 
 \include{prototype}
 
-\section{Līdzīgu darbu apskats}
+\include{related}
 
-\fixme{related work}
+%\section{Līdzīgu darbu apskats}
+
+%\fixme{related work}
 
 \include{results}
 
 \section{\label{s:conclusions}Secinājumi}
-
-
-Šī darba ietvaros tika izstrādāts šablonu sakrišanu meklēšanas prototips, kas prot meklēt regulāro izteiksmju sakrišanas reizes programmas tokenu un pseido-tokenu virknē. 
-
-Tālāk darbs tik turpināts (šeit var pārfrāzēt Conclusions no raksta melnraksta).
+%
+%
+%Šī darba ietvaros tika izstrādāts šablonu sakrišanu meklēšanas prototips, kas prot meklēt regulāro izteiksmju sakrišanas reizes programmas tokenu un pseido-tokenu virknē. 
+%
+%Tālāk darbs tik turpināts (šeit var pārfrāzēt Conclusions no raksta melnraksta).
 
 %This paper describes a theoretical background for constructing an extensible dynamic macroprocessor and provides a view on solving shortcomings that ex- isting preprocessors have. We present to the judjment of the reader a parser model that includes facilities necessary for the dynamic extension constructing and the syntax we propose for describing macros using regular expression ele- ments. We also give several examples to demonstrate the described extension’s capabilities, which can be applied to perform metaprogramming techniques as well as language syntax extension.
 
