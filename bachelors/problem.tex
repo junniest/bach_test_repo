@@ -1,20 +1,6 @@
-\section{\label{s:motivation}Ievads}
+\section{\label{s:motivation}Problemātika un risinājuma koncepcija}
 
-Mūsdienu programmēšanas valodas ir spēcīgi rīki, kas var tikt pielietojami dažādu uzdevumu risināšanai. Abstrakti programmēšanas valodas var sadalīt divās grupās - universālas un domēn-specifiskas valodas. Universālas valodas ir pielietojamas visās sfērās, bet domēn-specifiskas gan tiek veidotas kādas konkrētas uzdevumu klases risināšanai. Kaut arī universālas valodas var tikt lietotas šīs uzdevumu klases risināšanai, tās ne vienmēr ir tikpat izteiksmīgas.
-
-Taču parasti tieši universālas programmēšanas valodas tiek lietotas lai risinātu specifiskus uzdevumus, jo ne visiem uzdevumiem eksistē domēn-specifiskas valodas. Domēn-specifiskas valodas ir rīks, ko ir vērts izstrādāt veselai klasei specializētu uzdevumu. Bet to izveide ir liels darbs, ko nav vērts pildīt, lai atrisināt vienu konkrētu uzdevumu.
-
-Gandrīz jebkādas universālas programmēšanas valodas virzošs spēks ir funkcijas un to kompozīcijas. Katra valoda iekļauj sevī kaut kādu bāzes funkcionalitāti, funkciju ietvaru, kuru kompozīcijas un virknes veido programmas. Taču specifisku uzdevumu gadījumā funkciju kompozīcijas nepietiekami apraksta izpildāmo darbību. Dažas darbības ir ērtāk un saprotamāk (tas var būt pieņemts ārpus programmēšanas, reālās dzīves situācijās) attēlot ar citu sintaktisku formu, nevis ar funkciju. Šādas darbības piemērs varētu būt faktoriāla pieraksts - \verb|n!|, kas ir vispārpieņemts apzīmējums.
-
-Viena no šādām sintaktiskām formām ir operatori, tomēr operatoru skaits un pārslogošanas iespējas valodās ir diezgan ierobežotas. To pārslogošana, piemēram, C vidē, neļaus attēlot faktoriālu ar \verb|!| zīmi, jo pārslogojot saglabājas tā prefiksā forma. Tātad operatoru pārslogošana nedod brīvību veidot konstrukcijas, kas varētu paaugstināt valodas izteiksmību. Bet citu rīku, kas varētu to piedāvāt, arī nav, jo programmēšanas valodas bieži iekļauj ļoti ierobežotas sintakses mainīšanas iespējas, vai arī neiekļauj šādu iespēju vispār.
-
-Uz doto brīdi vairākumam mūsdienīgo programmēšanas valodu eksistē standarti. Pateicoties šim faktam, ir iespējams izstrādāt dažādus kompilatorus vienai un tai pašai valodai. Bet sintakses izmaiņu ieviešanas gadījumā ir jāmaina standarts, tātad ir jākorigē arī visi valodas kompilatori. Dažreiz šīs izmaiņas ir tik nopietnas, ka tiešām prasa ievērojamas parsētāja modifikācijas, lai tiktu atbalstītas, bet dažreiz tās ir tikai sintaktiskas, piem. sintaktiskā cukura\footnote{Sintaktiskais cukurs (\emph{syntactic sugar}) ir speciālas konstrukcijas, kas tiek pievienotas lai to padarītu saprotamāku un lasāmāku cilvēkam. Šīs konstrukcijas nemaina valodas funkcionalitāti, bet gan atvieglo tās lietošanu. Izplatīts sintaktiskā cukura piemērs ir C valodas konstrukcija \texttt{a[i]}, kas patiesībā ir \texttt{*(a + i)}.} ieviešana.
-
-%Bieži izmaiņas ir valodas lietotāju iniciētas, jo tikai aktīvi lietojot valodu var izprast, kā tai trūkst, lai tā tiešām kļūtu par ērtu un populāru izstrādes rīku. Piedāvāt savas izmaiņas var dažādos veidos - informējot valodas izstrādātāju par kādas iespējas trūkumu, piedāvājot ielāpus kompilatoram, u.t.t.. Bet jebkādai izmaiņai ir nepieciešams atbalsts un lietotāju kvorums, kas vēlās šo izmaiņu lietot. To ir diezgan grūti dabūt ar šādiem izmaiņu pieprasījumiem.
-
-%Tomēr jebkādas, pat nebūtiskas, valodas sintakses izmaiņas parasti prasa kompilatora vai vairāku kompilatoru pārstrādi. Tas varētu būt vērts tad, kad izmaiņas ir nepieciešamas vairākumam valodas lietotāju, bet gadījumos, kad universālas valodas ir lietotas specifisku uzdevumu risināšanai, tas tā nav.
-
-Šīs darbs izpēta jautājumu, kā dot valodas lietotājam iespēju izteikt kādu tam nepieciešamu funkcionalitāti ar netriviālām sintaktiskām konstrukcijām, nevis ar funkcijām. Tas arī mēģina iznest valodas sintakses izmaiņas uz valodas lietotāja līmeni, t.i. dot lietotājam iespēju sapratnes robežās modificēt valodas sintaksi rakstot programmas. Tas dos iespēju lietotājiem pašiem ieviest izmaiņas, kas ir nepieciešamas, lai paplašināt valodas iespējas un specificēt valodas konstrukcijas pielietošanas domēnam.
+\subsection{Problemātika}
 
 Viena no metodēm, kā varētu ļaut lietotājam paplašināt valodas sintaksi ir izveidot kross\--kom\-pi\-la\-to\-ru, kas transformētu jauno sintaksi tā, lai standarta kompilators to varētu atpazīt. Bet šīs metodes problēma ir tas, ka lielākas daļas moderno valodu sintaksi ir neiespējams noparsēt lietojot automātiskos rīkus. Zemāk ir piedāvāti daži piemēri gadījumiem no populāras valodas C, kad automātiskā parsēšana ir neiespējama.
 
@@ -22,7 +8,7 @@ Viena no metodēm, kā varētu ļaut lietotājam paplašināt valodas sintaksi i
 \item
 Valodā C lietotājs var nodefinēt patvaļīgu tipu lietojot konstrukciju \verb|typedef|. Šāda veida iespēja padara neiespējamu šādas izteiksmes apstrādi \verb|(x) + 5|, ja vien mēs neesam pārliecināti, kas ir \verb|x| - tips vai mainīgais. Ja \verb|x| ir tips, tad šī izteiksme pārveido izteiksmes \verb|+ 5| vērtību uz tipu \verb|x|. Ja \verb|x| ir mainīgais, tad šī izteiksme nozīmē vienkāršu mainīgā \verb|x| un vērtības \verb|5| saskaitīšanu. 
 \item
-C valodā eksistē operators postfikss operators \verb|++|, kas palielina argumentu par vienu vienību. Pieņemsim, ka ir iespēja paplašināt C valodas sintaksi ar infiksu operatoru \verb|++| un pierakstīt konstanšu masīvus \verb|[1, 2, 3]| veidā. Tad izteiksme \verb|a ++ [1]| būtu nepārsējama, jo eksistē vismaz divi to interpretācijas veidi. Tas varētu tikt saprasts ka postfiksā operatora \verb|++| pielietošana mainīgam \verb|a| un tad \verb|a| indeksēšana ar \verb|[1]|. Vai arī tas varētu būt divu masīvu \verb|a| un \verb|[1]| konkatenācija.
+C valodā eksistē operators postfikss operators \verb|++|, kas palielina argumentu par vienu vienību. Pieņemsim, ka ir iespēja paplašināt C valodas sintaksi ar infiksu operatoru \verb|++|, kas savieno divus masīvus un pierakstīt konstanšu masīvus \verb|[1, 2, 3]| veidā. Tad izteiksme \verb|a ++ [1]| būtu nepārsējama, jo eksistē vismaz divi to interpretācijas veidi. Tas varētu tikt saprasts ka postfiksā operatora \verb|++| pielietošana mainīgam \verb|a| un tad \verb|a| indeksēšana ar \verb|[1]|. Vai arī tas varētu būt divu masīvu \verb|a| un \verb|[1]| konkatenācija.
 \end{enumerate}
 
 %Dažreiz arī programmatūras koda dalīšana pa tokeniem ir atkarīga no šī koda konteksta, kas padara ne tikai parsēšanas procesu, bet arī leksēšanas procesu neautomatizējamu.
@@ -34,7 +20,7 @@ C valodā eksistē operators postfikss operators \verb|++|, kas palielina argume
 %Gadījumā, ja lietotājam ir dota iespēja definēt savus operatorus, ieviešot operatoru, kas pārklāj eksistējošos, ir jāmaina leksēšanas likumus. Piemēram, ja lietotājs definē unāru operatoru \verb|+-|, tad izteiksmei \verb|+-5| ir jābūt saprastai ka \verb|(+-, 5)|, nevis ka \verb|(+, -, 5)|.
 %\end{enumerate}
 
-Apskatītie piemēri dod iespēju secināt, ka automātisku parsētāju ģeneratoru lietošana var būt tik pat sarežģīta, ka parsētāja rakstīšana ar rokām. Izrādās, ka daudzām eksistējošām valodām parsētāji arī tiek rakstīti manuāli (piemēram C/C++/ObjectiveC kompilators GNU GCC \cite{GCC}). Tas nozīmē, ka kross-kompilatoru visticamāk būs jāraksta manuāli, risinot eksistējošās gramatikas konfliktus, un oriģinālvalodas ievērojamu izmaiņu gadījumā būs jāpastrādā abi kompilatori, kas nozīmē divreiz vairāk darba. 
+Apskatītie piemēri dod iespēju secināt, ka automātisku parsētāju ģeneratoru lietošana var būt tik pat sarežģīta, ka parsētāja rakstīšana ar rokām. Izrādās, ka daudzām eksistējošām valodām parsētāji arī tiek rakstīti manuāli (piemēram C/C++/ObjectiveC kompilators GNU GCC \cite{GCC} - http://gcc.gnu.org/wiki/New\_C\_Parser). Tas nozīmē, ka kross-kompilatoru visticamāk būs jāraksta manuāli, risinot eksistējošās gramatikas konfliktus, un oriģinālvalodas ievērojamu izmaiņu gadījumā būs jāpastrādā abi kompilatori, kas nozīmē divreiz vairāk darba. 
 
 Šīs darbs apskata pieeju, kas lietos eksistējošo valodas parsētāju ka pamatu savam darbam un piedāvās likumu kopu, kas ļaus  modificēt valodas gramatiku parsēšanas laikā. Taču patvaļīgas gramatikas izmaiņas var novest pie nekontrolējamas valodas evolūcijas. Tāpēc aprakstāmā pieejā tiek piedāvātas ierobežotas izmaņu iespējas, kas tiks kontrolētas ar speciāli izveidotas tipu sistēmas palīdzību.
 
@@ -71,4 +57,63 @@ Lai padarītu transformācijas sistēmu vairāk spēcīgu un ļautu atpazīt vis
 
 Šādā sistēma dos iespēju paplašināt valodu lietotāja līmenī, nevis kompilatora līmenī. Tas arī dos lielāku brīvību izmaiņu izstrādē, jo lietotājiem būs iespēja veidot makro bibliotēkas ar jaunām iespējām un izplatīt tās. Tā varēs būt pielāgota dažādām valodām, jo tā strādās ārpus paplašināmās valodas gramatikas.
 
-Šī sistēma tiek izstrādāta zinātniskās grupas sastāvā, kurā piedalās cilvēki no Compiler Technology \& Computer Architecture Group, University of Hertfordshire (Hertfordshire, England), Heriot-Watt University (Edinburgh, Scotland) un Moscow Institute of Physics and Technology (Dolgoprudny, Russia).. Tās ideja ir radusies valodas Eq \footnote{Atrodams tiešsaistē - https://github.com/zayac/eq} izstrādes darba gaitā un perspektīvā tiks integrēta ar šīs valodas kompilatoru.
+\subsection{Idejas rašanās - valoda Eq}
+Šīs makro transformācijas sistēmas ideja ir radusies valodas Eq\footnote{Pirmkods atrodams tiešsaistē - https://github.com/zayac/eq} kompilatora izstrādes gaitā, ar ko nodarbojas zinātniskā grupa, kuras sastāvā ir cilvēki no Compiler Technology \& Computer Architecture Group, University of Hertfordshire (Hertfordshire, England), Heriot-Watt University (Edinburgh, Scotland) un Moscow Institute of Physics and Technology (Dolgoprudny, Russia). Šīs valodas sintakse bāzējas uz \LaTeX{} teksta procesora sintakses, kas ir standarts priekš zinātniskām publikācijām. Korekti uzrakstīta Eq valodas programma var tikt interpretēta ar \LaTeX{} procesoru. Perspektīvā Eq programma varēs tikt kompilēta un izpildīta uz vairākuma mūsdienīgo arhitektūru. 
+
+Lai atvieglotu izstrādi valodā Eq tika nolemts izveidot makro sistēmu, kas ļaus pielāgot sintaksi programmētāja vajadzībām. Tomēr bez kaut kādas šablonu sistēmas makro iespējas ir ļoti ierobežotas. Tāpēc tika izlemts lietot šablonus ar minimālu regulāro izteiksmju sintaksi, kas dod brīvību sakritību aprakstīšanai. 
+
+Lai izveidot jaunas konstrukcijas no tokeniem, kas tika atpazīti ir nepieciešami kaut kādi rīki, lai apstrādāt tokenus, kas tika atpazīti, ka sakrītoši ar vienu no šabloniem. 
+
+ tāpēc tika izlemts lietot regulāro izteiksmju šablonus.  kas dod brīvību sakrišanas meklēšanas mehānismam. Tālāk, lai apstrādāt regulārās izteiksmes sakrātos tokenus, tika nolemts izveidot vienkāršu funkcionālu valodu, kas ļaus pārstrādāt pseido-tokenu virknes atkarībā no programmētāja izveidotiem šabloniem.
+
+Bet kaut arī ideja un pieejas izstrāde sākās ar valodu Eq, tā nav piesaistīta tieši šai valodai. Visspēcīgāka šīs sistēmas īpašība ir tas, ka tā ir universāla un var tikt pielietota jebkādam parsētājam kas atbilst dažiem nosacījumiem. Par parsētājiem nepieciešamām īpašībām tiks runāts apakšnodaļā~\ref{sbs:sys_parserqualities}.
+
+\subsection{\label{sbs:sys_approach}Sistēmas koncepcija}
+
+Aprakstāmā transformāciju sistēma tiek projektēta ņemot vērā divu eksistējošo pieeju pieredzi. Pirmā no pieejam ir programmas koda priekšprocesēšana - koda makro ierakstu apstrāde pirms parsētāja darba sākšanos. Priekšprocesors parasti aizvieto kādas konstrukcijas ar citām noteikti definētam konstrukcijām. Otrā pieeja ir adaptīvās gramatikas - gramatikas, kas ļauj programmas kodam modificēt savu apstrādes gramatiku. Abas pieejas dod ļoti spēcīgus rīkus programmēšanas valodu izstrādē. Tomēr abām šīm pieejām ir savas problēmas un trūkumi, kurus šīs sistēmas projektēšanā mēģināja atrisināt. 
+
+Pirmā problēma, no kuras šī sistēmas izstrādē mēģināja izvairīties ir nekorekta simbolu ar divām nozīmēm apstrāde. Pieņemsim, ka mēs gribam funkciju \verb|abs (x)| apzīmēt ka \verb/| x |/. Apskatīsim izteiksmi \verb/| (a | b) + c|/, kurai vajadzētu tikt pārveidotai par \verb/abs ((a | b) + c)/. Gadījumā, ja transformācijas sistēma apstrādātu tekstu, tā nebūs spējīga pārveidot šādu konstrukciju. Tiks apstrādāti pirmie divi \verb/|/simboli, no \verb/| (a |/, izveidojot nekorektu konstrukciju \verb/abs( (a) b ) + c) |/. Šīs problēmas izvēlētais risinājums ir aprakstīts apakšnodaļā~\ref{sbsbs:sys_texttransform}.
+
+Otrā problēma ir dinamisku gramatiku nekontrolējamība. Dinamiskas gramatikas ir ļoti spēcīgs rīks, kas mūsdienās gandrīz netiek lietots. Tas tā ir tādēļ, ka dodot iespēju lietotājam patvaļīgi pievienot un dzēst gramatikas likumus, tiek zaudēta iespēja kontrolēt izmaiņu korektumu. Robežgadījums varētu būt tad, kad sākotnējā gramatika tiek pilnībā aizvietota ar citu gramatiku. Tad, kaut arī sākotnējā gramatika bija derīga parsēšanai ar eksistējošo algoritmu, jaunai gramatikai var piemīt īpašības, kas neļaus to apstrādāt (piemēram, kreisā rekursija LL parsētāju gadījumā). Šīs problēmas izvēlētais risinājums ir apskatīts apakšnodaļā~\ref{sbsbs:sys_dynamicgrammars}.
+
+Trešā problēma ir tas, ka nav iespējams vienkārši ieviest gramatikas modifikācijas jau eksistējošā valodas parsētāja, ja vien tā arhitektūra no sākuma atbalsta gramatikas izmaiņas. Bet tā kā parasti šāda iespēja netiek iekļauta, visticamāk būs nepieciešamas nopietnas parsētāja adaptācijas. Aprakstāmā sistēma, savukārt, mēģina dot iespēju paplašināt valodas gramatiku bāzējoties uz vienu no plaši lietojamam parsētāju arhitektūrām. Kā tas tiks darīts ir aprakstīts apakšnodaļā~\ref{sbsbs:sys_parsermodifications}.
+
+%dinamiskumu gramatikas līmenī nav iespējams ieviest jau eksistējošā valodas parsētājā bez ievērojamām izmaiņām. Parsētāja adaptācija, kas ļaus lietotājam modificēt gramatiku, ir sarežģīts darbs, kas dažreiz prasīs parsētāja arhitektūras izmaiņas. Iespēja pievienot valodai dinamiskumu nepārstrādājot parsētāju ir aprakstīta apakšnodaļā~\ref{sbsbs:sys_parsermodifications}.
+
+\subsubsection{\label{sbsbs:sys_texttransform}Priekšprocesori}
+
+Ir dažādas pieejas programmu pirmkoda priekšprocesēšanai. Visvairāk izplatītas no tām ir divas pieejas. Viena no pieejām ir sintaktiskā pieeja - sintaktiskie priekšprocesori tiek palaisti pēc parsētāja darbības un apstrādā sintaktiskos kokus, ko uzbūvē parsētājs. Dēļ aprakstāmās sistēmas īpašībām šajā darbā netiks apskatīti sintaktiskie priekšprocesori, jo līdz sistēmas darba izpildei, gadījumā, ja tika ieviestas kaut kādas transformācijas, parsētājs nevar uzbūvēt pareizu sintaktisko koku. Otra no pieejām ir leksiskā, leksiskie priekšprocesori tiek palaisti pirms pirmkoda parsēšanas un tiek nav zināšanu par apstrādājamas valodas sintaksi (piem. C/C++ priekšprocesors). 
+
+Leksiskie priekšprocesori pēc savām īpašībām ir tuvi aprakstāmai sistēmai. Ar makro valodu palīdzību tiem tiek uzdoti koda pārrakstīšanas likumi, un kods tiek pārveidots attiecīgi tām. Bet leksisko priekšprocesoru vislielākais trūkums ir tas, ka tie apstrādā tekstu pa simboliem neievērojot izteiksmju un konstrukciju struktūru. Apskatīsim jau minētu piemēru \verb/abs ((a | b) + c)/. Ar tādu makro sistēmu, kas neievēro koda struktūru, tātad neievēro to, ka patiesībā \verb/(a | b) + c/ ir atomāra konstrukcija izteiksmē, šādu koda gabalu pareizi apstrādāt nevarēs\footnote{C/C++ priekšprocesors vispār neatļaus tādu konstrukciju izveidot, kaut arī šāds pieraksts ir diezgan loģisks no matemātiķu skatu punkta. C/C++ makro sistēma ļauj veidot tikai makro konstantes un prefiksa formas funkcijas.}.
+
+Priekšprocesoru var iemācīt apstrādāt šāda veida konstrukcijas un atpazīt tos, ka atomārās izteiksmes. Bet tas nozīmēs, ka priekšprocesoram būs jāzina apstrādājamas valodas gramatika, kas neatbilst priekšprocesora lomai kompilēšanas procesā un nozīmē ka būs divreiz jāimplementē sintakses atpazīšana.
+
+Lai izvairīties no šīs problēmas tika izvēlēts apstrādāt nevis programmas tekstu, bet gan programmas daļiņu un pseido-daļiņu virkni, ko daļēji jau apstrādāja parsētājs. Tas nozīmē, ka makro šablonu sintakse būs bāzēta uz daļiņu aprakstiem, nevis uz tekstuālām izteiksmēm. Piemēram, ja ir nepieciešams izveidot šablonu, kas pārveidos funkcijas ar nosaukumu \verb|bar| par funkcijām ar nosaukumu \verb|foo|, makro šablonā būs jāieraksta daļiņa ar tipu \verb|id| un vērtību \verb|bar| - \verb|{id:bar}|. Tad, kad programmas daļiņu virknē tiks atrasta daļiņa ar šādu tipu un vērtību, tā tiks aizvietota ar citu daļiņu \verb|{id:foo}|. Šāda pieeja dod iespēju programmas tekstā meklēt specifiskus daļiņu tipus, nevis specifiskas teksta daļas. Tas dod iespēju meklēt, piemēram, jebkādus identifikatorus, šablonā norādot daļiņu \verb|{id}| bez vērtības. 
+
+Makro šablonu sistēma arī ļauj lietot pseido-daļiņas savu šablonu aprakstos, t.i. ļauj lietot daļiņu \verb|{expr}|. Pseido-daļiņa \verb|{expr}| dotajā sintaksē apzīmē kādu izteiksmi. Tā tiek saukta par pseido-daļiņu tādēļ, ka programmas tekstā tā ir reprezentēta ar citu daļiņu virkni, kaut arī patiesībā tā ir atomāra vienība.
+
+Tā kā aprakstāmā sistēma tiek izstrādāta tā, lai tā varētu darboties nezinot neko par valodas gramatiku, tā nezina, kādas varētu būt izteiksmes dotajā valodā. Tad, kad transformācijas sistēmu makro ir atrodama šāda pseido-daļiņa, sistēma nemēģina pati izsecināt, vai šāda daļiņa ir nolasāma no parsētās virknes. Lietojot speciālu saskarni tā "pajautā" parsētājam, vai sagaidītā pseido-daļiņa ir atrodama sākot no dotās daļiņas virknē. Gadījumā, ja parsētājs var izveidot izteiksmi, tas paziņo par to, un transformācijas sistēma turpina virknes apstrādi. Piemēram, konstrukciju \verb/(a | b) + c/ parsētājs atpazīs ka pseido-daļiņu \verb|{expr}|.
+
+Gadījumā, ja kāds no šabloniem tiks atpazīts ieejas virknē, atpazītā apakšvirkne tiks pārveidota citā apakšvirknē, kas aizvietos iepriekšējo. Tālāk aizvietotā virkne tiks apstrādāta ar sākotnējo valodas gramatiku.
+
+Otrā leksiskā tipa priekšprocesoru problēma ir tas, ka tie strādā ārpus programmas tvērumiem. Tas nozīmē, ka tvēruma sākuma daļiņa (piemēram, figūriekava, C/C++, Java un citu valodu gadījumā) tiek uzskatīts par parastu tekstu un var tikt pārrakstīts. Loģiskāk būtu, ja konkrētā tvērumā definēti makro tiktu mantoti līdzīgi ka mainīgie, kas nozīmē, ka šabloni, kas ir specifiski tvērumam, būtu ar lielāku prioritāti ka tie, kas definēti vispārīgākā tvērumā. 
+
+Sistēmas sakrišanas meklēšanas mehānisms tiks izstrādāts ņemot vērā programmas tvēruma maiņu. Tātad šabloni, kuri tiek ieviesti konkrētā tvērumā, strādās tikai tā ietvaros.
+
+\subsubsection{\label{sbsbs:sys_dynamicgrammars}Dinamiskas gramatikas}
+
+Sistēma adaptē dinamisko gramatiku principu, ieviešot izmaiņu kontroli. Dinamiskas gramatikas vispārīgā gadījumā nekontrolē ieviestās izmaiņas, kas var sabojāt valodas parsējamību.
+
+Transformācijas sistēmas makro nepievieno sistēmai jaunus gramatikas likumus tajā nozīmē, ka tie modificē gramatiku. Tie pievieno jaunu daļiņu virknes pārrakstīšanas likumu, kas tiek izpildīts, kad tiek atrasta sakrišana ar makro specificētu šablonu. Tātad jaunās konstrukcijas daļiņu virknē ir atpazītas un pārrakstītas uz konstrukcijām, kuras jau ir zināmas parsētājam. Makro sistēma nedos iespēju dzēst eksistējošos likumus no valodas gramatikas.
+
+Lai nodrošinātu gramatikas likumu pievienošanas kontroli, tiek ieviestas dažas tipu specifikācijas. Katrs no makro attiecas uz kādu konkrētu gramatikas produkciju, un nevar tikt pārbaudīts citā parsēšanas brīdī. Katram makro pārrakstīšanas likumam arī ir specificēts tips, kas tiek lietots lai statiski pārliecināties par to, ka transformācija ir korekta dotā tipa ietvaros. Tipu sistēma detalizētāk ir aprakstīta apakšnodaļā~\ref{sbsbs:sys_typesystem}.
+
+\subsubsection{\label{sbsbs:sys_parsermodifications}Parsētāja modifikācijas}
+
+Vēl viena svarīga dinamisku gramatiku īpašība ir tas, ka to lietošanai ir nepieciešams speciāli izstrādāts parsētājs, kas atļauj savu parsēšanas tabulu modifikācijas. Ir jāeksistē iespējai pievienot un dzēst attiecīgus gramatikas likumus, kā arī parsētājam jāprot pārbūvēt parsēšanas tabulas atbilstoši ieviestām izmaiņām.
+
+Šī dinamisku gramatiku īpašība ļoti ierobežo iespēju lietot tos jau eksistējošo valodu paplašināšanai. Šāda veida papildināšana vairākumā gadījumu nozīmēs jauna parsētāja izveidošanu. Bet zinot, ka mūsdienīgām valodām parasti eksistē vairāki kompilatori, kurus izstrādā dažādi cilvēki, šādu izmaiņu ieviešana globālajā līmenī var kļūt neiespējama.
+
+Aprakstāmā sistēma, savukārt, ir domāta ka palīgrīks parsētājam. Parsētāju izmaiņas, kas būs nepieciešamas integrēšanai ar sistēmu ir minimālas. Tas dos iespēju lietot to jebkuram parsētājam, kas atbilst dažiem apstrādes nosacījumiem, kas ir apskatīti apakšnodaļā~\ref{sbs:sys_parserqualities}.
+
+Sistēma dos iespēju papildināt valodas sintaksi bez nepieciešamības pilnībā pārstrādāt valodas parsētājus. Tā strādās ārpus valodas gramatikas. Pirms katras produkcijas apstrādes ar standartu valodas gramatiku likumiem tiek izsaukta transformācijas sistēma. 
