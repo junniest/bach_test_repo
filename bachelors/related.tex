@@ -1,14 +1,24 @@
 \section{\label{s:related}Līdzīgu darbu apskats}
 
-Valodu paplašināšana ir zināms uzdevums, kuram eksistē dažādi risinājumi. Katrs no risinājumiem ir darbspējīgs un pamatots, un katram ir savas labās un sliktās puses. Šī nodaļa piedāvā līdzīgu projektu un darbu apskatu, kā arī uzrāda aprakstītā projekta atšķirības no šiem projektiem.
+Šīs darbs tika iedvesmots ar dažiem rakstiem par dinamisko gramatiku iespējām un pielietojumiem programmēšanas valodu izstrādē. Apakšnodaļa~\ref{sbs:rel_dynamicgrammars} apskata darbus par dinamiskām gramatikām. 
 
-Чтобы не объяснять синтаксис каждого из языков, реальные примеры не приводятся, приводятся только описания систем и их возможностей. Ссылки на литературу при желании провайдяд необходимую информацию.
+Vispārīgi dinamiskas gramatikas un valodu dinamiska parsēšana gandrīz netiek lietota valodu implementācijās. Tomēr valodu paplašināšana ir zināms uzdevums, kuram eksistē dažādi risinājumi. Katrs no risinājumiem ir darbspējīgs un pamatots priekš sava mērķa, un katram ir savas labās un sliktās puses. Šī nodaļas apakšnodaļas~\ref{sbs:rel_lisp}, ~\ref{sbs:rel_forth}, ~\ref{sbs:rel_nemerle} un ~\ref{sbs:rel_openzz} piedāvā līdzīgu projektu un darbu apskatu, kā arī uzrāda aprakstītā projekta atšķirības no šiem projektiem.
 
-\subsection{Lisp}
+Šī nodaļa neiedziļinās sistēmu sintakses īpatnībās, jo šāda apskate būtu pārāk apjomīga. Tā tikai pavirši apskata nozīmīgākas sistēmu īpatnības. Tālākai izpētei katra apakšnodaļa piedāvā literatūras avotus, kas piedāvā nepieciešamu informāciju.
+
+\subsection{\label{sbs:rel_dynamicgrammars}Dinamiskas gramatikas}
+
+Ir dažas dinamisku gramatiku pieejas, kas, diemžēl, vairākumā ir tīri teorētiskas. Labu ieskatu adaptīvo gramatiku pieejās dod Heninga Kristiansena raksts \cite{Christiansen:SurveyAdaptableGrammars} un Džona Šutta maģistra darbs \cite{Shutt:AdaptiveGrammars}. Abi šie darbi apkopo visas uz to brīdi eksistējošās pieejas. Diemžēl kopš abu raksta laika citu ievērojamu variantu un implementāciju skaits ir ļoti mazs.
+
+Pjērs Bulliers savā rakstā \cite{Boullier:DynamicGrammars} apskata iespēju lietot dinamiskas gramatikas valodas sintakses kontrolei. Tas apraksta, kā tās dod iespēju pārbaudīt tipus programmas parsēšanas, nevis kompilēšanas fāzē. Diemžēl, aprakstīta sistēma ir eksperimentāla un tikai prototipēta, nevis izveidota par lietojamu risinājumu.
+
+\fixme{Rewrite!}
+
+\subsection{\label{sbs:rel_lisp}Lisp}
 
 Lisp (\emph{LISt Processing}) ir viena no funkcionālam valodām, kuras ievērojama īpašība ir spēcīga meta-programmēšanas iespēja. Lisp ļauj paplašināt valodas konstrukcijas ar makro izteiksmēm un pievienot valodai jaunus atslēgas vārdus.
 
-Lisp gan dati, gan programmas kods ir attēloti sarakstu veidā, tātad funkcijas var tikt apstrādātas tāpat ka dati. Tas dod iespēju rakstīt programmas, kas manipulē ar citām programmām un iedod bezgalīgas iespējas programmētājam, kuram nav nepieciešamības mācīt jaunu valodu, lai modificētu eksistējošo. Sintakses paplašināšana ir izpildāma lietojot pašu Lisp un tā makro sistēma ļauj veidot Lisp domen-specifiskus dialektus.
+Lisp gan dati, gan programmas kods ir attēloti sarakstu veidā, tātad funkcijas var tikt apstrādātas tāpat ka dati. Tas dod iespēju rakstīt programmas, kas manipulē ar citām programmām un iedod bezgalīgas iespējas programmētājam, kuram nav nepieciešamības mācīt jaunu valodu, lai modificētu eksistējošo. Sintakses paplašināšana ir izpildāma lietojot pašu Lisp un tā makro sistēma ļauj veidot Lisp domēn-specifiskus dialektus.
 
 Lisp makro apstrādes spējas ir ļoti specifiskas tieši šai valodai. Tas var tikt lietotas tāpēc, ka pati valoda ir speciālā veidā implementēta un uztver visu informāciju vienādi. Lisp makro sistēma bez izmaiņām nav pielietojama imperatīvām valodām, jo to instrukciju kopa ir cieši atdalīta no programmas datu kopas.
 
@@ -18,32 +28,46 @@ Visas iegūtās konstrukcijas joprojām būs tīri funkcionālas, ar Lisp-specif
 
 \cite{Seibel:PracticalCommonLisp}
 
-\subsection{Forth}
+\subsection{\label{sbs:rel_forth}Forth}
 
 Forth ir steka valoda, kas neatbalsta nekādas programmēšanas paradigmas un vienlaikus atbalsta tās visas. Pateicoties Forth īpatnībām, tā var tikt lietota vienlaikus ka valoda un ka kompilators.
 
-Forth satur tikai divus tokenu tipus, skaitļus un visus citus - vārdus. Visas valodas vienības ir vārdi, gan funkcijas, gan mainīgie, gan operatori. Šāda pieeja ļauj rakstīt programmas dabiskā valodā. Tā kā tā ir steka valoda, nav nepieciešamības lietot iekavas lai padotu parametrus funkcijām, vai citādi atdalīt fukcijas jēdzienu no mainīgo jēdziena. Forth nesatur nekādus atslēgvārdus, kas tiek apstrādāti atsevišķi. Forth standarts definē vārdu kopu, kas ir iebūvēti valodā, bet arī tie var tikt pārdefinēti.
+Forth satur tikai divus daļiņu tipus, skaitļus un visus citus - vārdus. Visas valodas vienības ir vārdi, gan funkcijas, gan mainīgie, gan operatori. Šāda pieeja ļauj rakstīt programmas dabiskā valodā. Tā kā tā ir steka valoda, nav nepieciešamības lietot iekavas lai padotu parametrus funkcijām, vai citādi atdalīt funkcijas jēdzienu no mainīgo jēdziena. Forth nesatur nekādus atslēgvārdus, kas tiek apstrādāti atsevišķi. Forth standarts definē vārdu kopu, kas ir iebūvēti valodā, bet arī tie var tikt pārdefinēti.
 
-Visas konstrukcijas ir ieraksti Forth vārnīcā, ar kuru var manipulēt kā ar datiem. No šī viedokļa Forth ir līdzīgs Lisp, kas arī uztver programmu un datus vienādi. Tas līdzīgi dod iespēju modificēt izpildāmo kodu un paplašināt valodas sintaksi, bez nepieciešamības mācīties jaunu transformācijas valodu.
+Visas konstrukcijas ir ieraksti Forth vārdnīcā, ar kuru var manipulēt kā ar datiem. No šī viedokļa Forth ir līdzīgs Lisp, kas arī uztver programmu un datus vienādi. Tas līdzīgi dod iespēju modificēt izpildāmo kodu un paplašināt valodas sintaksi, bez nepieciešamības mācīties jaunu transformācijas valodu.
 
 Forth ļauj ne tikai veidot jaunas sintaktiskas konstrukcijas, bet ļauj arī iejaukties kompilēšanas procesā. Tas tiek atļauts ar speciāliem vārdiem, un ļauj iegulst pat citu valodu kodu Forth programmā. Tomēr interpretēt iegulto kodu vajadzēs pašam programmētājam, kas grib to izpildīt.
 
-Diemžēl Forth īpatnības padara to ļoti specifisku lietošanā. Potsfiksa forma ir izteiksmīga valodiski\footnote{Sakarā ar sintakses īpašībām pēc filmas "Zvaigžņu kari" parādīšanās,  The mistery of Yoda’s speech uncovered is: Just an old Forth programmer Yoda was.}, bet nav izteiksmīga gadījumos, kad grib ieviest matemātikas notācijas. Tam, ka var rakstīt programmas dabiskā valodā, arī ir divas monētas puses - ja katrs rakstīs savā valodā, citiem programmetājiem visticāmāk būs grūti saprast (ja vien vispār tas būs iespējams).
+Diemžēl Forth īpatnības padara to ļoti specifisku lietošanā. Potsfiksā forma ir diezgan izteiksmīga valodiski\footnote{Sakarā ar sintakses īpašībām pēc filmas "Zvaigžņu kari" parādīšanās,  The mistery of Yoda’s speech uncovered is: Just an old Forth programmer Yoda was.}, bet nav izteiksmīga gadījumos, kad ir nepieciešams ieviest matemātikas notācijas. Tam, ka var rakstīt programmas dabiskā valodā, arī ir divas monētas puses - ja katrs rakstīs savā valodā, citiem programmētājiem visticamāk būs grūti saprast (ja vien vispār tas būs iespējams).
 
-Forth implementēto sistēmu nebūs iespējams pielietot valodās, kuras satur vairākus tokenu tipus, jo nebūs iespējams apstrādāt kodu un datus vienādi. Forth vide ir ļoti vienkārši implementējama un dod ļoti lielas iespējas. Tā kā tā neatbalsta 
+Forth implementēto sistēmu nebūs iespējams pielietot valodās, kuras satur vairākus tokenu tipus, jo nebūs iespējams apstrādāt kodu un datus vienādi. Forth vide ir ļoti vienkārši implementējama un dod ļoti lielas iespējas. Tā kā tā neatbalsta ...
 
-\fixme{Write!}
+Plašāka informācija par Forth valodu un tās iespējām ir atrodama ...
 
-\subsection{Nemerle}
+\fixme{Rewrite!}
 
-\fixme{Write!}
+\subsection{\label{sbs:rel_nemerle}Nemerle}
 
+Nemerle ir statiski tipizējama universāla programmēšanas valoda .NET platformai. Tai piemīt gan funkcionālas, gan objektorientētas, gan imperativās paradigmas iezīmes. Tai ir C\#-līdzīga sintakse un ļoti spēcīga meta-programmēšanas sistēma.
 
+Viena no svarīgākām Nemerle pazīmēm ir tas, ka tai ir raksturīga ļoti augsta līmeņa pieeja visiem valodas aspektiem. Tā mēģina atbrīvot programmētāju no lieka darba lietojot tipu izvadīšanas iespēju un makro sistēmu.
 
-\subsection{OpenZz}
+Nemerle makro sistēma dod iespēju ģenerēt tekstveidnes (\emph{boilerplate}) kodu bez programmētāja piepūles. Tas arī dod iespēju kompilatoram izpildīt statiskas pārbaudes kompilācijas laikā. Tas viss dod spēku programmatiski ģenerēt pārbaudāmu kodu.
 
-\fixme{Write!}
+Kaut arī Nemerle makro sistēma ir ļoti spēcīga un ļauj izpildīt daļēju novērtēšanu, tomēr tā ir ļoti atkarīga no valodas specifikas. Tā kā Nemerle ir statiski tipizēta, tā dod iespēju kompilatoram pārbaudīt kompilēto kodu. Diemžēl plaši lietojamas valodas ne vienmēr ir statiski tipizējamas (piem. C/C++, Python), un šāda pieeja nebūs realizējama vairākumam valodu.
 
-\subsection{PierreBoullier}
+Plašāka informācija par Nemerle valodu un makro sistēmas īpatnībām ir atrodama \cite{NemerleWiki}.
 
-\fixme{Write!}
+\fixme{Rewrite!}
+
+\subsection{\label{sbs:rel_openzz}OpenZz}
+
+OpenZz parsētājs ir interpretējams dinamisks parsētājs, kas ļauj ātri izstrādāt parsēšanas risinājumus. OpenZz ļauj modificēt un paplašināt savu gramatiku lietojot komandas parsējamo valodu. To var pielāgot dažādu valodu parsēšanai, bet izstrādāts tas tika lietošanai "Apese" programmēšanas valodai.
+
+Ļoti svarīga šī parsētāja īpašība ir tas, ka tas ļauj modificēt valodas gramatiku ar pašas valodas palīdzību. Tomēr tā kā parsētājs atbalsta parsēšanas tabulu izmaiņas, kas ietekmē parsētāja ātrdarbību.
+
+Tas nav pielietojams jebkādai jau eksistējošai valodai, tam ir jāievieš speciāli modificēšanas mehānismi.
+
+Diemžēl šīs parsētājs netiek attīstīts kopš 2002. gada un informācija par to ir ļoti ierobežota. Sīkāka informācija par šo rīku ir dabūjama rakstā \cite{Cabasino:DynamicParsers}, kas apskata parsētāja koncepciju, un parsētāja mājaslapa \cite{OpenZZParser}. 
+
+\fixme{Rewrite!}
