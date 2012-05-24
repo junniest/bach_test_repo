@@ -1,9 +1,14 @@
 \section{\label{s:results}Rezultāti}
 
-Šī darba ietvaros tika izstrādāts prototips sakrišanu meklēšanas sistēmai, kura koncepcija var kalpot ka bāze transformācijas sistēmas izstrādei. Šablonu apakšsistēmas atrastās virknes kalpos ka ieejas dati pārrakstīšanas apakšsistēmai. Tipu sistēma, savukārt, lietos regulāro izteiksmju minimizētos automātus lai pārbaudītu tipu sakritību makro izteiksmju ietvaros.
+Šī darba ietvaros tik definēta koncepcija programmēšanas valodu paplašināšanas sistēmai, kas varētu tikt ieviesta jebkādai LL-parsējamai valodai. Tās ideja ir radusies izstrādājot kompilatoru valodai Eq, un tālākos izstrādes posmos visticamāk tiks integrēta tās kompilatorā. 
 
-Regulārās izteiksmes tika izvēlētas ka saskarne transformāciju meklēšanai...
+Transformāciju sistēma ir iedvesmota ar divu koda apstrādes principu kombināciju, ar dinamisko parsēšanu un ar koda priekšprocesēšanu. Dinamiskās koda parsēšanas trūkumi ir ļoti mazas valodas gramatikas kontroles iespējās, kā arī prasība pēc tāda parsētāja modeļa, kas ļauj modificēt savas parsēšanas tabulas darba laikā. Priekšprocesēšanas princips ir teksta apstrāde, kas dažādās situācijās ir nepietiekams nopietnu izejas koda modifikāciju iespējai.
+
+Sistēmas projektēšanā tika piedāvātas pieejas, kas ļaus izvairīties no abu principu trūkumiem. Tā tiks veidota ka virsbūve valodas parsētājam, ielasot noteiktas sintakses makro izteiksmes, kas sastāvēs no tipu aprakstiem, regulāro izteiksmju šablona un transformācijas funkcijas. Tā strādās paralēli ar parsētāju, pirms katras parsētāja produkcijas pārbaudes izpildot nepieciešamas virkņu transformāciju. Tā apstrādās programmas tekstu daļiņu veidā, nepieciešamības gadījumā vēršoties pie parsētāja pēc papildus informācijas. Tomēr tā tiek projektēta neatkarīgi no parsētāja, pieprasot minimālas zināšanas par valodas gramatiku, proti, iespējamo valodas daļiņu un pseido-daļiņu tipus. Tipi ir nepieciešami, lai ieviestu noteiktu transformāciju korektuma kontroli.
+
+Šī darba ietvaros tika izstrādāts prototips sakrišanu meklēšanas sistēmai, kurš konceptuāli var kalpot ka bāze transformācijas sistēmas izstrādei. Šablonu apakšsistēmas atrastās virknes kalpos ka ieejas dati transformācijas funkcijai. Tipu sistēma, savukārt, lietos regulāro izteiksmju minimizētos automātus lai pārbaudītu tipu sakritību makro izteiksmju ietvaros.
+
 Darbs parāda, ka ir iespējams veidot regulāro izteiksmju šablonus un ar tiem attiecīgi apstrādāt ieejas daļiņu virkni. Gadījuma, ja valodas parsētājs būs modelēts aprakstītā veidā, būs iespējams veikt sakrišanu meklēšanu.
 Prototipa izstrādes laikā tika identificētas iespējamās problēmas un izņēmumi, kuri ierobežo šablonu sistēmas darbu.
 
-Darba gaitā tika sagatavots raksta melnraksts, kas apraksta sistēmas koncepciju un pielietošanu. Tālākā sistēmas izstrādes gaitā tas tiks pilnveidots un publicēts. Raksta melnraksts ir atrodams pielikumā $N$.
+Darba gaitā arī tika sagatavots publikācijas melnraksts, kas apraksta sistēmas koncepciju un pielietošanu. Tālākā sistēmas izstrādes gaitā tas tiks pilnveidots un publicēts. Raksta melnraksts ir atrodams pielikumā $N$.
