@@ -62,6 +62,8 @@ Pieejamas regulāro izteiksmju bibliotēkas arī nepiedāvā iespēju apvienot v
 
 Visu automātu pārejas pa zariem notiek nevis pa kādu simbolu, bet gan pa attiecīgu tokenu. Regulāro izteiksmju apstrādes gaitā tokeni \verb|{id:foo}| un \verb|{id}| tiek uzskatīti par dažādiem, kaut arī \verb|{id:foo}| ir apakšgadījums tokenam \verb|{id}|. Šīs fakts tiek iegaumēts tikai sakrišanu meklēšanas gaitā.
 
+Algoritmi, kas tika lietoti prototipa implementācijā tika ņemti no dažādiem literatūras avotiem, kas ir norādīti apakšnodaļās, un adaptēti lietošanai aprakstāmos nolūkos.
+
 \subsubsection{Regulāro izteiksmju pārveidošana nedeterminētā galīgā automātā}
 
 \fixme{Proof that they have the same computational power}
@@ -136,6 +138,8 @@ Kaut arī daudzām valodām ir vienkāršāk uzbūvēt nedeterminētu galīgu au
 
 Izrādās, ka patiesībā katram NGA eksistē ekvivalents DGA, ko var uzbūvēt ar apakškopu sastādīšanas algoritmu\footnote{Pierādījumu tam, ka uzbūvētais DGA tik tiešām akceptē to pašu valodu, ko NGA, sk.  \cite{Hopcroft:IntroAutomataTheory}, teorēma 2.11.}. Vadošā doma šī algoritmā ir tas, ka katrs determinētā galīgā automāta (DGA) stāvoklis ir kādu NGA stāvokļu kopa. Pēc ieejas virknes $a_1, a_2, ..., a_n$ ielasīšanas DGA atrodas stāvoklī, kas atbilst NGA stāvokļu kopai, kuru var sasniegt apstaigājot virkni $a_1, a_2, ..., a_n$.
 
+Algoritms ir paņemts no~\cite{DragonBook}.
+
 \paragraph*{Algoritms 1: NGA transformēšana uz DGA}
 \subparagraph{Ieeja:}NGA $N$.
 \subparagraph{Izeja:}DGA $D$, kas ir ekvivalents $N$.
@@ -143,7 +147,7 @@ Izrādās, ka patiesībā katram NGA eksistē ekvivalents DGA, ko var uzbūvēt 
 
 Tabulā~\ref{fig:NGAoperations} var redzēt divas funkcijas, kas ir nepieciešamas NGA apstrādes izpildei. Šīs funkcijas no NGA stāvokļiem un pārejām veido jaunas stāvokļu kopas, kuras veidos DGA stāvokļus.
 
-\begin{table}[htdp]
+\begin{table}[H]
   \caption{NGA apstaigāšanas funkcijas}
   \centering
   \begin{tabular}{|c|p{350pt}|}
@@ -162,7 +166,7 @@ Ir nepieciešams apstrādāt visas tādas $N$ stāvokļu kopas, kuras ir sasnied
 
 Automāta $D$ sākuma stāvoklis ir $\varepsilon-closure (set (s_0))$, bet $D$ akceptējošie stāvokļi ir visas tās NGA stāvokļu kopas, kas satur vismaz vienu akceptējošu stāvokli. $Dstates$ ir jauna automāta $D$ stāvokļu saraksts un $Dtran$ ir stāvokļu pāreju tabula.
 
-\begin{figure}[h]
+\begin{figure}[H]
   \begin{algorithmic}
   \State initially, $\varepsilon-closure (set (s_0))$  is the only state in $Dstates$, and is unmarked
   \While{there is an unmarked state $S$ in $Dstates$}
@@ -185,9 +189,11 @@ Automāta $D$ sākuma stāvoklis ir $\varepsilon-closure (set (s_0))$, bet $D$ a
 
 Izveidotais determinēts galīgs automāts var būt neoptimāls pēc stāvokļu skaita. Bet no šī skaitļa ir atkarīgs tālāko soļu izpildes ātrums. Tātad ir nepieciešams izveidot automātu, kas atpazīs to pašu valodu un saturēs minimālu iespējamu stāvokļi skaitu.
 
-Var pierādīt, ka katram automātam eksistē ekvivalents minimāls automāts\footnote{Šī fakta pierādījumu sk. ???}. Vēl vairāk, ja eksistē 2 dažādi automāti ar vienādu stāvokļu daudzumu, kas atpazīst vienu un to pašu valodu, tad tie ir vienādi līdz stāvokļu nosaukumiem\footnote{Tā kā stāvokļu nosaukumi neietekmē automāta darbību, divi automāti tiek saukti par vienādiem līdz pat stāvokļu nosaukumiem, ja viens no tiem var tikt pārveidots otrajā vienkārši pārsaucot to stāvokļus.}.
+Var pierādīt, ka katram automātam eksistē ekvivalents minimāls automāts\footnote{Šī fakta pierādījumu sk.~\cite{Bassino:ComplexityMinimization}}. Vēl vairāk, ja eksistē 2 dažādi automāti ar vienādu stāvokļu daudzumu, kas atpazīst vienu un to pašu valodu, tad tie ir vienādi līdz stāvokļu nosaukumiem\footnote{Tā kā stāvokļu nosaukumi neietekmē automāta darbību, divi automāti tiek saukti par vienādiem līdz pat stāvokļu nosaukumiem, ja viens no tiem var tikt pārveidots otrajā vienkārši pārsaucot to stāvokļus.}.
 
 Tālāk teiksim, ka virkne $x$ atšķir stāvokļu $s$ no stāvokļa $t$ tad, kad tikai viens stāvoklis, ko var sasniegt no $t$ un $s$ pa $x$ ir akceptējošs. Tātad divi stāvokļi ir atšķirami tad, kad eksistē tāda virkne, kas viņus atšķir. Jebkurš akceptējošs stāvoklis ir atšķirams no jebkura neakceptējoša stāvokļa ar tukšu virkni (stāvoklis nevar būt akceptējošs un neakceptējoss vienlaikus). Divi neatšķirami stāvokļi ir ekvivalenti\footnote{\cite{Hopcroft:IntroAutomataTheory} nodaļa 4.4}.
+
+Algoritms ir paņemts no~\cite{DragonBook}.
 
 \paragraph*{Algoritms 2: DGA minimizēšana}
 \subparagraph{Ieeja:}DGA $D$.
@@ -202,7 +208,7 @@ Pirms algoritms uzsāk darbu, stāvokļi tiek sadalīti divās grupās - akcept�
 
 Attēls~\ref{fig:min_algorithm} parāda minimizēšanas algoritmu pseido-kodā.
 
-\begin{figure}[h]
+\begin{figure}[H]
   \begin{algorithmic}
   \State initially, partitioning $\Pi$ contains two groups, $F$ and $S-F$, the accepting and nonaccepting states of $D$, $\Pi_{new}$ is empty
   \While{$\Pi_{new}$ is not equal to $\Pi$}
@@ -225,13 +231,13 @@ Tālāk paliek apstrādāt jaunizveidotās stāvokļu grupas izveidojot jaunu de
 \end{enumerate}
 
 \subparagraph{Sarežģītība:}
-Šī algoritma sarežģītība ir $O(n^2*l)$, kur $n$ ir sākotnējā automāta stāvokļu daudzums un $l$ maksimāls pāreju daudzums no kāda no stāvokļiem\footnote{Patiesībā $l$ būtu jābūt ieejas alfabēta elementu skaitam. Bet šī darba ietvaros ir atļauts veidot regulārās izteiksmes ar pārejām pa tokeniem ar specificētu vērtību, piemēram \texttt{\{int:5\}}. Tātad īstenībā ieejas alfabēts ir bezgalīgs.}.
+Šī algoritma sarežģītība sliktākajā gadījumā ir $O(n^2)$, kur $n$ ir sākotnējā automāta stāvokļu daudzums. Tomēr vidēji algoritma darbības sarežģītība ir $O(n$ log $n)$. \cite{Bassino:ComplexityMinimization}
 
 \subsubsection{Apvienošana}
 
 Kā jau bija teikts agrāk, lai samazinātu sakrišanu meklēšanas laiku, tika izvēlēts apvienot visus meklēšanas automātus vienā. Tā kā makro atnāk pa vienam dažādās vietās programmas kodā un var sākt uzreiz tikt lietotas, nav iespējams gaidīt kamēr sakrāsies vairāki automāti apvienošanai. Tikko parādās divi automāti tie tūlīt pat tiek apvienoti vienā sistēmā. Tālāk, kad parādās citi makro, to automāti tiek pievienoti jau eksistējošam.
 
-Algoritms pēc savas būtības ir ļoti līdzīgs determinēšanas algoritmam. Vienīgais uzņēmums ir tas, ka nevienā no automātiem neeksistē $\varepsilon$-pārejas. Tātad tas, no kā vajag atbrīvoties, ir pārejas pa vienu un to pašu simbolu uz diviem dažādiem stāvokļiem. Tas tiek darīts apvienojot divus stāvokļus no dažādiem automātiem. 
+Algoritms pēc savas būtības ir determinēšanas algoritma adaptācija. Vienīgais uzņēmums ir tas, ka nevienā no automātiem neeksistē $\varepsilon$-pārejas. Tātad tas, no kā vajag atbrīvoties, ir pārejas pa vienu un to pašu simbolu uz diviem dažādiem stāvokļiem. Tas tiek darīts apvienojot divus stāvokļus no dažādiem automātiem. 
 
 \paragraph*{Algoritms 3: Divu DGA apvienošana}
 \subparagraph{Ieeja:}DGA $D_1$ un $D_2$.
@@ -264,7 +270,7 @@ To apvienotais automāts ir parādīts attēlā~\ref{fig:auto_merge}.
 
 Attēls~\ref{fig:uni_algorithm} parāda apvienošanas algoritmu pseido-kodā. $s_0$ ir jaunā automāta $D'$ sākuma stāvoklis, $r_0$ ir $D_1$ sākuma stāvoklis un $t_0$ ir $D_2$ sākuma stāvoklis. $Dstates$ ir automāta $D'$ stāvokļu saraksts, $Dtran$ ir $D'$ pāreju tabula. Funkcija $move (S, t)$ atgriež tos stāvokļus, uz kuriem var nokļūt no $S$ pa tokenu $t$. Tā kā parasti $S$ sastāv no diviem stāvokļiem $r_i$ un $t_i$, tā atgriež pārejas rezultātu no katra no tiem. Rezultāts arī var but tikai viens stāvoklis, gadījumā, ja no kāda $r_i$ un $t_i$ neeksistē pāreja pa doto tokenu.
 
-\begin{figure}[h]
+\begin{figure}[H]
   \begin{algorithmic}
   \State initially, $s_0 = (r_0, t_0)$ is the only state in $Dstates$, and is unmarked
   \While{there is an unmarked state $S$ in $Dstates$}
