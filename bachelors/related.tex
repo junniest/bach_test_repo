@@ -1,0 +1,49 @@
+\section{\label{s:related}Līdzīgu darbu apskats}
+
+Valodu paplašināšana ir zināms uzdevums, kuram eksistē dažādi risinājumi. Katrs no risinājumiem ir darbspējīgs un pamatots, un katram ir savas labās un sliktās puses. Šī nodaļa piedāvā līdzīgu projektu un darbu apskatu, kā arī uzrāda aprakstītā projekta atšķirības no šiem projektiem.
+
+Чтобы не объяснять синтаксис каждого из языков, реальные примеры не приводятся, приводятся только описания систем и их возможностей. Ссылки на литературу при желании провайдяд необходимую информацию.
+
+\subsection{Lisp}
+
+Lisp (\emph{LISt Processing}) ir viena no funkcionālam valodām, kuras ievērojama īpašība ir spēcīga meta-programmēšanas iespēja. Lisp ļauj paplašināt valodas konstrukcijas ar makro izteiksmēm un pievienot valodai jaunus atslēgas vārdus.
+
+Lisp gan dati, gan programmas kods ir attēloti sarakstu veidā, tātad funkcijas var tikt apstrādātas tāpat ka dati. Tas dod iespēju rakstīt programmas, kas manipulē ar citām programmām un iedod bezgalīgas iespējas programmētājam, kuram nav nepieciešamības mācīt jaunu valodu, lai modificētu eksistējošo. Sintakses paplašināšana ir izpildāma lietojot pašu Lisp un tā makro sistēma ļauj veidot Lisp domen-specifiskus dialektus.
+
+Lisp makro apstrādes spējas ir ļoti specifiskas tieši šai valodai. Tas var tikt lietotas tāpēc, ka pati valoda ir speciālā veidā implementēta un uztver visu informāciju vienādi. Lisp makro sistēma bez izmaiņām nav pielietojama imperatīvām valodām, jo to instrukciju kopa ir cieši atdalīta no programmas datu kopas.
+
+Lisp ļauj pievienot valodai jaunus atslēgas vārdus, bet neļauj veidot jaunus operatorus ne infiksā, ne postfiksā formā. Visām jaunām konstrukcijām joprojām jābūt prefiksa notācijā un to argumentiem saraksta formā.
+
+Visas iegūtās konstrukcijas joprojām būs tīri funkcionālas, ar Lisp-specifisku sintaksi, t.i. nebūs iespējas izveidot moduļa pierakstu \verb/|a|/. Lisp sintakse ir grūti saprotama cilvēkasm, kas nepazīst valodu programmēšanas līmenī, t.i. ja nestrādāja ar to jau iepriekš. Ar Lisp makro sistēmu nav iespējams izveidot sintaksi, kas būtu lasāma un saprotāma cilvēkam kas neprogrammē.
+
+\cite{Seibel:PracticalCommonLisp}
+
+\subsection{Forth}
+
+Forth ir steka valoda, kas neatbalsta nekādas programmēšanas paradigmas un vienlaikus atbalsta tās visas. Pateicoties Forth īpatnībām, tā var tikt lietota vienlaikus ka valoda un ka kompilators.
+
+Forth satur tikai divus tokenu tipus, skaitļus un visus citus - vārdus. Visas valodas vienības ir vārdi, gan funkcijas, gan mainīgie, gan operatori. Šāda pieeja ļauj rakstīt programmas dabiskā valodā. Tā kā tā ir steka valoda, nav nepieciešamības lietot iekavas lai padotu parametrus funkcijām, vai citādi atdalīt fukcijas jēdzienu no mainīgo jēdziena. Forth nesatur nekādus atslēgvārdus, kas tiek apstrādāti atsevišķi. Forth standarts definē vārdu kopu, kas ir iebūvēti valodā, bet arī tie var tikt pārdefinēti.
+
+Visas konstrukcijas ir ieraksti Forth vārnīcā, ar kuru var manipulēt kā ar datiem. No šī viedokļa Forth ir līdzīgs Lisp, kas arī uztver programmu un datus vienādi. Tas līdzīgi dod iespēju modificēt izpildāmo kodu un paplašināt valodas sintaksi, bez nepieciešamības mācīties jaunu transformācijas valodu.
+
+Forth ļauj ne tikai veidot jaunas sintaktiskas konstrukcijas, bet ļauj arī iejaukties kompilēšanas procesā. Tas tiek atļauts ar speciāliem vārdiem, un ļauj iegulst pat citu valodu kodu Forth programmā. Tomēr interpretēt iegulto kodu vajadzēs pašam programmētājam, kas grib to izpildīt.
+
+Diemžēl Forth īpatnības padara to ļoti specifisku lietošanā. Potsfiksa forma ir izteiksmīga valodiski\footnote{Sakarā ar sintakses īpašībām pēc filmas "Zvaigžņu kari" parādīšanās,  The mistery of Yoda’s speech uncovered is: Just an old Forth programmer Yoda was.}, bet nav izteiksmīga gadījumos, kad grib ieviest matemātikas notācijas. Tam, ka var rakstīt programmas dabiskā valodā, arī ir divas monētas puses - ja katrs rakstīs savā valodā, citiem programmetājiem visticāmāk būs grūti saprast (ja vien vispār tas būs iespējams).
+
+Forth implementēto sistēmu nebūs iespējams pielietot valodās, kuras satur vairākus tokenu tipus, jo nebūs iespējams apstrādāt kodu un datus vienādi. Forth vide ir ļoti vienkārši implementējama un dod ļoti lielas iespējas. Tā kā tā neatbalsta 
+
+\fixme{Write!}
+
+\subsection{Nemerle}
+
+\fixme{Write!}
+
+
+
+\subsection{OpenZz}
+
+\fixme{Write!}
+
+\subsection{PierreBoullier}
+
+\fixme{Write!}
