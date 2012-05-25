@@ -32,8 +32,10 @@
 
 \renewcommand{\thesection}{\arabic{section}}
 
-\renewcommand{\thefigure}{\arabic{section}.\arabic{figure}}\renewcommand{\thetable}{\arabic{section}.\arabic{table}}
-\let\stddsection\section{}\renewcommand\section{ \setcounter{figure}{0}\stddsection}
+\renewcommand{\thefigure}{\arabic{section}.\arabic{figure}}
+\renewcommand{\thetable}{\arabic{section}.\arabic{table}}
+\let\stddsection\section{}
+\renewcommand\section{ \setcounter{figure}{0}\stddsection}
 \renewcommand\section{ \setcounter{table}{0}\newpage\stddsection}
 
 \newcommand{\kw}[2]{\par\noindent{\small{\em #1\/}: #2}}
@@ -68,10 +70,6 @@
 \include{prototype}
 
 \include{related}
-
-%\section{Līdzīgu darbu apskats}
-
-%\fixme{related work}
 
 \include{results}
 
