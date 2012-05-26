@@ -6,6 +6,7 @@
 \usepackage[labelfont=it,textfont=bf]{caption}
 \captionsetup[table]{labelsep=newline, justification=raggedleft, singlelinecheck=false}
 
+\usepackage{hyperref}
 \usepackage{bacdarbs}
 \usepackage{mathtools}
 \usepackage{fixlatvian}
@@ -16,6 +17,8 @@
 \usepackage{longtable}
 
 \newcommand{\fixme}[1]{\vskip 5mm\noindent{\bf FIXME}: {\it #1}}
+
+\defaultfontfeatures{Mapping=tex-text}
 
 \usepackage[hmargin=2cm,vmargin=2cm,lmargin=3cm,rmargin=2cm]{geometry} 
 
@@ -28,27 +31,27 @@
 
 \setmainfont{Times New Roman}
 
-\setcounter{secnumdepth}{4} 
-
-\renewcommand{\thesection}{\arabic{section}}
-
-\renewcommand{\thefigure}{\arabic{section}.\arabic{figure}}
-\renewcommand{\thetable}{\arabic{section}.\arabic{table}}
-\let\stddsection\section{}
-\renewcommand\section{ \setcounter{figure}{0}\stddsection}
-\renewcommand\section{ \setcounter{table}{0}\newpage\stddsection}
-
-\newcommand{\kw}[2]{\par\noindent{\small{\em #1\/}: #2}}
+\setcounter{secnumdepth}{3} 
 
 \nosaukums{Ar regulārām izteiksmēm paplašinātu gramatiku dinamiska parsēšana}
 \darbatips{Bakalaura}
 \autors{Jūlija Pečerska}
 \vadvards{Guntis Arnicāns}
-\vadinfo{profesors Dr. dat.}
+\vadinfo{profesors Dr.sc.comp.}
 \gads{2012}
 \univer{Latvijas Universitāte}
+\univ{LU}
 \fakul{Datorikas}
-\nod{Profesors}
+\datums{28.05.2012.}
+
+\students{Jūlija Pečerska}
+\recvards{Kārlis Čerāns}
+\recamats{profesors Dr.sc.comp.}
+\sekretars{}
+\apl_num{jp08194}
+\metod{vecākā metodiķe Ārija Sproģe}
+\komis{bakalaura gala}
+\aizstdatums{07.06.2012.}
 
 \begin{document}
 
@@ -73,7 +76,8 @@
 
 \include{results}
 
-\section{\label{s:conclusions}Secinājumi}
+\section*{\label{s:conclusions}Secinājumi}
+\addcontentsline{toc}{section}{Secinājumi}
 
 Šīs darbs skar jautājumu par dinamiskas makro-apstrādes sistēmas izstrādes iespējamības teorētisku pamatojumu. Tas arī parāda eksistējošo sistēmu nepilnības un parāda pieejas, kas varētu palīdzēt šo nepilnību risināšanā.
 
@@ -92,4 +96,7 @@ Makro sistēmas izstrāde tiks turpināta lai izveidotu reālu lietojamu piemēr
 
 \bibliography{bachelors}{}
 \bibliographystyle{plain}
+
+\reglapa
+
 \end{document}

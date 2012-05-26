@@ -4,10 +4,14 @@
 
 % *******************  NEW COMMANDS  ********************************
 
+\newcommand{\mdots}{\ldots\ldots\ldots\ldots\ldots\ldots}
+
+\def\upcase{\expandafter\makeupcase}
+\def\makeupcase#1{\uppercase{#1}}
+
 \def\univ#1{\gdef\@univ{#1}}
 \def\univer#1{\gdef\@univer{#1}}
 \def\fakul#1{\gdef\@fakul{#1}}
-\def\nod#1{\gdef\@nod{#1}}
 \def\komis#1{\gdef\@komis{#1}}
 
 \def\nosaukums#1{\gdef\@nosaukums{#1}}
@@ -18,58 +22,123 @@
 \def\gads#1{\gdef\@gads{#1}}
 
 \def\students#1{\gdef\@students{#1}}
-\def\vaditajs#1{\gdef\@vaditajs{#1}}
-\def\recenzents#1{\gdef\@recenzents{#1}}
-\def\sekretars#1{\gdef\@sekretars{#1}}
 \def\apl_num#1{\gdef\@apl_num{#1}}
+
+\def\recvards#1{\gdef\@recvards{#1}}
+\def\recamats#1{\gdef\@recamats{#1}}
+
+\def\metod#1{\gdef\@metod{#1}}
+
+\def\sekretars#1{\gdef\@sekretars{#1}}
+
 \def\datums#1{\gdef\@datums{#1}}
+\def\aizstdatums#1{\gdef\@aizstdatums{#1}}
 
 % ******************  TITLEPAGE  ************************************
 
-\def\titullapa{\thispagestyle{empty} \@titullapa%
+\def\titullapa{\thispagestyle{empty} \@titullapa
               \let\titullapa\relax  % to avoid several titlepages
                \let\@titullapa\relax }
 
-\def\@titullapa{\begin{center}%
-        \large \@univer \\ \@fakul\ fakultāte%
-        %\\ \@nod\ nodaļa
+\def\@titullapa{
+\begin{center}
+        \large \@univer \\ \@fakul\ fakultāte
         \\[18cm]
           \large Rīga, \@gads\\[-17cm]   % \\[-17cm] = \vspace{-17cm}
           \LARGE \bf \@nosaukums\\[1cm]
           \large \@darbatips \ darbs\\ \end{center}%
          \vspace{4cm} \hfill
          \begin{minipage}{6cm} \raggedright%
-          \large Autors\\ \sl \@autors \\[0.6cm]%
+          \large Autors\\ \sl \@students \\[0.6cm]%
          \large Vadītājs\\ \sl \@vadvards\\ \@vadinfo \end{minipage}}
 
 % ******************  REGISTRATION PAGE  ****************************
 
-\def\reglapa{\newpage \thispagestyle{empty} \@reglapa%
+\def\reglapa{\newpage \thispagestyle{empty} \@reglapa
              \let\reglapa\relax  % to avoid several reg.pages
              \let\@reglapa\relax }
 
-\def\@reglapa{\begin{center} \large \upcase \@darbatips \ darbs izstrādāts\\
-        \@univ\ \@fakul\ fakultātē \end{center}
+\def\@reglapa{
 
-\renewcommand{\baselinestretch}{1.2}   % larger space between lines
+\topmargin 1cm
+
+\@darbatips\  darbs "\@nosaukums" izstrādāts \@univ\  \@fakul\  fakultātē.
 
 \vspace{1cm}
+
+Ar savu parakstu apliecinu, ka pētījums veikts patstāvīgi, izmantoti tikai tajā norādītie informācijas avoti un iesniegtā darba elektroniskā kopija atbilst izdrukai.
+
+Autors: \mdots ~ \@students
+
+\vspace{2cm}
+Rekomendēju/nerekomendēju darbu aizstāvēšanai
+
+Vadītājs: \@vadinfo\  \@vadvards\  \mdots ~ \@datums
+
+\vspace{1.5cm}
+
 \noindent
-{\large Autors:\\
-\@fakul \hfill \mdots\\
-fakultātes students \@students \hfill \@autors\\
-St.~apl.~Nr.~\@apl_num \hfill \@datums
-\\[1.3cm]Darba vadītājs:\\ \@vaditajs \hfill \mdots
-\\[1.3cm]Recenzents:\\ \@recenzents \hfill \mdots
-\\[1.3cm]Darbs iesniegts %
-%\@nod\ nodaļā 
-\hfill \@gads .~g.~\mdots
-\\[1.3cm]Aizstāvēts \@komis\ pār\-bau\-dī\-ju\-mu ko\-mi\-si\-jas
-sē\-dē \@gads .~g.~\mdots  ar atzīmi \mdots
-                   %<TeX_Marker>
-\begin{flushright} Protokols Nr.\ldots \end{flushright}
-\vspace{1cm}
-\@darbatips\ pārbaudījumu \hfill \mdots\\
-komisijas sekretārs \hfill \@sekretars
+Recenzents: \@recamats\  \@recvards
 
-}}
+\vspace{1.5cm}
+
+Darbs iesniegts \@fakul\ fakultātē \@datums
+
+Dekāna pilnvarotā persona: \@metod\ \mdots
+
+\vspace{3cm}
+
+Darbs aizstāvēts \@komis\ pār\-bau\-dī\-ju\-mu ko\-mi\-si\-jas sē\-dē
+
+\@aizstdatums\  prot. Nr. \ldots
+
+Komisijas sekretāre: \mdots\mdots\mdots
+}
+
+
+% ********  MODIFICATION OF COMMANDS, WHICH DEFINES SECTIONS  ********
+\renewcommand{\section}{\@startsection
+{section}
+{1}
+{\z@}
+{-\baselineskip}
+{1\baselineskip}
+{\reset@font\center\large\uppercase}}
+
+\renewcommand{\subsection}{\@startsection
+{subsection}
+{2}
+{\z@}
+{-\baselineskip}
+{0.5\baselineskip}
+{\reset@font\normalsize\bf}}
+
+\renewcommand{\subsubsection}{\@startsection
+{subsubsection}
+{3}
+{\z@}
+{-\baselineskip}
+{0.5\baselineskip}
+{\reset@font\normalsize\bf\itshape}}
+   
+\captionsetup[table]{font=small,position=top,labelsep=newline,%
+justification=raggedleft, singlelinecheck=false}
+\captionsetup[figure]{font=small,position=above} 
+
+
+\renewcommand{\thesection}{\arabic{section}}
+
+\renewcommand{\thefigure}{\arabic{section}.\arabic{figure}}
+\renewcommand{\thetable}{\arabic{section}.\arabic{table}}
+\let\stddsection\section{}
+\renewcommand\section{ \setcounter{figure}{0}\stddsection}
+\renewcommand\section{ \setcounter{table}{0}\newpage\stddsection}
+
+\newcommand{\kw}[2]{\par\noindent{\small{\em #1\/}: #2}}
+  
+%\renewcommand{\paragraph}{\@startsection
+%      {paragraph}{4}{\z@}{3.25ex plus 1ex minus.2ex}{-1em}{\reset@font
+%        \normalsize\bxsl}}
+%\renewcommand{\subparagraph}{\@startsection
+%        {subparagraph}{4}{\parindent}{3.25ex plus 1ex minus
+%        .2ex}{-1em}{\reset@font\normalsize\bxsl}}
