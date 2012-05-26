@@ -18,7 +18,7 @@
 \def\darbatips#1{\gdef\@darbatips{#1}}
 \def\autors#1{\gdef\@autors{#1}}
 \def\vadvards#1{\gdef\@vadvards{#1}}
-\def\vadinfo#1{\gdef\@vadinfo{#1}}
+\def\vadamats#1{\gdef\@vadamats{#1}}
 \def\gads#1{\gdef\@gads{#1}}
 
 \def\students#1{\gdef\@students{#1}}
@@ -38,19 +38,41 @@
 
 \def\titullapa{\thispagestyle{empty} \@titullapa
               \let\titullapa\relax  % to avoid several titlepages
-               \let\@titullapa\relax }
+               \let\@titullapa\relax}
 
 \def\@titullapa{
+{\begin{center}
+\Large
+
+\MakeUppercase{\@univer}\\
+\MakeUppercase{\@fakul\ fakultāte}
+
+\vspace{4cm}
+
+{\bfseries \MakeUppercase{\@nosaukums}}
+
+\vspace{2cm}
+
+\MakeUppercase{\@darbatips\ darbs}
+\end{center}
+
+\vspace{3cm}
+
+\singlespacing
+\noindent
+\large
+Autors: {\bfseries \@students} \\
+Studenta apliecības Nr.: \@apl_num\ \\
+Darba vadītājs: \@vadamats\ \@vadvards\
+
+\vfill
+
 \begin{center}
-        \large \@univer \\ \@fakul\ fakultāte
-        \\[18cm]
-          \large Rīga, \@gads\\[-17cm]   % \\[-17cm] = \vspace{-17cm}
-          \LARGE \bf \@nosaukums\\[1cm]
-          \large \@darbatips \ darbs\\ \end{center}%
-         \vspace{4cm} \hfill
-         \begin{minipage}{6cm} \raggedright%
-          \large Autors\\ \sl \@students \\[0.6cm]%
-         \large Vadītājs\\ \sl \@vadvards\\ \@vadinfo \end{minipage}}
+\Large
+RĪGA, \@gads
+\end{center}
+}
+\onehalfspacing}
 
 % ******************  REGISTRATION PAGE  ****************************
 
@@ -73,7 +95,7 @@ Autors: \mdots ~ \@students
 \vspace{2cm}
 Rekomendēju/nerekomendēju darbu aizstāvēšanai
 
-Vadītājs: \@vadinfo\  \@vadvards\  \mdots ~ \@datums
+Vadītājs: \@vadamats\  \@vadvards\  \mdots ~ \@datums
 
 \vspace{1.5cm}
 
