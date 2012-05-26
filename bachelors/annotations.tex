@@ -1,10 +1,10 @@
 \begin{abstract}
 
-Parasti universālas valodas tiek lietotas specifisku uzdevumu risināšanai, bet vairākumā tiem piemīt ļoti ierobežota iespēja modificēt un papildināt savu sintaksi. Šīs darbs apskata iespēju ļaut programmēšanas valodas lietotājam paplašināt valodas sintaksi ar netriviālām sintaktiskām konstrukcijām, lai pielāgotu valodu saviem mērķiem.
+Vairākumam mūsdienu programmēšanas valodu ir statiski definēta nemainīga sintakse un tās nepiedāvā nekādus līdzekļus valodas paplašināšanai. Šāds projektējums ir pamatots, toties tas nozīmē, ka visas, pat nenozīmīgas, izmaiņas valodas sintaksē ir nepieciešams implementēt valodas kompilatorā.
 
-Šīs darbs apraksta iespējamo koda transformācijas sistēmas koncepciju, kas ar nelielu darba ieguldījumu varētu ļaut papildināt plašas valodu klases sintaksi. Tas tiks izpildīts ar regulāro izteiksmju paplašinātu makro šablonu sistēmas palīdzību.
+Šīs darbs apraksta mehānismu, kas ļaus lietotājam veidot paplašinājumus valodas sintaksei. Lai to pagūtu tiek projektēta sistēma, kas pēc savas būtības ir ļoti līdzīga priekšprocesoram, bet kurai piemīt ciešāka integrācija ar programmēšanas valodas sintaksi.
 
-Šī darba ietvaros tika izstrādāta transformācijas sistēmas šablonu sakrišanu meklēšanas apakšsistēmas koncepcija un izveidota piemērotu algoritmu kopa. Tika izveidots apakšsistēmas prototips un identificēti iespējamie sistēmas ierobežojumi.
+Mehānisms ir bāzēts uz regulāro izteiksmju šabloniem, kuri veido saskarni sintakses transformācijām. Šīs darbs koncentrējas uz efektīvas šablonu sakrišanu meklēšanas pieejas izveidošanas, uz ka bāzes vēlāk varēs tikt izstrādāta transformācijas sistēma.
 
 \kw{Atslēgvārdi}{Dinamiskās gramatikas, priekšprocesēšana, makro, regulārās izteiksmes, galīgi determinēti automāti, Python}
 \end{abstract}
@@ -13,7 +13,11 @@ Parasti universālas valodas tiek lietotas specifisku uzdevumu risināšanai, be
 \begin{abstract}
 \textbf{Dynamic parsing using regular-expression-extended grammars}
 
-Abstract text in English
+Most of the programming languages nowadays have statically fixed syntax and do not provide any means of extending it. There are reasons for such s design decision, however, it implies that any, even slight, syntactical modification of the language have to be implemented on the compiler side.
+
+This thesis describes a mechanism that allows syntactical extensions to a languge to be introduced by the user, rather than by the compiler developer. In order to achieve that a system is designed, which is very similar to a preprocessor, but which has a much closer integration with the semantics of the language.
+
+The mechanism is based on regular expression templates, which are the interface to the transformations of the syntax. This paper is focused on creating an effective template matching approach, which later will be used as the basis for building the transformation system.
 
 \kw{Keywords}{Dynamic grammars, preprocessing, macros, regular expressions, determinate finite automata, Python}
 \end{abstract}
