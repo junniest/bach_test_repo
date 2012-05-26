@@ -1,4 +1,4 @@
-\documentclass[12pt, a4paper]{report}
+\documentclass[12pt, a4paper]{article}
 \usepackage{polyglossia}
 \setdefaultlanguage{latvian}
 \setotherlanguages{english, russian}
@@ -15,6 +15,11 @@
 \usepackage{algpseudocode}
 \usepackage{float}
 \usepackage{longtable}
+\usepackage{appendix}
+\usepackage[final]{pdfpages}
+\usepackage{listings}
+
+\let\stdabstract\abstract{}\renewcommand\abstract{\newpage\stdabstract}
 
 \newcommand{\fixme}[1]{\vskip 5mm\noindent{\bf FIXME}: {\it #1}}
 
@@ -81,7 +86,9 @@
 
 Šīs darbs skar jautājumu par dinamiskas makro-apstrādes sistēmas izstrādes iespējamības teorētisku pamatojumu. Tas arī parāda eksistējošo sistēmu nepilnības un parāda pieejas, kas varētu palīdzēt šo nepilnību risināšanā.
 
-Prototipa izveidošana parāda, ka šablonu sakrišanu meklēšanas sistēma ir implementējama un darbojas, un var kļūt par bāzi tālākai sistēmas funkcionalitātes prototipēšanai, testēšanai un attīstīšanai. 
+Prototipa izveidošana parāda, ka šablonu sakrišanu meklēšanas sistēma ir implementējama, un var kļūt par bāzi tālākai sistēmas funkcionalitātes prototipēšanai, testēšanai un attīstīšanai. 
+
+Uz doto brīdi sistēmas izveide ir bāzēta uz konkrētas parsētāju arhitektūras, bet atšķirībā no vairākuma līdzīgiem darbiem, tā nav piesaistīta konkrētai programmēšanas valodai. Tālākos izstrādes posmos tās arhitektūra var tikt pielāgota arī citiem parsētāju modeļiem.
 
 Makro sistēmas izstrāde tiks turpināta lai izveidotu reālu lietojamu piemēru aprakstītai koncepcijai. Ir saprotams, ka izstrādes gaitā tiks atrastas jaunas problēmas, kuras vajadzēs risināt, un jaunas idejas, ko varēs pielietot realizācijā. Tomēr pirmais izstrādes solis ir izdarīts un cerams, ka šādas transformācijas sistēmas projekts būs noderīgs programmēšanas valodu izstrādes, kompilatoru optimizēšanas un makro valodu jomās.
 %
@@ -93,6 +100,39 @@ Makro sistēmas izstrāde tiks turpināta lai izveidotu reālu lietojamu piemēr
 %We have prototyped the described system and plan to develop it further on to create an actual usable example of the described approach. There are, for sure, still plenty of issues to tackle and resolve, however, we expect the project to be helpful in wide areas of language design, compiler optimisations and macro languages.
 
 %\include{random}
+
+\appendixtitleon\appendixtitletocon
+
+%\appendixpage
+\begin{appendices}
+\newcommand{\ap}[1]{\section{#1}}\renewcommand\thesection{\arabic{section} }
+
+\ap{Prototipa koda piemērs}
+\label{ap:code_sample}
+
+\lstinputlisting[language=Python, firstline=585, lastline=692, basicstyle=\footnotesize, numbers=left, numberstyle=\scriptsize, stepnumber=1, numbersep=2pt, morekeywords={filter, None, len, self}]{../nfa.py}
+
+\ap{Testu koda piemērs -- tvērumu tests}
+\label{ap:test1_sample}
+
+\lstinputlisting[language=Python, firstline=40, lastline=70, basicstyle=\footnotesize, numbers=left, numberstyle=\scriptsize, stepnumber=1, numbersep=2pt, morekeywords={filter, None, len, self}]{../test-nfa.py}
+
+\ap{Testu koda piemērs -- prioritāšu un garumu tests}
+\label{ap:test2_sample}
+
+\lstinputlisting[language=Python, firstline=202, lastline=226, basicstyle=\footnotesize, numbers=left, numberstyle=\scriptsize, stepnumber=1, numbersep=2pt, morekeywords={filter, None, len, self}]{../test-nfa.py}
+
+\ap{Testu koda piemērs -- tvērumu ieejas un izejas tests}
+\label{ap:test3_sample}
+
+\lstinputlisting[language=Python, firstline=229, lastline=250, basicstyle=\footnotesize, numbers=left, numberstyle=\scriptsize, stepnumber=1, numbersep=2pt, morekeywords={filter, None, len, self}]{../test-nfa.py}
+
+\ap{Sistēmas apraksta melnraksts}\label{ap:draft}
+
+Šī pielikumā ir atrodams melnraksts rakstam, kas tika izveidots darba izstrādes laika. Raksts pagaidām netika publicēts un ir atrodas izveidošanas posmā.
+
+\includepdf[pages={-}]{paper/paper.pdf}
+\end{appendices}
 
 \bibliography{bachelors}{}
 \bibliographystyle{plain}
