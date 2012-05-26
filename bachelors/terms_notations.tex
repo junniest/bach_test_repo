@@ -1,22 +1,20 @@
-\section*{Apzīmējumu saraksts}\addcontentsline{toc}{section}{Apzīmējumu saraksts}
+\section*{Apzīmējumu saraksts}
+\addcontentsline{toc}{section}{Apzīmējumu saraksts}
 
 \begin{description}
-\item[Regulārās izteiksmes]
-
-
-\item[Atpakaļnorādes]
-
-
 \item[Priekšprocesors]
 
+\item[Regulārā izteiksme (angl. \emph{regular expression})]
+Regulārās izteiksmes ir formāla valoda apakšvirkņu meklēšanai tekstā. Regulārā izteiksme ir šablons, kas sastāv no simboliem un speciāliem meta-simboliem, kas uzdod meklēšanas kritērijus. Populārākie meta-simboli ir \verb|*|, \verb|+|, \verb|?|, \verb/|/. Pieņemsim, ka \verb|s| un \verb|r| ir regulārās izteiksmes. Tad \verb|s*| meklēs sakrišanu pa izteiksmi \verb|s| 0 vai vairākas reizes, \verb|s+| meklēs  \verb|s| vienu vai vairākas reizes, \verb|s?| meklēs \verb|s| 0 vai 1 reizi, bet  \verb/s|r/ meklēs sakrišanu ar vienu no izteiksmēm \verb|s| vai \verb|r|.
 
-\item[Meta-programmēšana]
+\item[Atpakaļnorāde (angl. \emph{backreference})]
+Regulārā izteiksmē grupām, kuras veido izteiksmes daļas, kas ir ievietotas iekavās, parasti tiek piekārtotas atpakaļnorādes, kas glabā atbilstošu atrastās virknes daļu.
 
-
+\item[Meta-programmēšana (angl. \emph{meta-programming})]
+Meta-programmēšana ir tādu programmu rakstīšana, kas strādā ar savu vai citu programmas izejas kodu kā ar ieejas datiem, vai arī izpilda daļu no darba kompilēšanas laikā, nevis darba laikā.
 
 \item[Tvērums]
-Programmas tvērums ir programmas bloks, kurā definēti mainīgo nosaukumi vai citi identifikatori ir lietojami, un kurā to definīcijas ir spēkā. Programmas ietvaros tvērumus ievieš, piemēram, figūriekavas, C/C++ gadījumā. Tad mainīgie, kas tiek definēti vispārīgā programmas kontekstā (globālie mainīgie), var tikt pārdefinēti mazākajā kontekstā (piemēram, kaut kādas funkcijas vai klases robežās) un iegūst lielāku prioritāti. Tas nozīmē, ka ja tiek lietots šāds pārdefinēts mainīgais, tas tiek uzskatīts par lokālu un tiek lietots lokāli līdz specifiska konteksta beigām, nemainot globālā mainīgā vērtību.
-
+Programmas tvērums ir programmas bloks, kurā definēti mainīgo nosaukumi vai citi identifikatori ir lietojami, un kurā to definīcijas ir spēkā. Programmas ietvaros tvērumus ievieš, piemēram, figūriekavas, C/C++ gadījumā. Tad mainīgie, kas tiek definēti vispārīgā programmas kontekstā (globālie mainīgie), var tikt pārdefinēti mazākajā kontekstā (piemēram, kaut kādas funkcijas vai klases robežās) un iegūst lielāku prioritāti. Tas nozīmē, ka ja tiek lietots šāds pārdefinēts mainīgais, tas tiek uzskatīts par lokālu un tiek lietots lokāli līdz specifiska konteksta beigām, nemainot globālā mainīgā vērtību.%
 Tvēruma piemērs:
 \begin{verbatim}
 int a = 0;
@@ -32,21 +30,21 @@ int main() {
 \item[Tipu izsecināšana]
 
 
-\item[Nedeterminēts galīgs automāts (nondeterministic finite automaton)]
+\item[Nedeterminēts galīgs automāts (angl. \emph{nondeterministic finite automaton})]
 
 
-\item[$\varepsilon$-pārejas ($\varepsilon$-transitions)]
+\item[$\varepsilon$-pārejas (angl. \emph{$\varepsilon$-transitions})]
 Nedeterminētā galīgā automātā pārejas
 
 
-\item[Determinēts galīgs automāts (deterministic finite automaton)]
+\item[Determinēts galīgs automāts (angl. \emph{deterministic finite automaton})]
 
 
-\item[Parsēšana (parsing)]
+\item[Parsēšana (angl. \emph{parsing})]
 
 
-\item[Daļiņa (token)]
-Pirmajā kompilēšanas stadijā leksiskais analizators sadala tekstu leksēmās (nozīmīgās simbolu secībās) un katrai leksēmai izveido speciālu objektu, kas tiek saukts par daļiņu (angl. \emph{token}). Katrai daļiņai ir glabāts tips, ko lieto parsētājs lai izveidotu programmas struktūru. Ja ir nepieciešams, tiek glabāta arī daļiņas vērtība, parasti tā ir norāde uz elementu simbolu tabulā, kurā glabājas informācija par daļiņu - tips, nosaukums. Simbolu tabula ir nepieciešama tālākā kompilatora darbā lai paveiktu semantisko analīzi un koda ģenerāciju. Šajā darbā vienkāršības dēļ tiks uzskatīts, ka daļiņas vērtības ailītē glabāsies leksēma, ko nolasīja analizators. Tālāk daļiņas tiks apzīmētas šādā veidā:
+\item[Daļiņa (angl. \emph{token})]
+Pirmajā kompilēšanas stadijā leksiskais analizators sadala tekstu leksēmās (nozīmīgās simbolu secībās) un katrai leksēmai izveido speciālu objektu, kas tiek saukts par daļiņu (angl. \emph{token}). Katrai daļiņai ir glabāts tips, ko lieto parsētājs lai izveidotu programmas struktūru. Ja ir nepieciešams, tiek glabāta arī daļiņas vērtība, parasti tā ir norāde uz elementu simbolu tabulā, kurā glabājas informācija par daļiņu - tips, nosaukums. Simbolu tabula ir nepieciešama tālākā kompilatora darbā lai paveiktu semantisko analīzi un koda ģenerāciju. Šajā darbā vienkāršības dēļ tiks uzskatīts, ka daļiņas vērtības ailītē glabāsies leksēma, ko nolasīja analizators. Tālāk daļiņas tiks apzīmētas šādā veidā:\verb|{token-type:token_value}|
 
 \begin{verbatim}
 {token-type : token-value}
@@ -63,6 +61,8 @@ Piemēram apskatīsim nelielu programmas izejas koda gabalu - \verb|sum = item +
 
 Tātad izejas kods \verb|sum = item1 + 5| pēc leksiskās analīzes tiks pārveidots daļiņu plūsmā \verb|{id:sum}, {=}, {id:item1}, {+}, {int:5}|. Nolasīto daļiņu virkne tiek padota parsētājam tālākai apstrādei un abstraktā sintaktiskā koka izveidei. \cite{DragonBook}
 
-\item[ASK (AST)]
+\item[Pseido-daļiņa (angl. \emph{pseudo-token})]
+
+\item[Abstraktais Sintaktiskais Koks, ASK (angl. \emph{Abstract Syntax Tree, AST})]
 
 \end{description}
