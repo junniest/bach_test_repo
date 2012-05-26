@@ -3,9 +3,9 @@
 
 Šī nodaļa piedāvā uzbūves principus sistēmai, kura ļaus lietotājam dinamiski paplašināt programmēšanas valodas iespējas ar makro valodas palīdzību. Šī makro valoda ļaus izveidot jaunas valodas konstrukcijas no jau eksistējošām vienībām. Sistēma ir projektēta ka virsbūve parsētājam un strādās paralēli ar parsētāju, analizējot kodu ar ierakstītiem makro un apstrādājot daļiņu virknes.
 
-Šīs sistēmas mērķis ir piedāvāt iespēju modificēt valodas sintaksi programmas rakstīšanas gaitā, nebojājot jau eksistējošo konstrukciju darbu. Sistēma ieviesīs pašmodificēšanos lietojot konstrukciju aizvietošanu, kas vienlaikus nodrošinās gramatikas modifikācijas un sākotnējās valodas gramatikas nemainīgumu. Tajā pašā laikā sistēma būs stabila pret kļūdām dēļ tā, ka tā strādās tikai konkrētās gramatikas produkcijas ietvaros un tā, ka tā pārbaudīs tipus jaunizveidotām virknēm.
+Šīs sistēmas mērķis ir piedāvāt iespēju modificēt valodas sintaksi programmas rakstīšanas gaitā, nebojājot jau eksistējošo konstrukciju darbu. Sistēma ieviesīs pašmodificēšanos lietojot konstrukciju aizvietošanu, kas vienlaikus nodrošinās gramatikas modifikācijas un sākotnējās valodas gramatikas nemainīgumu. Tajā pašā laikā sistēma būs samērā stabila pret kļūdām dēļ tā, ka tā strādās tikai konkrētās gramatikas produkcijas ietvaros un tā, ka tā pārbaudīs tipus jaunizveidotām virknēm\footnote{Ir saprotams, ka sistēmu, kas pavisam nepielaiž kļūdu parādīšanos ir gandrīz neiespējami izveidot.}.
 
-Sistēmas raksturīga īpašība ir tas, ka tā nav piesaistīta konkrētai programmēšanas valodai. Uz doto brīdi tā var tikt pielāgota un integrēta dažādu valodu parsētājos, kuru arhitektūra atbilst dažiem nosacījumiem. Tai nav ierobežojumu pret atbalstāmo sintaksi, jo tā strādās ārpus valodas gramatikas.
+Sistēmas raksturīga īpašība ir tas, ka tā nav piesaistīta konkrētai programmēšanas valodai. Tā varēs tikt pielāgota un integrēta dažādu valodu parsētājos, kuru arhitektūra atbilst dažiem nosacījumiem. Tai nav ierobežojumu pret atbalstāmo sintaksi, jo tā strādās ārpus valodas gramatikas un tai būs nepieciešamas minimālas zināšanas par to.
 
 %Tālāk nodaļa ir organizēta sekojoši. Apakšnodaļa~\ref{sbs:sys_architecture} iedod ieskatu plānotā sistēmas arhitektūrā. Apakšnodaļa~\ref{sbs:sys_approach} vispārīgi pamato izvēlēto transformācijas pieeju. Apakšnodaļa~\ref{sbs:sys_parserqualities} apraksta īpašības, kuram jāpiemīt parsētājam, lai tas varētu iekļaut transformācijas sistēmu. Apakšnodaļa~\ref{sbs:sys_macrosyntax} apraksta un pamato sistēmas makro sintaksi. Apakšnodaļa~\ref{sbs:sys_qualities} detalizētāk apskata sistēmas sadalījumu uz trim apakšsistēmām un apraksta to sadarbību.
 
@@ -40,7 +40,7 @@ Katras vadīšanas funkcijas darbības sākumā vai beigās (tas ir atkarīgs ti
 Tā pārbauda, vai tā vieta tokenu virknē, uz kuru rāda parsētājs, ir derīga kaut kādai transformācijai dotās produkcijas ietvaros. Ja pārbaude ir veiksmīga, funkcija izpilda sakrītošās virknes substitūciju ar jaunu virkni un parsētāja stāvoklī uzliek norādi uz aizvietotās virknes sākumu. Gadījumā,  ja pārbaude nav veiksmīga, funkcija nemaina parsētāja stāvokli, un parsētājs var turpināt darbu nemodificētas gramatikas ietvaros.
 \end{description}
 
-Ja izstrādājamās valodas parsētāja modelis atbilst aprakstītām īpašībām, tad tā var tikt veiksmīgi savienota ar aprakstāmo transformācijas sistēmu un ļaut programmētājam ieviest modifikācijas oriģinālās valodas sintaksē.
+Ja izstrādājamās valodas parsētāja modelis atbilst aprakstītām īpašībām, tad tas var tikt veiksmīgi savienotas ar aprakstāmo transformācijas sistēmu un ļaut programmētājam ieviest modifikācijas oriģinālās valodas sintaksē.
 
 \subsection{\label{sbs:sys_macrosyntax}Makro sistēmas sintakse}
 
@@ -85,7 +85,7 @@ match [{expr}] v = {|} {expr} {|}
 
 Šajā piemērā šablons \verb/{|} {expr} {|}/, strādājot \verb|{expr}| produkcijas ietvaros, atradīs sakritību ar trim daļiņām, \verb/|/, kaut kāda izteiksme, \verb/|/. Transformējot atrasto elementu sarakstu tiek veidots jauns saraksts no \verb|{id:abs}|, \verb|{(}|, atrastās izteiksmes \verb|v[1]| un \verb|{)}|. Izveidotam sarakstam jāatbilst produkcijai \verb|{expr}|.
 
-Vēl viens korektā makro piemērs: pieņemsim, ka funkcija \verb|replace| ir definēta transformāciju valodā ar trim argumentiem, un darba gaitā tā jebkurā pseido-tokenu virknē aizvieto elementus, kas sakrīt ar otro argumentu, ar trešo funkcijas argumentu. Pieņemsim, ka mums ir nepieciešams aizvietot visas funkcijas \verb|sum| izsaukšanas reizes ar tās argumentu summu. Funkcija \verb|sum| ir iespējams padot patvaļīgu argumentu skaitu, kas ir lielāks par vienu. Šādā gadījumā makro, kas parādīts attēlā~\ref{fig:matchsample2}, izpildīs nepieciešamu darbību.
+Vēl viens korektā makro piemērs: pieņemsim, ka funkcija \verb|replace| ir definēta transformāciju valodā ar trim argumentiem, un darba gaitā tā jebkurā pseido-daļiņu virknē, kas padota ka pirmais arguments, aizvieto elementus, kas sakrīt ar otro argumentu, ar trešo funkcijas argumentu. Pieņemsim, ka mums ir nepieciešams aizvietot visas funkcijas \verb|sum| izsaukšanas reizes ar tās argumentu summu. Funkcija \verb|sum| ir iespējams padot patvaļīgu argumentu skaitu, kas ir lielāks par vienu. Šādā gadījumā makro, kas parādīts attēlā~\ref{fig:matchsample2}, izpildīs nepieciešamu darbību.
 
 \begin{figure}[h!]
 \begin{verbatim}
@@ -97,7 +97,7 @@ match [{expr}] v = {id:sum} {(} {expr} {,} {expr} ( {,} {expr} ) * {)}
 
 \subsection{\label{sbs:sys_qualities}Transformācijas sistēmas apakšsistēmas}
 
-Šī nodaļa parāda sistēmas sadalīšanu uz trim neatkarīgam daļām. Pirmā no tām ir sakrišanu meklēšanas daļa. Tā tokenu virknē atrod makro šablonu satikšanas reizes. Otrā ir atrasto virkņu apstrādes daļa. Tā pārveido sakrišanas mehānisma atrasto tokenu virkni atbilstoši tam, kas norādīts makro labajā daļā. Trešā ir tipu pārbaudīšanas sistēma, kas statiski pārbauda, vai uzrakstītais makro var būt derīgs valodas gramatikas ietvaros. Šīs sadalījums ir tikai konceptuāls, kas ir izveidots ērtības dēļ, lai varētu apskatīt sistēmu ka atsevišķu apakšsistēmu kombināciju.
+Šī nodaļa parāda sistēmas sadalīšanu uz trim neatkarīgam daļām. Pirmā no tām ir sakrišanu meklēšanas daļa. Tā daļiņu virknē atrod makro šablonu satikšanas reizes. Otrā ir atrasto virkņu apstrādes daļa. Tā pārveido sakrišanas mehānisma atrasto daļiņu virkni atbilstoši tam, kas norādīts makro labajā daļā. Trešā ir tipu pārbaudīšanas sistēma, kas statiski pārbauda, vai uzrakstītais makro var būt derīgs valodas gramatikas ietvaros. Šīs sadalījums ir tikai konceptuāls, kas ir izveidots ērtības dēļ, lai varētu apskatīt sistēmu ka atsevišķu apakšsistēmu kombināciju.
 
 Šablonu sakrišanu meklēšanas sistēma ir īsumā aprakstīta apakšnodaļā~\ref{sbsbs:sys_matches}. Sīkāk šīs apakšsistēmas īpašības un tās prototipa realizācija ir aprakstīta nodaļā~\ref{s:prototype}.
 
@@ -111,8 +111,6 @@ Ir plānots, ka transformāciju sistēma varēs atpazīt nepareizi sastādītus 
 
 Galvenais princips uz kura jābāzējas šīs apakšsistēmas izstrādē minimāls apstrādes laiku. Tātad apakšsistēmas koncepcija  tika izveidota tā, lai jebkurā laika momentā šablonu sakrišanu meklēšanai būtu nepieciešams lineārs laiks un tikai viena daļiņu virknes apstaigāšana. Šāda pieeja ir izvēlēta ar iedomu, ka makro pievienošana tiks izpildīta tikai vienreiz, un to daudzums būs samērā neliels, bet sakrišanu meklēšana tiks pildīta katrā produkcijā, un, sliktākajā gadījumā, katrai daļiņai no ieejas plūsmas.
 
-Darba ietvaros šī apakšsistēma tika prototipēta
-
 Ielasītā regulārā izteiksme tiek pārsēta un pārveidota nedeterminēta galīgā automātā. Tad šablona nedeterminēts galīgs automāts tiek determinēts un minimizēts. Tātad katrai regulārai izteiksmei tiek izveidots minimāls determinēts automāts, kurš ir optimizēts gan pēc apstaigāšanas laika, gan pēc aizņemtās vietas.
 
 Tālāk, lai nodrošinātu visu šablonu pārbaudi vienlaikus un minimizēt meklēšanas laiku, ir nepieciešams apvienot izveidotos automātus. To var izdarīt dažos veidos. Vienkāršākais no tiek būtu glabāt visus galīgos automātus sarakstā. Pieņemsim, ka ir $n$ šabloni, kurus vajag pārbaudīt. Tad automātu saraksts reprezentē nedeterminētu galīgu automātu ar $n$ $\varepsilon$-zariem no sākuma stāvokļa, katrs no kuriem ved pie sākuma stāvokļa vienam no jau izveidotiem determinētiem automātiem.
@@ -123,9 +121,9 @@ Sīkāk šīs apakšsistēmas prototipa īpašības un lietotie algoritmi ir izk
 
 \subsubsection{\label{sbsbs:sys_language}Daļiņu virkņu apstrāde}
 
-Gadījumā, ja šablonu sistēma nesaturētu regulāro izteiksmju sintaksi (it īpaši \verb|*|), būtu iespējams transformēt tokenu virknes ar pašu makro palīdzību. Atrastās tokenu virknes vienmēr būtu ar vienādu un determinētu garumu un saturu. Bet tā kā šabloni ļauj meklēt sakrišanas ar elementu sarakstiem, ir nepieciešams veids, kā apstrādāt jaunizveidotus un, iespējams, tukšus sarakstus.
+Gadījumā, ja šablonu sistēma nesaturētu regulāro izteiksmju sintaksi (it īpaši \verb|*|), būtu iespējams transformēt daļiņu virknes ar pašu makro palīdzību. Atrastās daļiņu virknes vienmēr būtu ar vienādu un determinētu garumu un saturu. Bet tā kā šabloni ļauj meklēt sakrišanas ar elementu sarakstiem, ir nepieciešams veids, kā apstrādāt jaunizveidotus un, iespējams, tukšus sarakstus.
 
-Tātad lai varētu izpildīt atrastās tokenu virknes apstrādi un modificēšanu ir nepieciešams kaut kāds papildus rīks. Šīs rīks varētu būt kaut kāda programmēšanas valoda. Izplatītākās programmēšanas valodu paradigmas mūsdienās ir imperatīvā  vai funkcionālā paradigma. Katru no tiem varētu lietot atrasto virkņu apstrādei.
+Tātad lai varētu izpildīt atrastās daļiņu virknes apstrādi un modificēšanu ir nepieciešams kaut kāds papildus rīks. Šīs rīks varētu būt kaut kāda programmēšanas valoda. Izplatītākās programmēšanas valodu paradigmas mūsdienās ir imperatīvā  vai funkcionālā paradigma. Katru no tiem varētu lietot atrasto virkņu apstrādei.
 
 Šīm uzdevumam varētu lietot kādu no imperatīvam programmēšanas valodām, piemēram C, vienkārši izveidojot saskarni ar tās valodas kompilatoru. Bet vairākumam šādu valodu nav statiskas tipu secināšanas iespējas. Statiska tipu secināšana C valodas gadījumā ir neiespējama rādītāju mainīgo dēļ, kuru tipus nevar izrēķināt parsēšanas laikā. Lai varētu ieviest statiskās tipu izsecināšanas iespējas, vajadzēs ierobežot valodas iespējas, tātad modificēt eksistējošo kompilatoru vai kaut kā citādāk ierobežot pieejamo konstrukciju kopu.
 
@@ -133,34 +131,31 @@ Uzdevumam arī varētu lietot kādu no jau eksistējošām funkcionālām valod�
 
 Varētu lietot arī vienu no jau eksistējošām funkcionālām valodām ar tipu secināšanas īpašību, kas piemīt vairākumam funkcionālo valodu. Vēl viena ērtā funkcionālo valodu īpašība ir tas, ka tās funkcijām nepiemīt blakusefekti, tātad to izpilde nevarēs samainīt eksistējošos datus. Valoda, kuras funkcijām ir blakusefekti, varētu sabojāta parsētāja darbu.
 
-Šīs sistēmas implementācijā tika izvēlēts izveidot minimalistisku funkcionālu valodu, kura būs statiski tipizējama. Tātad visiem šīs valodas mainīgajiem varēs izsecināt piederību pie tipa un pie kaut kāda virstipa, kas tiks lietots lai nodrošināt transformāciju korektumu. Funkcionālā pieeja nodrošina arī to, ka apstrādes funkcijām nepiemīt blakusefekti, kas varētu samainīt eksistējošos datus. Valodas mērķis ir ļaut izveidot atrasto tokenu permutācijas ar kādiem papildinājumiem nepieciešamības gadījumā.
+Šīs sistēmas implementācijā tika izvēlēts izveidot minimalistisku funkcionālu valodu, kura būs statiski tipizējama. Tātad visiem šīs valodas mainīgajiem varēs izsecināt piederību pie tipa un pie kaut kāda virstipa, kas tiks lietots lai nodrošināt transformāciju korektumu. Funkcionālā pieeja nodrošina arī to, ka apstrādes funkcijām nepiemīt blakusefekti, kas varētu samainīt eksistējošos datus. Apstrādes sistēmas mērķis ir ļaut izveidot atrasto daļiņu permutācijas ar kādiem papildinājumiem nepieciešamības gadījumā.
 
-Galvenais šīs valodas pielietojums ir dot iespēju apstaigāt pseido-tokenu virkni, kura tika atzīta par sakrītošu ar atbilstošu šablonu. Lai to darīt, tā dos iespēju lietot rekursiju un dažas iebūvētās funkcijas - saraksta pirmā elementa funkciju \verb|head|, saraksta astes funkciju \verb|tail| un objektu pāra izveidošanas funkciju \verb|cons|. Funkcija \verb|cons| funkcionālo valodu kontekstā strādā kā saraksta izveidošanas funkcija, jo saraksts \verb|list(1, 2, 3)| tiek reprezentēta ka \verb|cons(1, cons(2, cons(3, nil)))|, kur \verb|nil| ir speciāls tukšs objekts. Valoda saturēs arī \verb|if| konstrukciju, kas ļaus pārbaudīt dažādus nosacījumus.
+Galvenais šīs valodas pielietojums ir dot iespēju apstaigāt pseido-daļiņu virkni, kura tika atzīta par sakrītošu ar atbilstošu šablonu. Lai to darīt, tā dos iespēju lietot rekursiju un dažas iebūvētās funkcijas - saraksta pirmā elementa funkciju \verb|head|, saraksta astes funkciju \verb|tail| un objektu pāra izveidošanas funkciju \verb|cons|. Funkcija \verb|cons| funkcionālo valodu kontekstā strādā kā saraksta izveidošanas funkcija, jo saraksts \verb|list(1, 2, 3)| tiek reprezentēta ka \verb|cons(1, cons(2, cons(3, nil)))|, kur \verb|nil| ir speciāls tukšs objekts. Valoda saturēs arī \verb|if| konstrukciju, kas ļaus pārbaudīt dažādus nosacījumus.
 
 Lai būtu iespēja apstādināt rekursiju, šī valoda arī ļaus izpildīt aritmētiskās operācijas ar veseliem skaitļiem. Tas dos iespēju izveidot skaitītājus un izveidot rekursijas izejas nosacījumus.
 
-Tiek plānots, ka šī valoda arī ļaus izpildīt daļēju novērtējumu izteiksmēm, tur kur būs nepieciešams. Tas nozīmē, ka valodai jāsatur saskarne, kas ļaus piekļūt pie tokena vērtības. Šim mērķim ir domāta funkcija \verb|value|, kas ir pielietojama pseido-tokeniem ar skaitlisku vērtību, piemēram, lai dabūt skaitli \verb|5| no pseido-tokena \verb|{int:5}|. Valoda arī ļaus izveidot jaunus tokenus ar izrēķinātu vērtību.
+Tiek plānots, ka šī valoda arī ļaus izpildīt daļēju novērtējumu izteiksmēm, tur kur būs nepieciešams. Tas nozīmē, ka valodai jāsatur saskarne, kas ļaus piekļūt pie daļiņas vērtības. Šim mērķim ir domāta funkcija \verb|value|, kas ir pielietojama pseido-daļiņām ar skaitlisku vērtību, piemēram, lai dabūt skaitli \verb|5| no pseido-daļiņas \verb|{int:5}|. Valoda arī ļaus izveidot jaunas daļiņas ar izrēķinātu vērtību.
 
-Funkcija \verb|type|, savukārt, ļaus pārbaudīt tokenu tipu, kas var būt nepieciešams transformācijas procesā, piemēram, lai atpazīt kādu operatoru.
+Funkcija \verb|type|, savukārt, ļaus pārbaudīt daļiņu tipu, kas var būt nepieciešams transformācijas procesā, piemēram, lai atpazīt kādu operatoru.
 
 Lai būtu iespēja apstādināt rekursiju, šī valoda arī ļaus izpildīt aritmētiskās operācijas ar veseliem skaitļiem. Tas dos iespēju izveidot skaitītājus un izveidot rekursijas izejas nosacījumus.
 
 \subsubsection{\label{sbsbs:sys_typesystem}Tipu sistēma}
 
-%\fixme{надо убрать ощущение что я ничего не знаю (Х }
-\fixme{идея строится вокруг того, что вот такое вот наблюдение}
+Šī nodaļa tikai vispārīgi apraksta tipu secināšanas sistēmas ideju, tā kā uz doto brīdi tā atrodas izpētes stadijā. Tipu secināšanas ideja ir bāzēta uz Bodo Šulca rakstu par masīvu tipu izvadīšanas sistēmu ~\cite{Scholz:SACTypeSystem}.
 
-Kā bija redzams attēlā~\ref{fig:matchsyntax}, katrā makro pusē ir atrodams produkcijas nosaukums, \verb|[prod1]| un \verb|[prod2]|. Tas tiek darīts tādēļ, lai kontrolētu, kad dotais makro ir pārbaudīts, un kāda tipa izejas virkni tas radīs. Abas šīs atzīmes ir rādītas tipu kontroles sistēmas dēļ.
+Kā bija redzams attēlā~\ref{fig:matchsyntax}, katrā makro pusē ir atrodams produkcijas nosaukums, \verb|[prod1]| un \verb|[prod2]|. Tas tiek darīts tādēļ, lai kontrolētu, kad dotais makro ir ielasīts, kāda tipa izejas virkni tas radīs. Abas šīs atzīmes ir rādītas tipu kontroles sistēmas dēļ.
 
 Katrs atsevišķs makro strādā konkrētas gramatikas produkcijas ietvaros, \verb|[prod1]| dotā makro gadījumā. Tas nodrošinās to, ka katrs no makro tiks izpildīts pareizajā vietā un visas konstrukcijas tiks apstrādātas. 
 
-Otrais tips, \verb|[prod2]|, atzīmē to, ka pēc transformācijas procesa beigām mums jāsaņem tieši šādai produkcijai korektu izteiksmi. Tātad ir jāparbauda tas, ka funkcijas \verb|f(v)| rezultāts attiecībā uz atrasto tokenu virkni, ir atļauta ieejas virkne priekš produkcijas \verb|prod2|.
+Otrais tips, \verb|[prod2]|, atzīmē to, ka pēc transformācijas procesa beigām mums jāsaņem tieši šādai produkcijai korektu izteiksmi. Tātad ir jāparbauda tas, ka funkcijas \verb|f(v)| rezultāts attiecībā uz atrasto daļiņu virkni, ir atļauta ieejas virkne priekš produkcijas \verb|prod2|.
 
-Lai to paveikt ir nepieciešams izveidot pseido-tokenu regulāro izteiksmi produkcijai \verb|prod2|. Tālāk ir nepieciešams izsecināt funkcijas \verb|f| no virknes \verb|v| rezultāta tipu.
+Lai to paveikt, ir nepieciešams izsecināt funkcijas \verb|f| no virknes \verb|v| rezultāta tipu un pārbaudīt, vai tas der produkcijai \verb|prod2|. \verb|f(v)| rezultāta tips būs kaut kāda regulāra izteiksme, ko veidos makro kreisās puses regulārās izteiksmes elementi. To attiecību ar \verb|prod2| var pārbaudīt dažos veidos, piemēram, izveidojot no tās gramatiku un pārbaudot, vai tā ir apakšgramatika produkcijai \verb|prod2|. Šī darba ietvaros tika izvēlēts veidot regulārās izteiksmes no gramatikas produkcijām un pārbaudīt, vai produkcijas izteiksme iekļauj sevī funkcijas rezultāta izteiksmi.
 
-\fixme{v  нужно обязательно из грамматического правила построить регулярное выражение (возможно более общее) и проверить подтип ли. Можно по-другому - вывести из регулярки грамматику, и проверить является ли грамматика подграмматикой}
-
-Šajā darbā netiks apskatīts jautājums, kādā veidā tiks izveidota regulārā izteiksme priekš katras gramatikas produkcijas. To varētu izveidot programmētājs, vai, varbūt tā varētu tikt izveidota automātiski. Ir svarīgi pieminēt, ka pāreja no gramatikas likuma uz regulāro izteiksmi noved pie kādas informācijas zaudēšanas. Piemēram, nav iespējams uzkonstruēt precīzu regulāro izteiksmi valodai:
+Šajā darbā netiks apskatīts jautājums, kādā veidā tiks izveidota regulārā izteiksme priekš katras gramatikas produkcijas. To varētu izveidot programmētājs vai tā varētu tikt izveidota automātiski. Ir svarīgi pieminēt, ka pāreja no gramatikas likuma uz regulāro izteiksmi noved pie kādas informācijas zaudēšanas. Piemēram, nav iespējams uzkonstruēt precīzu regulāro izteiksmi valodai:
 
 \begin{verbatim}
 A :=  aAb | ab
@@ -170,7 +165,7 @@ Tomēr ir iespējams izveidot regulāro izteiksmi kas iekļaus sevī gramatikas 
 
 Ir viegli pamanīt, ka regulārās izteiksmes izveido dabisku tipu hierarhiju. Valoda, kura var tikt atpazīta ar regulāro izteiksmi $r_1$, var tikt iekļauta citas regulārās izteiksmes $r_2$ atpazītās valodā apakškopas veidā. Piemēram, regulārās izteiksmes \verb|a+| valoda ir atpazīstama arī ar regulāro izteiksmi \verb|a*|, bet \verb|a*| atpazīst vēl papildus tukšu simbolu virkni. Šādai tipu hierarhijai uz regulārām izteiksmēm eksistē arī super-tips, ko uzdod regulārā izteiksme \verb|.*| - $\top$. Ir acīmredzami, ka $\forall t_i \in R, t_i \sqsubseteq \top$, kur $R$ ir visu regulāro izteiksmju kopa.
 
-Ir svarīgi izveidot procedūru, kas ļaus izsecināt, vai $r_1 {\sqsubseteq} r_2$. Ir zināms, ka ir iespējams katrai regulārai izteiksmei uzbūvēt minimālu akceptējošu galīgu determinētu automātu\footnote{Sk. nodaļu~\ref{sbs:prot_algorithms}.}. Šīs automāts atpazīs precīzi to pašu valodu, ko atpazīst regulārā izteiksme. Tas nozīmē, ka no $r_1 \sqsubseteq r_2 \Rightarrow seko min (det (r_1)) \sqsubseteq min (det (r_2))$. Diviem minimāliem automātiem $A_1$ un $A_2$, $A_1 \sqsubseteq A_2$ nozīmē, ka eksistē kaut kāds attēlojums $\Psi$ no $A_1$ stāvokļiem uz $A_2$ stāvokļiem, tāds, ka:
+Ir svarīgi izveidot procedūru, kas ļaus izsecināt, vai $r_1 {\sqsubseteq} r_2$. Ir zināms, ka ir iespējams katrai regulārai izteiksmei uzbūvēt minimālu akceptējošu galīgu determinētu automātu\footnote{Sk. nodaļu~\ref{sbs:prot_algorithms}.}. Šīs automāts atpazīs precīzi to pašu valodu, ko atpazīst regulārā izteiksme. Tas nozīmē, ka no $r_1 \sqsubseteq r_2 \Rightarrow$ seko $min(det (r_1)) \sqsubseteq min (det (r_2))$. Diviem minimāliem automātiem $A_1$ un $A_2$, $A_1 \sqsubseteq A_2$ nozīmē, ka eksistē kaut kāds attēlojums $\Psi$ no $A_1$ stāvokļiem uz $A_2$ stāvokļiem, tāds, ka:
 
 \[
     Start (A_1) \to Start (A_2) \in \Psi
@@ -182,8 +177,4 @@ Ir svarīgi izveidot procedūru, kas ļaus izsecināt, vai $r_1 {\sqsubseteq} r_
 
 Šeit $States (x)$ apzīmē automāta $x$ stāvokļu kopu, $Edges (s)$ apzīmē pseido-tokenu kopu, kas atzīmē no stāvoļa $s$ izejošās šķautnes. $Transition(s, t)$, savukārt, apzīmē stāvokli, kas ir sasniedzams no $s$ pārejot pa šķautni, kas atzīmēta ar pseido-tokenu $t$.
 
-Otra svarīga īpašība, kas tiks lietota šajā tipu pārbaudīšanas sistēmā ir tas, ka transformāciju valoda ir statiski tipizējama un tā satur ļoti ierobežotu iebūvēto funkciju skaitu. Katrai no šīm iebūvētām funkcijām ir iespējams izveidot to aprakstošo regulāro izteiksmi. Piemēram, regulārā izteiksme funkcijai $head (x)$ var tikt izveidota ka visu to šķautņu kopa, kas iziet no $x$ aprakstošā automāta sākuma stāvokļa. Kad šablona apstrāde tiek sākta, var arī izsecināt iespējamo virknes garumu intervālu un izvadīt brīdinājumus gadījumā, ja ir iespējama funkcijas $head (x)$ izsaukšana no tukšā saraksta.
-
-\fixme{Все остальные действия выражаются при помощи тейла хеда и конса и рекурсии, для каждой операции можно вывести тип. Подробности находятся в стадии рисёрча.}
-
-Šī nodaļa tikai vispārīgi apraksta tipu secināšanas sistēmas ideju. Uz doto brīdi tā atrodas izstrādes stadijā, bet var redzēt ka tās izveide ir pamatota. Sīkāka informācija par tipu sistēmu ir saņemama pie Eq kompilatora izstrādes komandas.
+Otra svarīga īpašība, kas tiks lietota šajā tipu pārbaudīšanas sistēmā ir tas, ka transformāciju valoda ir statiski tipizējama un tā satur ļoti ierobežotu iebūvēto funkciju skaitu. Katrai no šīm iebūvētām funkcijām ir iespējams izveidot to aprakstošo regulāro izteiksmi. Piemēram, regulārā izteiksme funkcijai $head (x)$ var tikt izveidota ka visu to šķautņu kopa, kas iziet no $x$ aprakstošā automāta sākuma stāvokļa. Kad šablona apstrāde tiek sākta, var arī izsecināt iespējamo virknes garumu intervālu un izvadīt brīdinājumus gadījumā, ja ir iespējama funkcijas $head (x)$ izsaukšana no tukšā saraksta. Visām pārējām iebūvētām funkcijām -- $cons$, $tail$ -- ir iespējams analoģiski izsecināt rezultātu tipus. Tā kā visas darbības saraksta apstrādē tiek izpildītas ar iebūvēto funkciju un rekursijas palīdzību, arī to rezultātiem ir iespējams izrēķināt vispārīgus tipus.
