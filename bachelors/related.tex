@@ -1,17 +1,25 @@
 \section{Līdzīgu darbu apskats}
 \label{s:related}
 
-Šīs darbs tika iedvesmots ar dažiem rakstiem par dinamisko gramatiku iespējām un pielietojumiem programmēšanas valodu izstrādē. Apakšnodaļa~\ref{sbs:rel_dynamicgrammars} apskata darbus par dinamiskām gramatikām. 
+Šī nodaļa apskata darbus, kuriem piemīt transformācijas sistēmai līdzīga funkcionalitāte. Šie darbi ir līdzīgi pēc savas būtības un dažreiz piedāvā alternatīvas pieejas aprakstītam uzdevumam. Toties lielāka šādu risinājumu daļa ir ļoti cieši piesaistīta pie konkrētas valodas, pat ne pie valodu klases. Zemāk tiks aprakstīti daži līdzīgi darbi un parādītas atšķirības starp tiem un aprakstīto pieeju.
 
-Vispārīgi dinamiskas gramatikas un valodu dinamiska parsēšana gandrīz netiek lietota valodu implementācijās. Tomēr valodu paplašināšana ir zināms uzdevums, kuram eksistē dažādi risinājumi. Katrs no risinājumiem ir darbspējīgs un pamatots priekš sava mērķa, un katram ir savas labās un sliktās puses. Šī nodaļas apakšnodaļas~\ref{sbs:rel_lisp}, ~\ref{sbs:rel_forth}, ~\ref{sbs:rel_nemerle} un ~\ref{sbs:rel_openzz} piedāvā līdzīgu projektu un darbu apskatu, kā arī uzrāda aprakstītā projekta atšķirības no šiem projektiem.
+Šīs darbs tika iedvesmots ar dažiem rakstiem par dinamisko gramatiku iespējām un pielietojumiem programmēšanas valodu izstrādē. Apakšnodaļa~\ref{sbs:rel_dynamicgrammars} apskata izskatītus darbus par dinamiskām gramatikām.
+
+Vispārīgi dinamiskas gramatikas un valodu dinamiska parsēšana gandrīz netiek lietota valodu implementēšanā. Tomēr valodu paplašināšana ir zināms uzdevums, kuram eksistē dažādi risinājumi. Katrs no risinājumiem ir darbspējīgs un pamatots priekš sava mērķa, un katram ir savas labās un sliktās puses. Šī nodaļas apakšnodaļas~\ref{sbs:rel_lisp}, ~\ref{sbs:rel_forth}, ~\ref{sbs:rel_nemerle} un ~\ref{sbs:rel_openzz} piedāvā līdzīgu projektu un darbu apskatu, kā arī uzrāda aprakstītā projekta atšķirības no šiem projektiem.
 
 Šī nodaļa neiedziļinās sistēmu sintakses īpatnībās, jo šāda apskate būtu pārāk apjomīga. Tā tikai pavirši apskata nozīmīgākas sistēmu īpatnības. Tālākai izpētei katra apakšnodaļa piedāvā literatūras avotus, kas piedāvā nepieciešamu informāciju.
 
 \subsection{\label{sbs:rel_dynamicgrammars}Dinamiskas gramatikas}
 
-Ir dažas dinamisku gramatiku pieejas, kas, diemžēl, vairākumā ir tīri teorētiskas. Labu ieskatu adaptīvo gramatiku pieejās dod Heninga Kristiansena raksts \cite{Christiansen:SurveyAdaptableGrammars} un Džona Šutta maģistra darbs \cite{Shutt:AdaptiveGrammars}. Abi šie darbi apkopo visas uz to brīdi eksistējošās pieejas. Diemžēl kopš abu raksta laika citu ievērojamu variantu un implementāciju skaits ir ļoti mazs.
+Ir dažas dinamisku gramatiku pieejas, kas, diemžēl, vairākumā ir tīri teorētiskas. Labu ieskatu adaptīvo gramatiku pieejās dod Heninga Kristiansena raksts par adaptīvām gramatikām --\cite{Christiansen:SurveyAdaptableGrammars} un Džona Šutta maģistra darbs -- \cite{Shutt:AdaptiveGrammars}. Abi šie darbi apkopo visas uz to brīdi eksistējošās pieejas, bet, diemžēl, kopš šo rakstu laika citu ievērojamu variantu un implementāciju skaits ir ļoti mazs.
 
-Pjērs Bulliers savā rakstā par dinamiskām gramatikām \cite{Boullier:DynamicGrammars} apskata iespēju lietot adaptīvas gramatikas valodas sintakses kontrolei. Tas apraksta, kā tās dod iespēju pārbaudīt tipus programmas parsēšanas, nevis kompilēšanas fāzē, tādējādi realizējot tā sauktās statiskās semantikas\footnote{Par statisko semantiku \emph{static semantics} dažādos rakstos tiek saukta kontekst-atkarīga sintakse, piemēram, attiecības starp mainīgā deklarāciju un tā lietošanas ierobežojumiem.} pārbaudi. Diemžēl, aprakstīta sistēma ir eksperimentāla un tikai prototipēta, nevis izveidota par lietojamu risinājumu.
+Dinamiskas gramatikas ir rīks, kas var ģenerēt neierobežotu kontekst-neatkarīgu gramatiku kopu. Katra gramatika ir veidota izejas teksta parsēšanas laikā sastopot speciālu konstrukciju. Dinamiska gramatika var tikt apskatīta ka parasto kontekstneatkarīgu gramatiku sekvence, ko definē programmas kods. Vispārīgi dinamiskas gramatikas var ļaut brīvi pievienot un dzēst savus produkciju likumus.
+
+Toties pārsvarā dinamiskas gramatikas tiek lietotas lai pārbaudīt kontekst-atkarīgas sintakses korektumu, kas, piemēram, ir saistība starp mainīgā definīciju un tā lietošanu. Bez konteksta analīzes parsētājs nevarēs kļūdainu piešķiršanu, piemēram,  šādā izteiksmē \verb|int i; i = 'a'|. Šādas kļūdas parasti atrod kompilators pēc parsēšanas fāzes. Lietojot dinamiskās gramatikas katra mainīgā definīcija \verb|type id;| varētu pievienot gramatikai likumu, ka \verb|type| mainīgā vietā var būt mainīgais ar nosaukumu \verb|id|.
+
+Šī ideja izskatās ļoti pievilcīgi no pirmā skata, jo tā ļaus izlaist veselu pārbaužu kopu no kompilatora implementācijas. Diemžēl šādu gramatiku izveide nav tik eleganta, tā ir viegli izveidojama tikai tādiem vienkāršiem gadījumiem ka mainīgo un funkciju signatūru definīcija. Bloka beigu gadījumā gramatikai ir jāprot izmest ārā visus likumus, kas tika pievienoti bloka iekšienē, kā arī kontrolēt mainīgo redzamību bloku ietvaros. Dinamisko gramatiku pieejas parasti arī neapstrādā rekursīvas deklarācijas. Vairāk informācijas var atrast Kristiansena rakstā \cite{Christiansen:SurveyAdaptableGrammars}.
+
+Pjērs Bulliers savā rakstā par dinamiskām gramatikām \cite{Boullier:DynamicGrammars} apskata iespēju lietot adaptīvas gramatikas valodas sintakses kontrolei. Tas apraksta, kā tās dod iespēju realizēt kontekst-atkarīgas sintakses pārbaudi programmas parsēšanas, nevis kompilēšanas fāzē. Diemžēl, aprakstīta sistēma ir eksperimentāla un tikai prototipēta, nevis izveidota par lietojamu risinājumu. Tajā tiek lietota saskarne pie neeksistējoša orakula, kura mērķis ir risināt iespējamus gramatikas konfliktus.
 
 \subsection{\label{sbs:rel_lisp}Lisp}
 
@@ -25,7 +33,7 @@ Lisp ļauj pievienot valodai jaunus atslēgas vārdus, bet neļauj veidot jaunus
 
 Visas iegūtās konstrukcijas joprojām būs tīri funkcionālas, ar Lisp-specifisku sintaksi, t.i. nebūs iespējas izveidot moduļa pierakstu \verb/|a|/. Lisp sintakse ir grūti saprotama cilvēkasm, kas nepazīst valodu programmēšanas līmenī, t.i. ja nestrādāja ar to jau iepriekš. Ar Lisp makro sistēmu nav iespējams izveidot sintaksi, kas būtu lasāma un saprotāma cilvēkam kas neprogrammē.
 
-\cite{Seibel:PracticalCommonLisp}
+Plašāka informācija par Lisp un tās makro sistēmu ir atrodama, starp citiem avotiem, grāmatā \cite{Seibel:PracticalCommonLisp}.
 
 \subsection{\label{sbs:rel_forth}Forth}
 
@@ -49,7 +57,7 @@ Viena no svarīgākām Nemerle pazīmēm ir tas, ka tai ir raksturīga ļoti aug
 
 Nemerle makro sistēma dod iespēju ģenerēt bieži atkārtojāmo kodu bez programmētāja piepūles. Tas statiskā tipizācija ļauj kompilatoram izpildīt statiskas ģenerētā koda pārbaudes kompilācijas laikā. Tas kopumā dod iespēju programmatiski ģenerēt pārbaudāmu un tipu korektu kodu.
 
-Kaut arī Nemerle makro sistēma ir ļoti spēcīga un ļauj izpildīt daļēju novērtēšanu, tomēr tā ir ļoti atkarīga no valodas specifikas. Tā kā Nemerle ir statiski tipizēta, tā dod iespēju kompilatoram pārbaudīt kompilēto kodu, nevis ķert tipu kļūdas programmas izpildes laikā. Diemžēl plaši lietojamas valodas ne vienmēr ir statiski tipizējamas (piem. C/C++, Python), un šāda pieeja nebūs realizējama vairākumam valodu.
+Nemerle realizētā makro sistēma ir ļoti līdzīga aprakstītai transformāciju sistēmai, kaut arī tā ir ļoti spēcīga un ļauj izpildīt daļēju novērtēšanu, tā ir ļoti atkarīga no valodas specifikas. Tā kā Nemerle ir statiski tipizēta, tā dod iespēju kompilatoram pārbaudīt kompilēto kodu, nevis ķert tipu kļūdas programmas izpildes laikā. Diemžēl plaši lietojamas valodas ne vienmēr ir statiski tipizējamas (piem. C/C++, Python), un šāda pieeja nebūs realizējama vairākumam valodu. 
 
 Plašāka informācija par Nemerle valodu un makro sistēmas īpatnībām ir atrodama Nemerle mājaslapā \cite{NemerleWiki}.
 
