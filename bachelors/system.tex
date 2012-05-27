@@ -3,9 +3,9 @@
 
 Šī nodaļa piedāvā uzbūves principus sistēmai, kura ļaus lietotājam dinamiski paplašināt programmēšanas valodas iespējas ar makro valodas palīdzību. Šī makro valoda ļaus izveidot jaunas valodas konstrukcijas no jau eksistējošām vienībām. Sistēma ir projektēta ka virsbūve parsētājam un strādās paralēli ar parsētāju, analizējot kodu ar ierakstītiem makro un apstrādājot daļiņu virknes.
 
-Šīs sistēmas mērķis ir piedāvāt iespēju modificēt valodas sintaksi programmas rakstīšanas gaitā, nebojājot jau eksistējošo konstrukciju darbu. Sistēma ieviesīs pašmodificēšanos lietojot konstrukciju aizvietošanu, kas vienlaikus nodrošinās gramatikas modifikācijas un sākotnējās valodas gramatikas nemainīgumu. Tajā pašā laikā sistēma būs samērā stabila pret kļūdām dēļ tā, ka tā strādās tikai konkrētās gramatikas produkcijas ietvaros un tā, ka tā pārbaudīs tipus jaunizveidotām virknēm\footnote{Ir saprotams, ka sistēmu, kas pavisam nepielaiž kļūdu parādīšanos ir gandrīz neiespējami izveidot.}.
+Šīs sistēmas mērķis ir piedāvāt iespēju modificēt valodas sintaksi programmas rakstīšanas gaitā, nebojājot jau eksistējošo konstrukciju darbu. Sistēma ieviesīs valodas pašmodificēšanos lietojot konstrukciju aizvietošanu, kas vienlaikus nodrošinās valodas sintakses paplašināšanu un sākotnējās valodas gramatikas nemainīgumu. Tajā pašā laikā sistēma būs samērā stabila pret kļūdām dēļ tā, ka tā strādās tikai konkrētās gramatikas produkcijas ietvaros un tā, ka tā pārbaudīs tipus jaunizveidotām virknēm\footnote{Ir saprotams, ka sistēmu, kas pavisam nepielaiž kļūdu parādīšanos ir gandrīz neiespējami izveidot.}.
 
-Sistēmas raksturīga īpašība ir tas, ka tā nav piesaistīta konkrētai programmēšanas valodai. Tā varēs tikt pielāgota un integrēta dažādu valodu parsētājos, kuru arhitektūra atbilst dažiem nosacījumiem. Tai nav ierobežojumu pret atbalstāmo sintaksi, jo tā strādās ārpus valodas gramatikas un tai būs nepieciešamas minimālas zināšanas par to.
+Sistēmas raksturīga īpašība ir tas, ka tā nav piesaistīta konkrētai programmēšanas valodai. Tā varēs tikt pielāgota un integrēta dažādu valodu parsētājos, kuru arhitektūra atbilst dažiem nosacījumiem. Tai nav ierobežojumu pret atbalstāmo sintaksi, jo tā strādās ārpus valodas gramatikas un tai būs nepieciešamas minimālas zināšanas par tās sintaksi un semantiku, kas tiks iegūtas lietojot parsētāja saskarni.
 
 %Tālāk nodaļa ir organizēta sekojoši. Apakšnodaļa~\ref{sbs:sys_architecture} iedod ieskatu plānotā sistēmas arhitektūrā. Apakšnodaļa~\ref{sbs:sys_approach} vispārīgi pamato izvēlēto transformācijas pieeju. Apakšnodaļa~\ref{sbs:sys_parserqualities} apraksta īpašības, kuram jāpiemīt parsētājam, lai tas varētu iekļaut transformācijas sistēmu. Apakšnodaļa~\ref{sbs:sys_macrosyntax} apraksta un pamato sistēmas makro sintaksi. Apakšnodaļa~\ref{sbs:sys_qualities} detalizētāk apskata sistēmas sadalījumu uz trim apakšsistēmām un apraksta to sadarbību.
 
@@ -135,9 +135,9 @@ Varētu lietot arī vienu no jau eksistējošām funkcionālām valodām ar tipu
 
 Galvenais šīs valodas pielietojums ir dot iespēju apstaigāt pseido-daļiņu virkni, kura tika atzīta par sakrītošu ar atbilstošu šablonu. Lai to darīt, tā dos iespēju lietot rekursiju un dažas iebūvētās funkcijas - saraksta pirmā elementa funkciju \verb|head|, saraksta astes funkciju \verb|tail| un objektu pāra izveidošanas funkciju \verb|cons|. Funkcija \verb|cons| funkcionālo valodu kontekstā strādā kā saraksta izveidošanas funkcija, jo saraksts \verb|list(1, 2, 3)| tiek reprezentēta ka \verb|cons(1, cons(2, cons(3, nil)))|, kur \verb|nil| ir speciāls tukšs objekts. Valoda saturēs arī \verb|if| konstrukciju, kas ļaus pārbaudīt dažādus nosacījumus.
 
-Lai būtu iespēja apstādināt rekursiju, šī valoda arī ļaus izpildīt aritmētiskās operācijas ar veseliem skaitļiem. Tas dos iespēju izveidot skaitītājus un izveidot rekursijas izejas nosacījumus.
+Lai būtu iespēja apstādināt rekursiju, šī valoda arī ļaus izpildīt aritmētiskās operācijas ar veseliem skaitļiem. Tas dos iespēju veidot skaitītājus un rekursijas izejas nosacījumus.
 
-Tiek plānots, ka šī valoda arī ļaus izpildīt daļēju novērtējumu izteiksmēm, tur kur būs nepieciešams. Tas nozīmē, ka valodai jāsatur saskarne, kas ļaus piekļūt pie daļiņas vērtības. Šim mērķim ir domāta funkcija \verb|value|, kas ir pielietojama pseido-daļiņām ar skaitlisku vērtību, piemēram, lai dabūt skaitli \verb|5| no pseido-daļiņas \verb|{int:5}|. Valoda arī ļaus izveidot jaunas daļiņas ar izrēķinātu vērtību.
+Tiek plānots, ka šī valoda arī ļaus nepieciešamības gadījumā izpildīt daļēju novērtējumu izteiksmēm. Tas nozīmē, ka valodai jāsatur saskarne, kas ļaus piekļūt pie daļiņas vērtības. Šim mērķim ir domāta funkcija \verb|value|, kas ir pielietojama pseido-daļiņām ar skaitlisku vērtību, piemēram, lai dabūt skaitli \verb|5| no pseido-daļiņas \verb|{int:5}|. Valoda arī ļaus izveidot jaunas daļiņas ar izrēķinātu vērtību.
 
 Funkcija \verb|type|, savukārt, ļaus pārbaudīt daļiņu tipu, kas var būt nepieciešams transformācijas procesā, piemēram, lai atpazīt kādu operatoru.
 
@@ -147,7 +147,7 @@ Lai būtu iespēja apstādināt rekursiju, šī valoda arī ļaus izpildīt arit
 
 Šī nodaļa tikai vispārīgi apraksta tipu secināšanas sistēmas ideju, tā kā uz doto brīdi tā atrodas izpētes stadijā. Tipu secināšanas ideja ir bāzēta uz Bodo Šulca rakstu par masīvu tipu izvadīšanas sistēmu ~\cite{Scholz:SACTypeSystem}.
 
-Kā bija redzams attēlā~\ref{fig:matchsyntax}, katrā makro pusē ir atrodams produkcijas nosaukums, \verb|[prod1]| un \verb|[prod2]|. Tas tiek darīts tādēļ, lai kontrolētu, kad dotais makro ir ielasīts, kāda tipa izejas virkni tas radīs. Abas šīs atzīmes ir rādītas tipu kontroles sistēmas dēļ.
+Kā bija redzams attēlā~\ref{fig:matchsyntax}, katrā makro pusē ir atrodams produkcijas nosaukums, \verb|[prod1]| un \verb|[prod2]|. Tas tiek darīts tādēļ, lai, kad dotais makro ir ielasīts, varētu izsecināt kāda tipa izejas virkni tas radīs. Abas šīs atzīmes ir rādītas tipu kontroles sistēmas dēļ.
 
 Katrs atsevišķs makro strādā konkrētas gramatikas produkcijas ietvaros, \verb|[prod1]| dotā makro gadījumā. Tas nodrošinās to, ka katrs no makro tiks izpildīts pareizajā vietā un visas konstrukcijas tiks apstrādātas. 
 

@@ -77,8 +77,6 @@ Otrā problēma ir neiespējamība vispārīgā gadījumā kontrolēt dinamiskas
 
 Trešā problēma ir tas, ka nav iespējams vienkārši ieviest gramatikas modifikācijas jau eksistējošā valodas parsētāja, ja vien tā arhitektūra no sākuma atbalsta gramatikas izmaiņas. Bet tā kā parasti šāda iespēja netiek iekļauta, visticamāk būs nepieciešamas nopietnas parsētāja adaptācijas. Aprakstāmā sistēma, savukārt, mēģina dot iespēju paplašināt valodas gramatiku bāzējoties uz vienu no plaši lietojamam parsētāju arhitektūrām. Kā tas tiks darīts ir aprakstīts apakšnodaļā~\ref{sbsbs:sys_parsermodifications}.
 
-%dinamiskumu gramatikas līmenī nav iespējams ieviest jau eksistējošā valodas parsētājā bez ievērojamām izmaiņām. Parsētāja adaptācija, kas ļaus lietotājam modificēt gramatiku, ir sarežģīts darbs, kas dažreiz prasīs parsētāja arhitektūras izmaiņas. Iespēja pievienot valodai dinamiskumu nepārstrādājot parsētāju ir aprakstīta apakšnodaļā~\ref{sbsbs:sys_parsermodifications}.
-
 \subsubsection{\label{sbsbs:sys_texttransform}Teksta pārveidošana}
 
 Ir dažādas pieejas programmu pirmkoda priekšprocesēšanai. Visvairāk izplatītas no tām ir divas pieejas. Viena no pieejām ir sintaktiskā pieeja - sintaktiskie priekšprocesori tiek palaisti pēc parsētāja darbības un apstrādā abstraktos sintaktiskos kokus (AST), ko tas ir uzbūvējis. Šāda tipa priekšprocesori netiks apskatīti šajā darbā, jo to darbībai ir nepieciešams korekts sintakses koks. Aprakstāmās sistēmas gadījumā sintakses koka uzbūvēšana var būt neiespējama tad, kad gramatikā tika ieviestas kaut kādas jaunas konstrukcijas. Sistēmai jānostrādā pirms sintaktiskā koka izveidošanas. Otra no priekšprocesēšanas pieejām ir leksiskā. leksiskie priekšprocesori tiek palaisti pirms pirmkoda parsēšanas un tiem nav zināšanu par apstrādājamas valodas sintaksi (piem. C/C++ priekšprocesors).
@@ -101,14 +99,9 @@ Sistēmas sakrišanas meklēšanas mehānisms tiks izstrādāts ņemot vērā pr
 
 \subsubsection{\label{sbsbs:sys_dynamicgrammars}Dinamiskas gramatikas}
 
-Ir dažādas iespējas lietot dinamiskas gramatikas. Viena no tām ir pieeja, kas ļauj kontrolēt programmas tā saukto statisko semantiku. Par statisko semantiku dažādos rakstos sauc kontekst-atkarīgu sintaksi - 
-Parasti dinamiskās gramatikas tiek lietotas lai pievienot iespēju automātiski parsēšanas laikā pārveidota valodas gramatikai 
+Ir dažādas iespējas lietot dinamiskas gramatikas. Viena no tām ir pieeja, kas ļauj kontrolēt tā saukto programmas statisko semantiku. Par statisko semantiku dažādos rakstos sauc kontekst-atkarīgu sintaksi, piemēram, attiecību starp mainīgā deklarāciju un tā lietošanas ierobežojumiem. Otra pieeja ļauj pa tiešo pievienot un dzēst valodas gramatikas likumus. Tā kā aprakstāmā sistēma nav piemērota statiskai tipu pārbaudei, bet gan tiek veidota lai varētu paplašināt eksistējošo sintaksi, tā pēc būtības ir tuvāka otrai dinamisko gramatiku lietošanas pieejai.
 
-Sistēma adaptē dinamisko gramatiku principu, ieviešot izmaiņu kontroli. Dinamiskas gramatikas vispārīgā gadījumā nekontrolē ieviestās izmaiņas, kas var sabojāt valodas parsējamību.
-
-\fixme{большое высказывание без всяких подтверждений, всегда только надстройка над}
-
-Transformācijas sistēmas makro nepievieno sistēmai jaunus gramatikas likumus tajā nozīmē, ka tie modificē gramatiku. Tie pievieno jaunu daļiņu virknes pārrakstīšanas likumu, kas tiek izpildīts, kad tiek atrasta sakrišana ar makro specificētu šablonu. Tātad jaunās konstrukcijas daļiņu virknē ir atpazītas un pārrakstītas uz konstrukcijām, kuras jau ir zināmas parsētājam. Makro sistēma nedos iespēju dzēst eksistējošos likumus no valodas gramatikas.
+Transformācijas sistēma neļaus pievienot un dzēst apstrādātās valodas gramatikas likumus. Toties tā ļaus pievienot jaunas konstrukcijas pievienojot likumus makro sistēmas kopai. Katrs makro pievieno jaunu daļiņu virknes pārrakstīšanas likumu, kas tiek izpildīts, kad tiek atrasta sakrišana ar makro specificētu šablonu. Tātad jaunās konstrukcijas daļiņu virknē ir atpazītas un pārrakstītas uz konstrukcijām, kuras jau ir zināmas parsētājam.
 
 Lai nodrošinātu gramatikas likumu pievienošanas kontroli, tiek ieviestas dažas tipu specifikācijas. Katrs no makro attiecas uz kādu konkrētu gramatikas produkciju, un nevar tikt pārbaudīts citā parsēšanas brīdī. Katram makro pārrakstīšanas likumam arī ir specificēts tips, kas tiek lietots lai statiski pārliecināties par to, ka transformācija ir korekta dotā tipa ietvaros. Tipu sistēma detalizētāk ir aprakstīta apakšnodaļā~\ref{sbsbs:sys_typesystem}.
 
