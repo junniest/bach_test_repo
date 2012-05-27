@@ -57,28 +57,28 @@ Regulāro izteiksmju translēšana uz nedeterminētu galīgu automātu ir diezga
 
 Nedeterminēts galīgs automāts (NGA) veselai regulārai izteiksmei ir izveidots to daļējiem automātiem katrai regulārās izteiksmes daļai. Katram operatoram tiek piekārtota attiecīga konstrukcija. Daļējiem automātiem nav akceptējošu stāvokļu, tiem ir pārejas uz nekurieni, kuras vēlāk tiks lietotas lai savienotu automāta daļas. Pilnīga automāta būvēšanas process beigsies ar akceptējošā stāvokļa pievienošanu palikušajām pārejām. Zemāk tiek parādīti automāti katrai no regulārās izteiksmes iespējamām sastāvdaļām.
 
-Attēlā~\ref{fig:auto_token} ir parādīts NGA vienai daļiņai ${token}$.
+\ref{fig:auto_token} attēlā ir parādīts NGA vienai daļiņai ${token}$.
 \begin{figure}[H]
   \centering
     \includegraphics[scale=1.5]{pictures/auto_token}
   \caption{\label{fig:auto_token}Automāts vienai daļiņai}
 \end{figure}
 
-Attēlā~\ref{fig:auto_sequence} ir parādīts NGA divu automātu konkatenācijai $e_1 e_2$.
+\ref{fig:auto_sequence} attēlā ir parādīts NGA divu automātu konkatenācijai $e_1 e_2$.
 \begin{figure}[H]
   \centering
     \includegraphics[scale=1.5]{pictures/auto_sequence}
   \caption{\label{fig:auto_sequence}Automāts divu automātu konkatenācijai}
 \end{figure}
 
-Attēlā~\ref{fig:auto_or} ir parādīts NGA izvēlei starp diviem automātiem $e_1 | e_2$.
+\ref{fig:auto_or} attēlā ir parādīts NGA izvēlei starp diviem automātiem $e_1 | e_2$.
 \begin{figure}[H]
   \centering
     \includegraphics[scale=1.5]{pictures/auto_or}
   \caption{\label{fig:auto_or}Automāts izvēlei starp diviem automātiem}
 \end{figure}
 
-Attēlā~\ref{fig:auto_asterisk} ir parādīts NGA priekš konstrukcijas $e_1 *$.
+\ref{fig:auto_asterisk} attēlā ir parādīts NGA priekš konstrukcijas $e_1 *$.
 \begin{figure}[H]
   \centering
     \includegraphics[scale=1.5]{pictures/auto_asterisk}
@@ -87,7 +87,7 @@ Attēlā~\ref{fig:auto_asterisk} ir parādīts NGA priekš konstrukcijas $e_1 *$
 
 Tālāk šie automāti tiek apvienoti vienā, un beigās tiek pievienots akceptējošais stāvoklis.
 
-Apskatīsim piemēru - izteiksmi \verb/{id} ({real} | {int}) */. Sākumā tiek izveidoti NGA izteiksmes daļām. Attēls~\ref{fig:auto_token_id} parāda NGA priekš \verb|{id}|. Attēls~\ref{fig:auto_or_ex} parāda NGA priekš daļas \verb/{real} | {int}/. Attēls~\ref{fig:auto_asterisk_ex} parāda NGA priekš \verb/({real} | {int}) */.
+Apskatīsim piemēru - izteiksmi \verb/{id} ({real} | {int}) */. Sākumā tiek izveidoti NGA izteiksmes daļām. \ref{fig:auto_token_id} attēls parāda NGA priekš \verb|{id}|. \ref{fig:auto_or_ex} attēls parāda NGA priekš daļas \verb/{real} | {int}/. \ref{fig:auto_asterisk_ex} attēls parāda NGA priekš \verb/({real} | {int}) */.
 
 \begin{figure}[H]
   \centering
@@ -107,7 +107,7 @@ Apskatīsim piemēru - izteiksmi \verb/{id} ({real} | {int}) */. Sākumā tiek i
   \caption{\label{fig:auto_asterisk_ex}Automāts izteiksmei \texttt{(\{real\} | \{int\}) *}}
 \end{figure}
 
-Tad izveidotie automāti var tikt savienoti un beigās tiem tiek pievienots akceptējošais stāvoklis (attēls~\ref{fig:auto_full_ex}).
+Tad izveidotie automāti var tikt savienoti un beigās tiem tiek pievienots akceptējošais stāvoklis (\ref{fig:auto_full_ex} attēls).
 
 \begin{figure}[H]
   \centering
@@ -130,7 +130,7 @@ Algoritms ir paņemts no~\cite{DragonBook}.
 \subparagraph{Izeja:}DGA $D$, kas ir ekvivalents $N$.
 \subparagraph{Algoritms:} Sākumā algoritms konstruē pāreju tabulu priekš $D$. Katrs $D$ stāvoklis ir $N$ stāvokļu kopa, tātad tabula tiek konstruēta tā, lai $D$ simulētu vienlaikus visas pārejas, ko var izpildīt $N$, saņemot kādu ieejas virkni. Lai automāts kļūtu determinēts, ir nepieciešams atbrīvoties no iespējas atrasties dažos stāvokļos vienlaikus. Tātad vajag atbrīvoties no $\varepsilon$-pārejām, un no daudzkārtīgām pārejām no viena stāvokļa pa vienu ieejas simbolu.
 
-Tabulā~\ref{fig:NGAoperations} var redzēt divas funkcijas, kas ir nepieciešamas NGA apstrādes izpildei. Šīs funkcijas no NGA stāvokļiem un pārejām veido jaunas stāvokļu kopas, kuras veidos DGA stāvokļus.
+\ref{fig:NGAoperations} tabulā var redzēt divas funkcijas, kas ir nepieciešamas NGA apstrādes izpildei. Šīs funkcijas no NGA stāvokļiem un pārejām veido jaunas stāvokļu kopas, kuras veidos DGA stāvokļus.
 
 \begin{table}[H]
   \caption{NGA apstaigāšanas funkcijas}
@@ -147,7 +147,7 @@ Tabulā~\ref{fig:NGAoperations} var redzēt divas funkcijas, kas ir nepieciešam
 \label{fig:NGAoperations}
 \end{table}
 
-Ir nepieciešams apstrādāt visas tādas $N$ stāvokļu kopas, kuras ir sasniedzamas, $N$ saņemot kaut kādu ieejas virkni. Indukcijas bāzes pieņēmums ir tas, ka pirms darbības uzsākšanas $N$ var atrasties jebkurā no stāvokļiem, kurus var sasniegt pārejot pa $\varepsilon$ bultiņām no $N$ sākuma stāvokļa. Ja $s_0$ ir $N$ sākuma stāvoklis, $D$ sākuma stāvoklis būs $\varepsilon-closure (set (s_0))$. Indukcijai pieņemam, ka $N$ var atrasties $T$ stāvokļu kopā pēc virknes $x$ ielasīšanas. Tad, ja $N$ ielasīs nākamo simbolu $a$, tad $N$ var pārvietoties jebkura no stāvokļiem $move (T, a)$. Taču pēc $a$ ielasīšanas var notikt vēl dažas $\varepsilon$-pārejas, tāpēc pēc virknes $xa$ ielasīšanas $N$ var atrasties jebkurā no stāvokļiem $\varepsilon-closure (move (T, a))$. Attēls~\ref{fig:det_algorithm} parāda pseido-kodu algoritmam, kā šādā veidā var tikt uzkonstruēti visi DGA stāvokļi un tā pāreju tabula.
+Ir nepieciešams apstrādāt visas tādas $N$ stāvokļu kopas, kuras ir sasniedzamas, $N$ saņemot kaut kādu ieejas virkni. Indukcijas bāzes pieņēmums ir tas, ka pirms darbības uzsākšanas $N$ var atrasties jebkurā no stāvokļiem, kurus var sasniegt pārejot pa $\varepsilon$ bultiņām no $N$ sākuma stāvokļa. Ja $s_0$ ir $N$ sākuma stāvoklis, $D$ sākuma stāvoklis būs $\varepsilon-closure (set (s_0))$. Indukcijai pieņemam, ka $N$ var atrasties $T$ stāvokļu kopā pēc virknes $x$ ielasīšanas. Tad, ja $N$ ielasīs nākamo simbolu $a$, tad $N$ var pārvietoties jebkura no stāvokļiem $move (T, a)$. Taču pēc $a$ ielasīšanas var notikt vēl dažas $\varepsilon$-pārejas, tāpēc pēc virknes $xa$ ielasīšanas $N$ var atrasties jebkurā no stāvokļiem $\varepsilon-closure (move (T, a))$. \ref{fig:det_algorithm} attēls parāda pseido-kodu algoritmam, kā šādā veidā var tikt uzkonstruēti visi DGA stāvokļi un tā pāreju tabula.
 
 Automāta $D$ sākuma stāvoklis ir $\varepsilon-closure(set(s_0))$, bet $D$ akceptējošie stāvokļi ir visas tās NGA stāvokļu kopas, kas satur vismaz vienu akceptējošu stāvokli. $Dstates$ ir jauna automāta $D$ stāvokļu saraksts un $Dtran$ ir stāvokļu pāreju tabula.
 
@@ -191,7 +191,7 @@ Minimizēšanas gaitā automāta stāvokļi tiek sadalīti grupās, ko uz doto b
 
 Pirms algoritms uzsāk darbu, stāvokļi tiek sadalīti divās grupās - akceptējošie stāvokļi un neakceptējošie stāvokļi. Šo grupu stāvokļi ir atšķirami ar tukšu virkni. Tālāk tiek pa vienai apstrādātas grupas no pašreizējā sadalījums. Katrai grupai tiek pārbaudīts, vai tās stāvokļi var tikt atšķirti ar kādu ieejas simbolu - vai kāds no ieejas simboliem noved uz divām vai vairākām dažādam stāvokļu grupām. Ja tādi simboli eksistē, tiek izveidotas jaunas grupas, tādas, ka divi stāvokļi atrodas vienā grupā tad un tikai tad, ja tie aiziet uz vienādām grupām pa vienādiem simboliem. Process ir atkārtots visām pašreizējā sadalījuma grupām, tad atkal jaunam sadalījumam, kamēr neviena no grupām vairs nevar tikt sadalīta.
 
-Attēls~\ref{fig:min_algorithm} parāda minimizēšanas algoritmu pseido-kodā.
+\ref{fig:min_algorithm} attēls parāda minimizēšanas algoritmu pseido-kodā.
 
 \begin{figure}[H]
   \begin{algorithmic}
@@ -231,7 +231,7 @@ Algoritms pēc savas būtības ir determinēšanas algoritma adaptācija. Vienī
 
 Algoritms sāk darbu apvienojot $D_1$ un $D_2$ sākuma stāvokļus. Šo stāvokļu kombinācija veido automāta $D'$ sākuma stāvokli. Tālāk algoritms apskata visas iespējamas pārejas no katra no kombinētiem stāvokļiem un apvieno to rezultātus jaunajos stāvokļos. 
 
-Apskatīsim piemēru automātu apvienošanai. Attēls~\ref{fig:auto_m_1} parāda determinētu minimālu automātu priekš regulārās izteiksmes \verb|{id}* {int}*|. Tas satur divus stāvokļus, \verb|a| un \verb|b|, kuri abi ir akceptējoši. Attēls~\ref{fig:auto_m_2}, savukārt, parāda DGA priekš izteiksmes \verb|{id} {real}* {int}|.
+Apskatīsim piemēru automātu apvienošanai. \ref{fig:auto_m_1} attēls parāda determinētu minimālu automātu priekš regulārās izteiksmes \verb|{id}* {int}*|. Tas satur divus stāvokļus, \verb|a| un \verb|b|, kuri abi ir akceptējoši. \ref{fig:auto_m_2} attēls, savukārt, parāda DGA priekš izteiksmes \verb|{id} {real}* {int}|.
 
 \begin{figure}[H]
   \centering
@@ -245,7 +245,7 @@ Apskatīsim piemēru automātu apvienošanai. Attēls~\ref{fig:auto_m_1} parāda
   \caption{\label{fig:auto_m_2}Automāts izteiksmei \texttt{\{id\} \{real\}* \{int\}}}
 \end{figure}
 
-To apvienotais automāts ir parādīts attēlā~\ref{fig:auto_merge}.
+To apvienotais automāts ir parādīts \ref{fig:auto_merge} attēlā.
 
 \begin{figure}[H]
   \centering
@@ -253,7 +253,7 @@ To apvienotais automāts ir parādīts attēlā~\ref{fig:auto_merge}.
   \caption{\label{fig:auto_merge}Automāts izteiksmju \texttt{\{id\}* \{int\}*} un \texttt{\{id\} \{real\}* \{int\}} apvienojumam}
 \end{figure}
 
-Attēls~\ref{fig:uni_algorithm} parāda apvienošanas algoritmu pseido-kodā. $s_0$ ir jaunā automāta $D'$ sākuma stāvoklis, $r_0$ ir $D_1$ sākuma stāvoklis un $t_0$ ir $D_2$ sākuma stāvoklis. $Dstates$ ir automāta $D'$ stāvokļu saraksts, $Dtran$ ir $D'$ pāreju tabula. Funkcija $move (S, t)$ atgriež tos stāvokļus, uz kuriem var nokļūt no $S$ pa daļiņu $t$. Tā kā parasti $S$ sastāv no diviem stāvokļiem $r_i$ un $t_i$, tā atgriež pārejas rezultātu no katra no tiem. Rezultāts arī var būt tikai viens stāvoklis, gadījumā, ja no kāda $r_i$ un $t_i$ neeksistē pāreja pa doto daļiņu.
+\ref{fig:uni_algorithm} attēls parāda apvienošanas algoritmu pseido-kodā. $s_0$ ir jaunā automāta $D'$ sākuma stāvoklis, $r_0$ ir $D_1$ sākuma stāvoklis un $t_0$ ir $D_2$ sākuma stāvoklis. $Dstates$ ir automāta $D'$ stāvokļu saraksts, $Dtran$ ir $D'$ pāreju tabula. Funkcija $move (S, t)$ atgriež tos stāvokļus, uz kuriem var nokļūt no $S$ pa daļiņu $t$. Tā kā parasti $S$ sastāv no diviem stāvokļiem $r_i$ un $t_i$, tā atgriež pārejas rezultātu no katra no tiem. Rezultāts arī var būt tikai viens stāvoklis, gadījumā, ja no kāda $r_i$ un $t_i$ neeksistē pāreja pa doto daļiņu.
 
 \begin{figure}[H]
   \begin{algorithmic}
@@ -330,7 +330,7 @@ Diemžēl pagaidām šī pieeja netiek implementēta ar daļiņu regulārām izt
 
 \subsubsection{Sistēmas testēšana}
 
-Prototipam tika izveidoti apmēram 20 testi, kas pārbauda to darbību iespējamās situācijās. Tabula~\ref{fig:tests} parāda konceptuālu testu sadalījumu pa grupām. Dažas grupas pārklājas, jo, piemēram, tvērumu pārbaudošie testi pārbauda arī korektas regulāro izteiksmju prioritātes.
+Prototipam tika izveidoti apmēram 20 testi, kas pārbauda to darbību iespējamās situācijās. \ref{fig:tests} tabula parāda konceptuālu testu sadalījumu pa grupām. Dažas grupas pārklājas, jo, piemēram, tvērumu pārbaudošie testi pārbauda arī korektas regulāro izteiksmju prioritātes.
 
 \begin{longtable}{|p{90pt}|p{210pt}|p{120pt}|}
 \caption{\label{fig:tests}Prototipa testu sadalījums pa grupām} \\ \hline

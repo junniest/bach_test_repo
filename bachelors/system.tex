@@ -22,7 +22,7 @@ Parsētājam jāprot aplūkot daļiņu virkni ka abpusēji saistītu sarakstu, l
 Tas ir nepieciešams, lai transformācijas sistēma varētu aizvietot transformētās virknes visā programmas daļiņu virknē.
 
 \item[Pseido-daļiņas]
-Parsētāji parasti pielieto (reducē) gramatikas likumus ielasot daļiņas no ieejas virknes. Pseido-tokens, savukārt, ir produkcijas redukcijas rezultāts. Tas tiek attēlots ka atomārs ieejas plūsmas elements, bet īstenībā attēlo kaut kādu valodas gramatikas netermināļi. Viena no pseido-daļiņām, piemēram, ir izteiksmes daļiņa - \verb|{expr}|, kas var sastāvēt no daudziem dažādiem daļinām (piem. \verb|(a+b*c)+d|).
+Parsētāji parasti pielieto (reducē) gramatikas likumus ielasot daļiņas no ieejas virknes. Pseido-daļiņa, savukārt, ir produkcijas redukcijas rezultāts. Tas tiek attēlots ka atomārs ieejas plūsmas elements, bet īstenībā attēlo kaut kādu valodas gramatikas netermināļi. Viena no pseido-daļiņām, piemēram, ir izteiksmes daļiņa - \verb|{expr}|, kas var sastāvēt no daudziem dažādiem daļinām (piem. \verb|(a+b*c)+d|).
 
 Šāda tipa daļiņas ir nepieciešamas, lai šablonu sistēma varētu meklēt sakritības ar gramatikas produkcijām, neimplementējot gramatikas atpazīšanu. Piemēram, ja ir nepieciešams aizvietot visas izteiksmes pēc vienādojuma zīmes ar tām pašām virknēm, bet ar iekavām, tad varēs lietot izteiksmes pseido-daļiņu, nemēģinot šablonā aprakstīt visas iespējamas izteiksmes variācijas.
 
@@ -37,7 +37,7 @@ Katra no vadīšanas funkcijām nāk pārī ar predikāta tipa funkciju (\emph{i
 \item[Sakrišanas funkcijas]
 Katras vadīšanas funkcijas darbības sākumā vai beigās (tas ir atkarīgs tikai no implementācijas izvēles) tiek izsaukta tā sauktā sakrišanas funkcija (\emph{match-function}). Sakrišanas funkcija ir transformācijas sistēmas saskarne, kas, zinot, kādā produkcijā uz doto brīdi strādā parsētājs, mēģina izdarīt daļiņu virknes transformāciju.
 
-Tā pārbauda, vai tā vieta tokenu virknē, uz kuru rāda parsētājs, ir derīga kaut kādai transformācijai dotās produkcijas ietvaros. Ja pārbaude ir veiksmīga, funkcija izpilda sakrītošās virknes substitūciju ar jaunu virkni un parsētāja stāvoklī uzliek norādi uz aizvietotās virknes sākumu. Gadījumā,  ja pārbaude nav veiksmīga, funkcija nemaina parsētāja stāvokli, un parsētājs var turpināt darbu nemodificētas gramatikas ietvaros.
+Tā pārbauda, vai tā vieta daliņu virknē, uz kuru rāda parsētājs, ir derīga kaut kādai transformācijai dotās produkcijas ietvaros. Ja pārbaude ir veiksmīga, funkcija izpilda sakrītošās virknes substitūciju ar jaunu virkni un parsētāja stāvoklī uzliek norādi uz aizvietotās virknes sākumu. Gadījumā,  ja pārbaude nav veiksmīga, funkcija nemaina parsētāja stāvokli, un parsētājs var turpināt darbu nemodificētas gramatikas ietvaros.
 \end{description}
 
 Ja izstrādājamās valodas parsētāja modelis atbilst aprakstītām īpašībām, tad tas var tikt veiksmīgi savienotas ar aprakstāmo transformācijas sistēmu un ļaut programmētājam ieviest modifikācijas oriģinālās valodas sintaksē.
@@ -48,7 +48,7 @@ Makro sintakse ir veidota transformācijas likuma izskatā. Transformāciju liku
 
 Makro izteiksmes strādā stingri kaut kādas produkcijas ietvaros, tāpēc makro šablona sintaksē tiek lietoti produkciju nosaukumu apzīmējumi. Tie tiks lietoti lai pārbaudītu pseido-daļiņu virknes korektumu sākotnējās gramatikas ietvaros pēc sintakses izmaiņu ieviešanas. Par tipu pārbaudi tiks runāts zemāk šajā nodaļā.
 
-Apskatīsim \textit{match} funkciju likumus, kas modificē apstrādājamās gramatikas produkcijas uzvedību. \emph{Match} makro sintakses vispārīgo formu var redzēt attēlā~\ref{fig:matchsyntax}.
+Apskatīsim \textit{match} funkciju likumus, kas modificē apstrādājamās gramatikas produkcijas uzvedību. \emph{Match} makro sintakses vispārīgo formu var redzēt \ref{fig:matchsyntax} attēlā.
 
 \begin{figure}[h!]
 \begin{verbatim}
@@ -59,7 +59,7 @@ match [\prod1] v = regexp → [\prod2] f(v)
 
 Šīs apraksts ir uztverams sekojoši. Ja produkcijas \verb|prod1| sākumā ir atrodama pseido-daļiņu virkne, kas atbilst regulārai izteiksmei \verb|regexp|, tad tai tiek nosacīti piekārtots vārds \verb|v|. Mainīgais \verb|v| ir visu atrasto daļiņu virkne, kas var tikt lietota makro labajā pusē pārveidošanas funkcijas izpildē. Tātad ja tāda virkne \verb|v| eksistē, tā tiek aizstāta ar pseido-daļiņu virkni, ko atgriezīs \verb|f(v)| un kurai ir jāatbilst gramatikas produkcijas \verb|prod2| likumiem. 
 
-Regulārā izteiksme \verb|regexp| ir vienkārša standarta regulārā izteiksme, kuras gramatika ir definēta attēlā~\ref{fig:regexpsyntax}. Pagaidām sistēmas prototipa izstrādē tiek lietota šāda minimāla sintakse, bet nepieciešamības gadījumā tā var tikt paplašināta.
+Regulārā izteiksme \verb|regexp| ir vienkārša standarta regulārā izteiksme, kuras gramatika ir definēta \ref{fig:regexpsyntax} attēlā. Pagaidām sistēmas prototipa izstrādē tiek lietota šāda minimāla sintakse, bet nepieciešamības gadījumā tā var tikt paplašināta.
 
 \begin{figure}[h!]
 \begin{verbatim}
@@ -68,12 +68,12 @@ concat-regexp   → asterisk-regexp  concat-regexp
 asterisk-regexp → unary-regexp * | unary-regexp
 unary-regexp    → pseudo-token | ( regexp )
 \end{verbatim}
-\caption{\label{fig:regexpsyntax}Regulāro izteiksmju gramatika uz pseido-tokeniem}
+\caption{\label{fig:regexpsyntax}Regulāro izteiksmju gramatika uz pseido-daļiņām}
 \end{figure}
 
-Piemēros uzskatības nolūkos \verb|v| virkne būs uzskatīta par apstaigājamu un lietota ar indeksiem, kas norāda strastās virknes elementa numuru.
+Piemēros uzskatāmības nolūkos \verb|v| virkne būs uzskatīta par apstaigājamu un lietota ar indeksiem, kas norāda atrastās virknes elementa numuru.
 
-Tagad mēs varam izveidot definētās makro sintakses korektu piemēru. Pieņemsim, ka ērtības dēļ programmētājs grib ieviest sekojošu notāciju absolūtās vērtības izrēķināšanai - \verb/|{expr}|/. Sākotnējā valodas gramatikā eksistē absolūtās vērtības funkcija izskatā \verb|abs({expr})|. Tad makro, kas parādīts attēlā~\ref{fig:matchsample1} izdarītu šo substitūciju, ļaujot programmētājam lietot ērtāku funkcijas pierakstu.
+Tagad mēs varam izveidot definētās makro sintakses korektu piemēru. Pieņemsim, ka ērtības dēļ programmētājs grib ieviest sekojošu notāciju absolūtās vērtības izrēķināšanai - \verb/|{expr}|/. Sākotnējā valodas gramatikā eksistē absolūtās vērtības funkcija izskatā \verb|abs({expr})|. Tad makro, kas parādīts \ref{fig:matchsample1} attēlā izdarītu šo substitūciju, ļaujot programmētājam lietot ērtāku funkcijas pierakstu.
 
 \begin{figure}[h!]
 \begin{verbatim}
@@ -85,7 +85,7 @@ match [{expr}] v = {|} {expr} {|}
 
 Šajā piemērā šablons \verb/{|} {expr} {|}/, strādājot \verb|{expr}| produkcijas ietvaros, atradīs sakritību ar trim daļiņām, \verb/|/, kaut kāda izteiksme, \verb/|/. Transformējot atrasto elementu sarakstu tiek veidots jauns saraksts no \verb|{id:abs}|, \verb|{(}|, atrastās izteiksmes \verb|v[1]| un \verb|{)}|. Izveidotam sarakstam jāatbilst produkcijai \verb|{expr}|.
 
-Vēl viens korektā makro piemērs: pieņemsim, ka funkcija \verb|replace| ir definēta transformāciju valodā ar trim argumentiem, un darba gaitā tā jebkurā pseido-daļiņu virknē, kas padota ka pirmais arguments, aizvieto elementus, kas sakrīt ar otro argumentu, ar trešo funkcijas argumentu. Pieņemsim, ka mums ir nepieciešams aizvietot visas funkcijas \verb|sum| izsaukšanas reizes ar tās argumentu summu. Funkcija \verb|sum| ir iespējams padot patvaļīgu argumentu skaitu, kas ir lielāks par vienu. Šādā gadījumā makro, kas parādīts attēlā~\ref{fig:matchsample2}, izpildīs nepieciešamu darbību.
+Vēl viens korektā makro piemērs: pieņemsim, ka funkcija \verb|replace| ir definēta transformāciju valodā ar trim argumentiem, un darba gaitā tā jebkurā pseido-daļiņu virknē, kas padota ka pirmais arguments, aizvieto elementus, kas sakrīt ar otro argumentu, ar trešo funkcijas argumentu. Pieņemsim, ka mums ir nepieciešams aizvietot visas funkcijas \verb|sum| izsaukšanas reizes ar tās argumentu summu. Funkcija \verb|sum| ir iespējams padot patvaļīgu argumentu skaitu, kas ir lielāks par vienu. Šādā gadījumā makro, kas parādīts \ref{fig:matchsample2} attēlā, izpildīs nepieciešamu darbību.
 
 \begin{figure}[h!]
 \begin{verbatim}
@@ -99,11 +99,11 @@ match [{expr}] v = {id:sum} {(} {expr} {,} {expr} ( {,} {expr} ) * {)}
 
 Šī nodaļa parāda sistēmas sadalīšanu uz trim neatkarīgam daļām. Pirmā no tām ir sakrišanu meklēšanas daļa. Tā daļiņu virknē atrod makro šablonu satikšanas reizes. Otrā ir atrasto virkņu apstrādes daļa. Tā pārveido sakrišanas mehānisma atrasto daļiņu virkni atbilstoši tam, kas norādīts makro labajā daļā. Trešā ir tipu pārbaudīšanas sistēma, kas statiski pārbauda, vai uzrakstītais makro var būt derīgs valodas gramatikas ietvaros. Šīs sadalījums ir tikai konceptuāls, kas ir izveidots ērtības dēļ, lai varētu apskatīt sistēmu ka atsevišķu apakšsistēmu kombināciju.
 
-Šablonu sakrišanu meklēšanas sistēma ir īsumā aprakstīta apakšnodaļā~\ref{sbsbs:sys_matches}. Sīkāk šīs apakšsistēmas īpašības un tās prototipa realizācija ir aprakstīta nodaļā~\ref{s:prototype}.
+Šablonu sakrišanu meklēšanas sistēma ir īsumā aprakstīta \ref{sbsbs:sys_matches} apakšnodaļā. Sīkāk šīs apakšsistēmas īpašības un tās prototipa realizācija ir aprakstīta \ref{s:prototype} nodaļā.
 
-Ir nepieciešams izveidot mehānismu, kas ļaus transformēt makro kreisās puses akceptētu pseido-tokenu virkni, izveidojot virkni, kas to aizvietos. Lai to izdarītu ir nepieciešama kaut kāds papildus rīks, par kuru ies runa apakšnodaļā~\ref{sbsbs:sys_language}.
+Ir nepieciešams izveidot mehānismu, kas ļaus transformēt makro kreisās puses akceptētu pseido-daļiņu virkni, izveidojot virkni, kas to aizvietos. Lai to izdarītu ir nepieciešama kaut kāds papildus rīks, par kuru ies runa \ref{sbsbs:sys_language} apakšnodaļā.
 
-Ir plānots, ka transformāciju sistēma varēs atpazīt nepareizi sastādītus makro šablonus lietojot tipu kontroli. Šīs pieejas bāzes principi ir aprakstīti apakšnodaļā~\ref{sbsbs:sys_typesystem}. Jāņem vērā tas, ka lai šī sistēma varētu tikt pielietota, izvēlētai transformāciju valodai jāpiemīt tipu secināšanas (\emph{type inference}) īpašībai.
+Ir plānots, ka transformāciju sistēma varēs atpazīt nepareizi sastādītus makro šablonus lietojot tipu kontroli. Šīs pieejas bāzes principi ir aprakstīti \ref{sbsbs:sys_typesystem} apakšnodaļā. Jāņem vērā tas, ka lai šī sistēma varētu tikt pielietota, izvēlētai transformāciju valodai jāpiemīt tipu secināšanas (\emph{type inference}) īpašībai.
 
 \subsubsection{\label{sbsbs:sys_matches}Sakrišanu meklēšana}
 
@@ -117,7 +117,7 @@ Tālāk, lai nodrošinātu visu šablonu pārbaudi vienlaikus un minimizēt mekl
 
 Cits veids, kā to varētu izpildīt, ir apvienot visus izveidotos šablonu automātus vienā determinētā galīgā automātā. Tieši šīs veids tika izvēlēts šī darba ietvaros lai pēc iespējas samazinātu laiku sakrišanu meklēšanai. Kaut arī automātu apvienošana šādā veidā ir laikietilpīga, tā samazina laika kārtu sakritību meklēšanai.
 
-Sīkāk šīs apakšsistēmas prototipa īpašības un lietotie algoritmi ir izklāsti nodaļā~\ref{s:prototype}.
+Sīkāk šīs apakšsistēmas prototipa īpašības un lietotie algoritmi ir izklāsti \ref{s:prototype} nodaļā.
 
 \subsubsection{\label{sbsbs:sys_language}Daļiņu virkņu apstrāde}
 
@@ -147,7 +147,7 @@ Lai būtu iespēja apstādināt rekursiju, šī valoda arī ļaus izpildīt arit
 
 Šī nodaļa tikai vispārīgi apraksta tipu secināšanas sistēmas ideju, tā kā uz doto brīdi tā atrodas izpētes stadijā. Tipu secināšanas ideja ir bāzēta uz Bodo Šulca rakstu par masīvu tipu izvadīšanas sistēmu ~\cite{Scholz:SACTypeSystem}.
 
-Kā bija redzams attēlā~\ref{fig:matchsyntax}, katrā makro pusē ir atrodams produkcijas nosaukums, \verb|[prod1]| un \verb|[prod2]|. Tas tiek darīts tādēļ, lai, kad dotais makro ir ielasīts, varētu izsecināt kāda tipa izejas virkni tas radīs. Abas šīs atzīmes ir rādītas tipu kontroles sistēmas dēļ.
+Kā bija redzams \ref{fig:matchsyntax} attēlā, katrā makro pusē ir atrodams produkcijas nosaukums, \verb|[prod1]| un \verb|[prod2]|. Tas tiek darīts tādēļ, lai, kad dotais makro ir ielasīts, varētu izsecināt kāda tipa izejas virkni tas radīs. Abas šīs atzīmes ir rādītas tipu kontroles sistēmas dēļ.
 
 Katrs atsevišķs makro strādā konkrētas gramatikas produkcijas ietvaros, \verb|[prod1]| dotā makro gadījumā. Tas nodrošinās to, ka katrs no makro tiks izpildīts pareizajā vietā un visas konstrukcijas tiks apstrādātas. 
 
@@ -165,7 +165,7 @@ Tomēr ir iespējams izveidot regulāro izteiksmi kas iekļaus sevī gramatikas 
 
 Ir viegli pamanīt, ka regulārās izteiksmes izveido dabisku tipu hierarhiju. Valoda, kura var tikt atpazīta ar regulāro izteiksmi $r_1$, var tikt iekļauta citas regulārās izteiksmes $r_2$ atpazītās valodā apakškopas veidā. Piemēram, regulārās izteiksmes \verb|a+| valoda ir atpazīstama arī ar regulāro izteiksmi \verb|a*|, bet \verb|a*| atpazīst vēl papildus tukšu simbolu virkni. Šādai tipu hierarhijai uz regulārām izteiksmēm eksistē arī super-tips, ko uzdod regulārā izteiksme \verb|.*| - $\top$. Ir acīmredzami, ka $\forall t_i \in R, t_i \sqsubseteq \top$, kur $R$ ir visu regulāro izteiksmju kopa.
 
-Ir svarīgi izveidot procedūru, kas ļaus izsecināt, vai $r_1 {\sqsubseteq} r_2$. Ir zināms, ka ir iespējams katrai regulārai izteiksmei uzbūvēt minimālu akceptējošu galīgu determinētu automātu\footnote{Sk. nodaļu~\ref{sbs:prot_algorithms}.}. Šīs automāts atpazīs precīzi to pašu valodu, ko atpazīst regulārā izteiksme. Tas nozīmē, ka no $r_1 \sqsubseteq r_2 \Rightarrow$ seko $min(det (r_1)) \sqsubseteq min (det (r_2))$. Diviem minimāliem automātiem $A_1$ un $A_2$, $A_1 \sqsubseteq A_2$ nozīmē, ka eksistē kaut kāds attēlojums $\Psi$ no $A_1$ stāvokļiem uz $A_2$ stāvokļiem, tāds, ka:
+Ir svarīgi izveidot procedūru, kas ļaus izsecināt, vai $r_1 {\sqsubseteq} r_2$. Ir zināms, ka ir iespējams katrai regulārai izteiksmei uzbūvēt minimālu akceptējošu galīgu determinētu automātu\footnote{Sk. \ref{sbs:prot_algorithms} nodaļu.}. Šīs automāts atpazīs precīzi to pašu valodu, ko atpazīst regulārā izteiksme. Tas nozīmē, ka no $r_1 \sqsubseteq r_2 \Rightarrow$ seko $min(det (r_1)) \sqsubseteq min (det (r_2))$. Diviem minimāliem automātiem $A_1$ un $A_2$, $A_1 \sqsubseteq A_2$ nozīmē, ka eksistē kaut kāds attēlojums $\Psi$ no $A_1$ stāvokļiem uz $A_2$ stāvokļiem, tāds, ka:
 
 \[
     Start (A_1) \to Start (A_2) \in \Psi
@@ -175,6 +175,6 @@ Ir svarīgi izveidot procedūru, kas ļaus izsecināt, vai $r_1 {\sqsubseteq} r_
     \Psi (Transition (s, e)) = Transition (\Psi (s), e)
 \]
 
-Šeit $States (x)$ apzīmē automāta $x$ stāvokļu kopu, $Edges (s)$ apzīmē pseido-tokenu kopu, kas atzīmē no stāvoļa $s$ izejošās šķautnes. $Transition(s, t)$, savukārt, apzīmē stāvokli, kas ir sasniedzams no $s$ pārejot pa šķautni, kas atzīmēta ar pseido-tokenu $t$.
+Šeit $States (x)$ apzīmē automāta $x$ stāvokļu kopu, $Edges (s)$ apzīmē pseido-daļiņu kopu, kas atzīmē no stāvoļa $s$ izejošās šķautnes. $Transition(s, t)$, savukārt, apzīmē stāvokli, kas ir sasniedzams no $s$ pārejot pa šķautni, kas atzīmēta ar pseido-daļiņu $t$.
 
 Otra svarīga īpašība, kas tiks lietota šajā tipu pārbaudīšanas sistēmā ir tas, ka transformāciju valoda ir statiski tipizējama un tā satur ļoti ierobežotu iebūvēto funkciju skaitu. Katrai no šīm iebūvētām funkcijām ir iespējams izveidot to aprakstošo regulāro izteiksmi. Piemēram, regulārā izteiksme funkcijai $head (x)$ var tikt izveidota ka visu to šķautņu kopa, kas iziet no $x$ aprakstošā automāta sākuma stāvokļa. Kad šablona apstrāde tiek sākta, var arī izsecināt iespējamo virknes garumu intervālu un izvadīt brīdinājumus gadījumā, ja ir iespējama funkcijas $head (x)$ izsaukšana no tukšā saraksta. Visām pārējām iebūvētām funkcijām -- $cons$, $tail$ -- ir iespējams analoģiski izsecināt rezultātu tipus. Tā kā visas darbības saraksta apstrādē tiek izpildītas ar iebūvēto funkciju un rekursijas palīdzību, arī to rezultātiem ir iespējams izrēķināt vispārīgus tipus.
