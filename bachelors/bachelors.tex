@@ -9,7 +9,7 @@
 \usepackage{hyperref}
 \usepackage{bacdarbs}
 \usepackage{mathtools}
-\usepackage{fixlatvian}
+\usepackage{fixlatvian-vj}
 \usepackage{mathtools}
 \usepackage{graphicx}
 \usepackage{algpseudocode}
@@ -19,10 +19,14 @@
 \usepackage[final]{pdfpages}
 \usepackage{listings}
 
-\usepackage[intoc]{nomencl}\makenomenclature
-\setlength{\nomlabelwidth}{.01\hsize}\renewcommand{\nomlabel}[1]{\hfil\textbf{#1} --}
+\usepackage[intoc]{nomencl}
+\makenomenclature
 
-\let\stdabstract\abstract{}\renewcommand\abstract{\newpage\stdabstract}
+\setlength{\nomlabelwidth}{.01\hsize}
+\renewcommand{\nomlabel}[1]{\hfil\textbf{#1} --}
+
+\let\stdabstract\abstract{}
+\renewcommand\abstract{\newpage\stdabstract}
 
 \newcommand{\fixme}[1]{\vskip 5mm\noindent{\bf FIXME}: {\it #1}}
 
@@ -95,10 +99,13 @@ Uz doto brīdi sistēmas izveide ir pamatota uz konkrētas parsētāju arhi
 
 Makro sistēmas izstrāde tiks turpināta un aprakstītai sistēmai tiks implementēts reāls lietojams piemērs. Ir saprotams, ka pilnās sistēmas izstrādes gaitā tiks atrastas jaunas problēmas, kuras būs jārisinā, un jaunas idejas, ko varēs pielietot realizācijā. Neskatoties uz to, pirmais izstrādes solis ir izdarīts un ir cerams, ka šādas transformācijas sistēmas projekts būs noderīgs programmēšanas valodu izstrādes, kompilatoru optimizēšanas un makro valodu jomās.
 
-\appendixtitleon\appendixtitletocon
+\appendixtitleon
+\appendixtitletocon
 
 \begin{appendices}
-\newcommand{\ap}[1]{\section{#1}}\renewcommand\thesection{\arabic{section} }
+
+\newcommand{\ap}[1]{\section{#1}}
+\renewcommand\thesection{\arabic{section}}
 
 \ap{Prototipa koda piemērs}
 \label{ap:code_sample}
@@ -120,15 +127,17 @@ Makro sistēmas izstrāde tiks turpināta un aprakstītai sistēmai tiks impl
 
 \lstinputlisting[language=Python, firstline=229, lastline=250, basicstyle=\footnotesize, numbers=left, numberstyle=\scriptsize, stepnumber=1, numbersep=2pt, morekeywords={filter, None, len, self}]{../test-nfa.py}
 
-\ap{Sistēmas apraksta melnraksts}\label{ap:draft}
+\ap{Sistēmas apraksta melnraksts}
+\label{ap:draft}
 
 Šī pielikumā ir atrodams melnraksts rakstam, kas tika izveidots darba izstrādes laika. Raksts pagaidām netika publicēts un atrodas izveidošanas posmā.
 
 \includepdf[pages={-}]{paper/paper.pdf}
-\end{appendices}
+
+\end{appendices}
 
 \bibliography{bachelors}{}
-\bibliographystyle{plain}
+\bibliographystyle{abbrv}
 
 \reglapa
 
