@@ -129,7 +129,7 @@ Parasti analīzes process notiek sekojoši (sk. \ref{fig:usual_compiling} attēl
 \begin{figure}[H]
   \centering
     \includegraphics[scale=0.4]{pictures/usual_compiling}
-  \caption{\label{fig:usual_compiling}Analīzes process}
+  \caption{\label{fig:usual_compiling}Kompilācijas process}
 \end{figure}
 
 Transformācijas sistēma tiek veidota tā, lai tā apstrādātu daļiņu virknes paralēli ar parsētāju (sk. \ref{fig:ransform_compiling} attēlu). Tās funkcijas tiks izsauktas pirms vai pēc parsētāja produkcijas reducēšanas. Ja transformācija tiks izsaukta pirms parsētāja darbības, tad transformācijas likumiem lielāka prioritāte nekā standartiem produkcijas reducēšanas likumiem, piem. būs iespēja pārdefinēt izteiksmes \verb|a+b| uzvedību ar transformācijas palīdzību. Ja transformācija tiks izsaukta pēc parsētāja darbības, tas nozīmēs, ka nekāds standarta parsēšanas likums nav piemērots dotās virknes apstrādei un ir nepieciešamas modifikācijas. Transformācijas sistēmas uzvedības nav atkarīga no izvēlētās pieejas.
@@ -137,7 +137,7 @@ Transformācijas sistēma tiek veidota tā, lai tā apstrādātu daļiņu virkne
 \begin{figure}[H]
   \centering
     \includegraphics[scale=0.4]{pictures/transform_compiling}
-  \caption{\label{fig:ransform_compiling}Analīzes process ar transformācijas sistēmu}
+  \caption{\label{fig:ransform_compiling}Kompilācijas process ar iekļauto transformācijas sistēmu}
 \end{figure}
 
 Zemāk ir parādīti makro ielasīšanas soļi, kas notiek, kad parsētājs sastopas ar makro ierakstu programmas pirmkodā:
