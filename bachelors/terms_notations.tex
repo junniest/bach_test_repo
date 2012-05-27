@@ -1,55 +1,55 @@
-%\section*{Apzīmējumu saraksts}
-%\addcontentsline{toc}{section}{Apzīmējumu saraksts}
+\section*{Apzīmējumu saraksts}
+\addcontentsline{toc}{section}{Apzīmējumu saraksts}
 
-\printnomenclature
+\begin{description}
+\item[$\varepsilon$-pārejas (angl. \emph{$\varepsilon$-transitions})]
+Nedeterminētā galīgā automātā pārejas, kas ļauj pārvietoties uz jaunu stāvokļi neielasot nekādu ieejas simbolu.
 
-\nomenclature{Priekšprocesors (angl. \emph{preprocessor})}{
-Priekšprocesora ir programma, kas ielasa datus un izvada tos tādā formā, kurā tie ir piemēroti citas programmas ieejai. Parasti priekšprocesori apstrādā programmu pirmkodu, ko pēc tam apstrādā kompilators. Apstrādes veids un rezultāts ir atkarīgs no priekšprocesora veida, parasti tie ir spējīgi tikai izpildīt teksta apstrādi, kamēr daži pēc iespējām ir līdzīgi programmēšanas valodām.}
+\item[Abstraktais Sintaktiskais Koks, ASK (angl. \emph{Abstract Syntax Tree, AST})]
+Abstraktais sintaktiskais koks (ASK) ir pirmkoda sintaktiskās struktūras kokveida reprezentācija. Katrs koka mezgls apzīmē kādu konstrukciju no pirmkoda. Parsētājs apstrādājot kodu veido ASK, kas tālāk tiek kompilēts izpildāmā kodā.
 
-\nomenclature{Regulārā izteiksme (angl. \emph{regular expression})}{
-Regulārās izteiksmes ir formāla valoda apakšvirkņu meklēšanai. Regulārā izteiksme ir šablons, kas sastāv no simboliem un speciāliem meta-simboliem, kas uzdod meklēšanas kritērijus. Populārākie meta-simboli ir \texttt{*}, \texttt{+}, \texttt{?}, \texttt{|}. Pieņemsim, ka \texttt{s} un \texttt{r} ir regulārās izteiksmes. Tad \texttt{s*} meklēs sakrišanu pa izteiksmi \texttt{s} 0 vai vairākas reizes, \texttt{s+} meklēs \texttt{s} vienu vai vairākas reizes, \texttt{s?} meklēs \texttt{s} 0 vai 1 reizi, bet  \texttt{s|r} meklēs sakrišanu ar vienu no izteiksmēm \texttt{s} vai \texttt{r}.}
+\item[Atpakaļnorāde (angl. \emph{backreference})]
+Regulārā izteiksmē grupām, kuras veido izteiksmes daļas, kas ir ievietotas iekavās, parasti tiek piekārtotas atpakaļnorādes, kas glabā atbilstošu atrastās virknes daļu.
 
-\nomenclature{Atpakaļnorāde (angl. \emph{backreference})}{
-Regulārā izteiksmē grupām, kuras veido izteiksmes daļas, kas ir ievietotas iekavās, parasti tiek piekārtotas atpakaļnorādes, kas glabā atbilstošu atrastās virknes daļu.}
+\item[Daļiņa (angl. \emph{token})]
+Pirmajā kompilēšanas stadijā leksiskais analizators sadala tekstu leksēmās un katrai leksēmai izveido speciālu objektu, kas tiek saukts par daļiņu. Katrai daļiņai ir glabāts tips, ko lieto parsētājs lai izveidotu programmas struktūru. Ja ir nepieciešams, tiek glabāta arī daļiņas vērtība, parasti tā ir norāde uz elementu simbolu tabulā, kurā glabājas informācija par daļiņu - tips, nosaukums. Simbolu tabula ir nepieciešama tālākā kompilatora darbā lai paveiktu semantisko analīzi un koda ģenerāciju. Šajā darbā vienkāršības dēļ tiks uzskatīts, ka daļiņas vērtības ailītē glabāsies leksēma, ko nolasīja analizators. Tālāk daļiņas tiks apzīmētas šādā veidā: \texttt{\{token-type:token\_value\}}
 
-\nomenclature{Meta-programmēšana (angl. \emph{meta-programming})}{
-Meta-programmēšana ir tādu programmu rakstīšana, kas strādā ar savu vai citu programmas izejas kodu kā ar ieejas datiem, vai arī izpilda daļu no darba kompilēšanas laikā, nevis darba laikā.}
+\item[Determinēts galīgs automāts (angl. \emph{deterministic finite automaton})]
+Determinēts galīgs automāts ir automāts, kas akceptē vai neakceptē galīgu elementu virknes un apstrādā tos ar vienu iespējamo ceļu pa automāta stāvokļiem katrai ieejas virknei.~\cite{Hopcroft:IntroAutomataTheory}
 
-\nomenclature{Tvērums (angl. \emph{scope})}{
-Programmas tvērums ir programmas bloks, kurā definēti mainīgo nosaukumi vai citi identifikatori ir lietojami, un kurā to definīcijas ir spēkā. Programmas ietvaros tvērumus ievieš, piemēram, figūriekavas, C/C++ gadījumā. Tad mainīgie, kas tiek definēti vispārīgā programmas tvērumā (globālie mainīgie), var tikt pārdefinēti mazākajā tvērumā (piemēram, kaut kādas funkcijas vai klases robežās) un iegūst lielāku prioritāti. Tas nozīmē, ka ja tiek lietots šāds pārdefinēts mainīgais, tas tiek uzskatīts par lokālu un tiek lietots lokāli līdz specifiska tvēruma beigām, nemainot globālā mainīgā vērtību.}
+\item[Leksiskais analizators (angl. \emph{lexer})]
+Programma vai funkcija, kas izpilda leksisko analīzi - ieejas simbolu virknes pārveidošana daļiņu virknē. Bieži sastāv no vienīgas funkcijas, ko izsauc parsētājs, un kas atgriež nākamo daļiņu no ieejas simbolu virknes.
 
-\nomenclature{Tipu izsecināšana (angl. \emph{type inference})}{
-Programmēšanas valodās tipu izsecināšana ir iespēja loģiski izvest kādas izteiksmes tipu.}
+\item[Leksēma (angl. \emph{lexeme})]
+Leksēma ir nozīmīgo simbolu secība pirmkodā, piemēram, burtu vai ciparu virkne, kas veido vienu elementu ieejas tekstā.
 
-\nomenclature{Nedeterminēts galīgs automāts (angl. \emph{nondeterministic finite automaton})}{
-Nedeterminēts galīgs automāts ir automāts, kas akceptē vai neakceptē galīgu elementu virknes, toties var vienlaikus atrasties dažos stāvokļos.~\cite{Hopcroft:IntroAutomataTheory}}
+\item[LL-parsētājs (angl. \emph{LL-parser})]
+Parsētājs kontekstneatkarīgu gramatiku apakškopas parsēšanai, kas analizē ieejas virkni no kreisās puses uz labo un veido kreiso atvasinājumu (angl. \emph{derivation}) gramatikas produkciju reducēšanai.
 
-\nomenclature{$\varepsilon$-pārejas (angl. \emph{$\varepsilon$-transitions})}{
-Nedeterminētā galīgā automātā pārejas, kas ļauj pārvietoties uz jaunu stāvokļi neielasot nekādu ieejas simbolu.}
+\item[Meta-programmēšana (angl. \emph{meta-programming})]
+Meta-programmēšana ir tādu programmu rakstīšana, kas strādā ar savu vai citu programmas izejas kodu kā ar ieejas datiem, vai arī izpilda daļu no darba kompilēšanas laikā, nevis darba laikā.
 
-\nomenclature{Determinēts galīgs automāts (angl. \emph{deterministic finite automaton})}{
-Determinēts galīgs automāts ir automāts, kas akceptē vai neakceptē galīgu elementu virknes un apstrādā tos ar vienu iespējamo ceļu pa automāta stāvokļiem katrai ieejas virknei.~\cite{Hopcroft:IntroAutomataTheory}}
+\item[Nedeterminēts galīgs automāts (angl. \emph{nondeterministic finite automaton})]
+Nedeterminēts galīgs automāts ir automāts, kas akceptē vai neakceptē galīgu elementu virknes, toties var vienlaikus atrasties dažos stāvokļos.~\cite{Hopcroft:IntroAutomataTheory}
 
-\nomenclature{Leksiskais analizators (angl. \emph{lexer})}{
-Programma vai funkcija, kas izpilda leksisko analīzi - ieejas simbolu virknes pārveidošana daļiņu virknē. Bieži sastāv no vienīgas funkcijas, ko izsauc parsētājs, un kas atgriež nākamo daļiņu no ieejas simbolu virknes.}
+\item[Parsētājs (angl. \emph{parser})]
+Programma vai funkcija kas izpilda sintaktisko analīzi - programmas daļiņu virknes sastatīšana attiecībā pret programmēšanas valodas gramatiku. Parsētāja darba rezultāts parasti ir ASK.
 
-\nomenclature{Leksēma (angl. \emph{lexeme})}{
-Leksēma ir nozīmīgo simbolu secība pirmkodā, piemēram, burtu vai ciparu virkne, kas veido vienu elementu ieejas tekstā.}
+\item[Priekšprocesors (angl. \emph{preprocessor})]
+Priekšprocesora ir programma, kas ielasa datus un izvada tos tādā formā, kurā tie ir piemēroti citas programmas ieejai. Parasti priekšprocesori apstrādā programmu pirmkodu, ko pēc tam apstrādā kompilators. Apstrādes veids un rezultāts ir atkarīgs no priekšprocesora veida, parasti tie ir spējīgi tikai izpildīt teksta apstrādi, kamēr daži pēc iespējām ir līdzīgi programmēšanas valodām.
 
-\nomenclature{Daļiņa (angl. \emph{token})}{
-Pirmajā kompilēšanas stadijā leksiskais analizators sadala tekstu leksēmās un katrai leksēmai izveido speciālu objektu, kas tiek saukts par daļiņu. Katrai daļiņai ir glabāts tips, ko lieto parsētājs lai izveidotu programmas struktūru. Ja ir nepieciešams, tiek glabāta arī daļiņas vērtība, parasti tā ir norāde uz elementu simbolu tabulā, kurā glabājas informācija par daļiņu - tips, nosaukums. Simbolu tabula ir nepieciešama tālākā kompilatora darbā lai paveiktu semantisko analīzi un koda ģenerāciju. Šajā darbā vienkāršības dēļ tiks uzskatīts, ka daļiņas vērtības ailītē glabāsies leksēma, ko nolasīja analizators. Tālāk daļiņas tiks apzīmētas šādā veidā: \texttt{\{token-type:token\_value\}}}
+\item[Pseido-daļiņa (angl. \emph{pseudo-token})]
+Pseido-daļiņa ir citu daļiņu grupa, kas tiek aizvietota ar vienu objektu. Tas var tikt darīts, lai vienreiz noparsētu izteiksmi nevajadzētu apstrādāt vēlreiz. Daļiņu virkņu aizvietošana ar pseido-daļiņām notiek gramatikas produkcijas reducēšanas brīdī. Kad, piemēram, daļiņu virkne \texttt{\{id:a\} \{+\} \{id:b\}} tiek atpazīta ka derīga izteiksme gramatikas ietvaros, tā var tikt aizvietota ar pseido-daļiņu \texttt{\{expr:a + b\}}
 
-\nomenclature{Pseido-daļiņa (angl. \emph{pseudo-token})}{
-Pseido-daļiņa ir citu daļiņu grupa, kas tiek aizvietota ar vienu objektu. Tas var tikt darīts, lai vienreiz noparsētu izteiksmi nevajadzētu apstrādāt vēlreiz. Daļiņu virkņu aizvietošana ar pseido-daļiņām notiek gramatikas produkcijas reducēšanas brīdī. Kad, piemēram, daļiņu virkne \texttt{\{id:a\} \{+\} \{id:b\}} tiek atpazīta ka derīga izteiksme gramatikas ietvaros, tā var tikt aizvietota ar pseido-daļiņu \texttt{\{expr:a + b\}}}
+\item[Regulārā izteiksme (angl. \emph{regular expression})]
+Regulārās izteiksmes ir formāla valoda apakšvirkņu meklēšanai. Regulārā izteiksme ir šablons, kas sastāv no simboliem un speciāliem meta-simboliem, kas uzdod meklēšanas kritērijus. Populārākie meta-simboli ir \texttt{*}, \texttt{+}, \texttt{?},    \texttt{|}. Pieņemsim, ka \texttt{s} un \texttt{r} ir regulārās izteiksmes. Tad \texttt{s*} meklēs sakrišanu pa izteiksmi \texttt{s} 0 vai vairākas reizes, \texttt{s+} meklēs \texttt{s} vienu vai vairākas reizes, \texttt{s?} meklēs \texttt{s} 0 vai 1 reizi, bet  \texttt{s | r} meklēs sakrišanu ar vienu no izteiksmēm \texttt{s} vai \texttt{r}.
 
-\nomenclature{Abstraktais Sintaktiskais Koks, ASK (angl. \emph{Abstract Syntax Tree, AST})}{
-Abstraktais sintaktiskais koks (ASK) ir pirmkoda sintaktiskās struktūras kokveida reprezentācija. Katrs koka mezgls apzīmē kādu konstrukciju no pirmkoda. Parsētājs apstrādājot kodu veido ASK, kas tālāk tiek kompilēts izpildāmā kodā.}
+\item[Rekursīvā nokāpšana (angl. \emph{recursive descent})]
+Pirmkoda parsēšanas metode, kur katras valodas gramatikas produkcijas apstrāde ir realizēta ar parsēšanas funkciju. Funkcijas izsauc viena otru un pakāpeniski no kreisās puses uz labo ielasa pirmkoda daļiņas.
 
-\nomenclature{Rekursīvā nokāpšana (angl. \emph{recursive descent})}{
-Pirmkoda parsēšanas metode, kur katras valodas gramatikas produkcijas apstrāde ir realizēta ar parsēšanas funkciju. Funkcijas izsauc viena otru un pakāpeniski no kreisās puses uz labo ielasa pirmkoda daļiņas.}
+\item[Tipu izsecināšana (angl. \emph{type inference})]
+Programmēšanas valodās tipu izsecināšana ir iespēja loģiski izvest kādas izteiksmes tipu.
 
-\nomenclature{Parsētājs (angl. \emph{parser})}{
-Programma vai funkcija kas izpilda sintaktisko analīzi - programmas daļiņu virknes sastatīšana attiecībā pret programmēšanas valodas gramatiku. Parsētāja darba rezultāts parasti ir ASK.}
-
-\nomenclature{LL-parsētājs (angl. \emph{LL-parser})}{
-Parsētājs kontekstneatkarīgu gramatiku apakškopas parsēšanai, kas analizē ieejas virkni no kreisās puses uz labo un veido kreiso atvasinājumu (angl. \emph{derivation}) gramatikas produkciju reducēšanai.}
+\item[Tvērums (angl. \emph{scope})]
+Programmas tvērums ir programmas bloks, kurā definēti mainīgo nosaukumi vai citi identifikatori ir lietojami, un kurā to definīcijas ir spēkā. Programmas ietvaros tvērumus ievieš, piemēram, figūriekavas, C/C++ gadījumā. Tad mainīgie, kas tiek definēti vispārīgā programmas tvērumā (globālie mainīgie), var tikt pārdefinēti mazākajā tvērumā (piemēram, kaut kādas funkcijas vai klases robežās) un iegūst lielāku prioritāti. Tas nozīmē, ka ja tiek lietots šāds pārdefinēts mainīgais, tas tiek uzskatīts par lokālu un tiek lietots lokāli līdz specifiska tvēruma beigām, nemainot globālā mainīgā vērtību.
+\end{description}

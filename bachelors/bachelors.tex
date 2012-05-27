@@ -9,7 +9,7 @@
 \usepackage{hyperref}
 \usepackage{bacdarbs}
 \usepackage{mathtools}
-\usepackage{fixlatvian-vj}
+\usepackage{fixlatvian}
 \usepackage{mathtools}
 \usepackage{graphicx}
 \usepackage{algpseudocode}
@@ -18,12 +18,6 @@
 \usepackage{appendix}
 \usepackage[final]{pdfpages}
 \usepackage{listings}
-
-\usepackage[intoc]{nomencl}
-\makenomenclature
-
-\setlength{\nomlabelwidth}{.01\hsize}
-\renewcommand{\nomlabel}[1]{\hfil\textbf{#1} --}
 
 \let\stdabstract\abstract{}
 \renewcommand\abstract{\newpage\stdabstract}
@@ -99,6 +93,14 @@ Uz doto brīdi sistēmas izveide ir pamatota uz konkrētas parsētāju arhi
 
 Makro sistēmas izstrāde tiks turpināta un aprakstītai sistēmai tiks implementēts reāls lietojams piemērs. Ir saprotams, ka pilnās sistēmas izstrādes gaitā tiks atrastas jaunas problēmas, kuras būs jārisinā, un jaunas idejas, ko varēs pielietot realizācijā. Neskatoties uz to, pirmais izstrādes solis ir izdarīts un ir cerams, ka šādas transformācijas sistēmas projekts būs noderīgs programmēšanas valodu izstrādes, kompilatoru optimizēšanas un makro valodu jomās.
 
+\section*{Pateicības}
+\addcontentsline{toc}{section}{Pateicības}
+
+Liels paldies Guntim Arnicānam un Artjomam Šinkarovam par atsaucību, pacietību un palīdzību bakalaura darba izstrādē.
+
+\bibliography{bachelors}{}
+\bibliographystyle{plain}
+
 \appendixtitleon
 \appendixtitletocon
 
@@ -135,9 +137,6 @@ Makro sistēmas izstrāde tiks turpināta un aprakstītai sistēmai tiks impl
 \includepdf[pages={-}]{paper/paper.pdf}
 
 \end{appendices}
-
-\bibliography{bachelors}{}
-\bibliographystyle{abbrv}
 
 \reglapa
 
