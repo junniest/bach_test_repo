@@ -66,7 +66,7 @@ Apskatītie piemēri parāda, ka ne kross-kompilēšana, ne programmas teksta pr
 
 Lai padarītu transformācijas sistēmu vairāk spēcīgu un ļautu atpazīt vispārīgākas virknes, tās makro šabloni tiks paplašināti ar regulāro izteiksmju elementiem. Šādi šabloni ļaus meklēt plašākas sakritības joprojām saglabājot iespēju kontrolēt pārveidojumu korektumu.
 
-Šādā sistēma dos iespēju paplašināt valodu lietotāja līmenī, nevis kompilatora līmenī. Tas arī dos lielāku brīvību izmaiņu izstrādē, jo lietotājiem būs iespēja veidot makro bibliotēkas ar jaunām iespējām un izplatīt tās. Tā varēs būt pielāgota dažādām valodām, jo tā strādās ārpus paplašināmās valodas gramatikas.
+Šāda sistēma dos iespēju paplašināt valodu lietotāja līmenī, nevis kompilatora līmenī. Tas arī dos lielāku brīvību izmaiņu izstrādē, jo lietotājiem būs iespēja veidot makro bibliotēkas ar jaunām iespējām un izplatīt tās. Tā varēs būt pielāgota dažādām valodām, jo tā strādās ārpus paplašināmās valodas gramatikas.
 
 \subsection{\label{sbs:sys_approach}Sistēmas koncepcija}
 
@@ -100,7 +100,7 @@ Sistēmas sakrišanas meklēšanas mehānisms tiks izstrādāts ņemot vērā pr
 
 \subsubsection{\label{sbsbs:sys_dynamicgrammars}Dinamiskas gramatikas}
 
-Ir dažādas iespējas lietot dinamiskas gramatikas. Viena no tām ir pieeja, kas ļauj kontrolēt tā saukto programmas statisko semantiku. Par statisko semantiku dažādos rakstos sauc kontekst-atkarīgu sintaksi, piemēram, attiecību starp mainīgā deklarāciju un tā lietošanas ierobežojumiem. Otra pieeja ļauj pa tiešo pievienot un dzēst valodas gramatikas likumus. Tā kā aprakstāmā sistēma nav piemērota statiskai tipu pārbaudei, bet gan tiek veidota lai varētu paplašināt eksistējošo sintaksi, tā pēc būtības ir tuvāka otrai dinamisko gramatiku lietošanas pieejai.
+Ir dažādas iespējas lietot dinamiskas gramatikas. Viena no tām ir pieeja, kas ļauj kontrolēt programmas kontekst-atkarīgu sintaksi, piemēram, attiecību starp mainīgā deklarāciju un tā lietošanas ierobežojumiem. Otra pieeja ļauj pa tiešo pievienot un dzēst valodas gramatikas likumus. Tā kā aprakstāmā sistēma nav piemērota statiskai tipu pārbaudei, bet gan tiek veidota lai varētu paplašināt eksistējošo sintaksi, tā pēc būtības ir tuvāka otrai dinamisko gramatiku lietošanas pieejai.
 
 Transformācijas sistēma neļaus pievienot un dzēst apstrādātās valodas gramatikas likumus. Toties tā ļaus pievienot jaunas konstrukcijas pievienojot likumus makro sistēmas kopai. Katrs makro pievieno jaunu daļiņu virknes pārrakstīšanas likumu, kas tiek izpildīts, kad tiek atrasta sakrišana ar makro specificētu šablonu. Tātad jaunās konstrukcijas daļiņu virknē ir atpazītas un pārrakstītas uz konstrukcijām, kuras jau ir zināmas parsētājam.
 
@@ -132,7 +132,7 @@ Parasti analīzes process notiek sekojoši (sk. \ref{fig:usual_compiling} attēl
   \caption{\label{fig:usual_compiling}Kompilācijas process}
 \end{figure}
 
-Transformācijas sistēma tiek veidota tā, lai tā apstrādātu daļiņu virknes paralēli ar parsētāju (sk. \ref{fig:ransform_compiling} attēlu). Tās funkcijas tiks izsauktas pirms vai pēc parsētāja produkcijas reducēšanas. Ja transformācija tiks izsaukta pirms parsētāja darbības, tad transformācijas likumiem lielāka prioritāte nekā standartiem produkcijas reducēšanas likumiem, piem. būs iespēja pārdefinēt izteiksmes \verb|a+b| uzvedību ar transformācijas palīdzību. Ja transformācija tiks izsaukta pēc parsētāja darbības, tas nozīmēs, ka nekāds standarta parsēšanas likums nav piemērots dotās virknes apstrādei un ir nepieciešamas modifikācijas. Transformācijas sistēmas uzvedības nav atkarīga no izvēlētās pieejas.
+Transformācijas sistēma tiek veidota tā, lai tā apstrādātu daļiņu virknes paralēli ar parsētāju (sk. \ref{fig:ransform_compiling} attēlu). Tās funkcijas tiks izsauktas pirms vai pēc parsētāja produkcijas reducēšanas. Ja transformācija tiks izsaukta pirms parsētāja darbības, tad transformācijas likumiem lielāka prioritāte nekā standartiem produkcijas reducēšanas likumiem, piem. būs iespēja pārdefinēt izteiksmes \verb|a+b| uzvedību ar transformācijas palīdzību. Ja transformācija tiks izsaukta pēc parsētāja darbības, tas nozīmēs, ka nekāds standarta parsēšanas likums nav piemērots dotās virknes apstrādei un ir nepieciešamas modifikācijas. Transformācijas sistēmas uzvedība nav atkarīga no izvēlētās pieejas.
 
 \begin{figure}[H]
   \centering
@@ -140,7 +140,7 @@ Transformācijas sistēma tiek veidota tā, lai tā apstrādātu daļiņu virkne
   \caption{\label{fig:ransform_compiling}Kompilācijas process ar iekļauto transformācijas sistēmu}
 \end{figure}
 
-Zemāk ir parādīti makro ielasīšanas soļi, kas notiek, kad parsētājs sastopas ar makro ierakstu programmas pirmkodā:
+Zemāk ir parādīti makro ielasīšanas soļi, kas notiek, kad parsētājs sastop makro ierakstu programmas pirmkodā:
 \begin{enumerate}
 \item
 Parsētājs atpazīst makro sākšanos un izsauc transformācijas sistēmu.

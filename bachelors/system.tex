@@ -3,7 +3,7 @@
 
 Šī nodaļa piedāvā uzbūves principus sistēmai, kura ļaus lietotājam dinamiski paplašināt programmēšanas valodas iespējas ar makro valodas palīdzību. Šī makro valoda ļaus izveidot jaunas valodas konstrukcijas no jau eksistējošām vienībām. Sistēma ir projektēta ka virsbūve parsētājam un strādās paralēli ar parsētāju, analizējot kodu ar ierakstītiem makro un apstrādājot daļiņu virknes.
 
-Šīs sistēmas mērķis ir piedāvāt iespēju modificēt valodas sintaksi programmas rakstīšanas gaitā, nebojājot jau eksistējošo konstrukciju darbu. Sistēma ieviesīs valodas pašmodificēšanos lietojot konstrukciju aizvietošanu, kas vienlaikus nodrošinās valodas sintakses paplašināšanu un sākotnējās valodas gramatikas nemainīgumu. Tajā pašā laikā sistēma būs samērā stabila pret kļūdām dēļ tā, ka tā strādās tikai konkrētās gramatikas produkcijas ietvaros un tā, ka tā pārbaudīs tipus jaunizveidotām virknēm\footnote{Ir saprotams, ka sistēmu, kas pavisam nepielaiž kļūdu parādīšanos ir gandrīz neiespējami izveidot.}.
+Šīs sistēmas mērķis ir piedāvāt iespēju modificēt valodas sintaksi programmas rakstīšanas gaitā, nebojājot jau eksistējošo konstrukciju darbu. Sistēma ieviesīs valodas pašmodificēšanos lietojot konstrukciju aizvietošanu, kas vienlaikus nodrošinās valodas sintakses paplašināšanu un sākotnējās valodas gramatikas nemainīgumu. Tajā pašā laikā sistēma būs samērā stabila pret kļūdām dēļ tā, ka tā strādās tikai konkrētās gramatikas produkcijas ietvaros un tā, ka tā pārbaudīs tipus jaunizveidotām virknēm.
 
 Sistēmas raksturīga īpašība ir tas, ka tā nav piesaistīta konkrētai programmēšanas valodai. Tā varēs tikt pielāgota un integrēta dažādu valodu parsētājos, kuru arhitektūra atbilst dažiem nosacījumiem. Tai nav ierobežojumu pret atbalstāmo sintaksi, jo tā strādās ārpus valodas gramatikas un tai būs nepieciešamas minimālas zināšanas par tās sintaksi un semantiku, kas tiks iegūtas lietojot parsētāja saskarni.
 
@@ -22,14 +22,14 @@ Parsētājam jāprot aplūkot daļiņu virkni ka abpusēji saistītu sarakstu, l
 Tas ir nepieciešams, lai transformācijas sistēma varētu aizvietot transformētās virknes visā programmas daļiņu virknē.
 
 \item[Pseido-daļiņas]
-Parsētāji parasti pielieto (reducē) gramatikas likumus ielasot daļiņas no ieejas virknes. Pseido-daļiņa, savukārt, ir produkcijas redukcijas rezultāts. Tas tiek attēlots ka atomārs ieejas plūsmas elements, bet īstenībā attēlo kaut kādu valodas gramatikas netermināļi. Viena no pseido-daļiņām, piemēram, ir izteiksmes daļiņa - \verb|{expr}|, kas var sastāvēt no daudziem dažādiem daļinām (piem. \verb|(a+b*c)+d|).
+Parsētāji parasti pielieto (reducē) gramatikas likumus ielasot daļiņas no ieejas virknes. Pseido-daļiņa, savukārt, ir produkcijas redukcijas rezultāts. Tas tiek attēlots ka atomārs ieejas plūsmas elements, bet īstenībā attēlo kaut kādu valodas gramatikas netermināļi. Viena no pseido-daļiņām, piemēram, ir izteiksmes daļiņa - \verb|{expr}|, kas var sastāvēt no daudzām dažādām daļinām (piem. \verb|(a+b*c)+d|).
 
 Šāda tipa daļiņas ir nepieciešamas, lai šablonu sistēma varētu meklēt sakritības ar gramatikas produkcijām, neimplementējot gramatikas atpazīšanu. Piemēram, ja ir nepieciešams aizvietot visas izteiksmes pēc vienādojuma zīmes ar tām pašām virknēm, bet ar iekavām, tad varēs lietot izteiksmes pseido-daļiņu, nemēģinot šablonā aprakstīt visas iespējamas izteiksmes variācijas.
 
 \item[Vadīšanas funkcijas]
 Sistēmas darbam ir prasīts, lai katra gramatikas produkcija tiktu reprezentēta ar vadīšanas funkciju (\emph{handle-function}). Vadīšanas funkcijām jāeksistē katrai gramatikas produkcijai, un katra šāda tipa funkcija prot atpazīt un reducēt produkciju.
 
-Ir svarīgi atzīmēt, ka šim funkcijām būs blakus efekti - daļiņu virknes pārveidošana pēc likuma reducēšanas, tāpēc to izsaukšanas kārtība ir svarīga. Šīs funkcijas atkārto gramatikas struktūru, tas ir ja gramatikas produkcija A ir atkarīga no produkcijas B, A-vadīšanas funkcija izsauks B-vadīšanas funkciju.
+Ir svarīgi atzīmēt, ka šim funkcijām būs blakusefekti -- daļiņu virknes pārveidošana pēc likuma reducēšanas, tāpēc to izsaukšanas kārtība ir svarīga. Šīs funkcijas atkārto gramatikas struktūru, tas ir ja gramatikas produkcija A ir atkarīga no produkcijas B, A-vadīšanas funkcija izsauks B-vadīšanas funkciju.
 
 \item[Ir-funkcijas]
 Katra no vadīšanas funkcijām nāk pārī ar predikāta tipa funkciju (\emph{is-function}). Šīs funkcijas pārbauda, vai tajā vietā daļiņu virknē, uz kura dotajā brīdī atrodas parsētāja radītājs, ir atrodama apakšvirkne, kas atbilst dotās produkcijas aprakstam. Šādu funkciju pielietošana nemaina parsētāja stāvokli.
@@ -44,7 +44,7 @@ Ja izstrādājamās valodas parsētāja modelis atbilst aprakstītām īpašīb�
 
 \subsection{\label{sbs:sys_macrosyntax}Makro sistēmas sintakse}
 
-Makro sintakse ir veidota transformācijas likuma izskatā. Transformāciju likums sastāv no divām daļām. Kreisā puse satur šablonu un produkciju, kurā tā var tikt pielietota. Makro šablons satur regulāro izteiksmi no daļiņām un pseido-daļiņām, kas tālāk tiek izmantota lai atrast virkni, kurai šī transformācija ir pielietojama. Labā makro puse satur transformācijas funkciju un produkciju, kurai ir jāatbilst transformācijas rezultātam.
+Makro sintakse ir veidota transformācijas likuma izskatā. Transformāciju likums sastāv no divām daļām. Kreisā puse satur šablonu un produkciju, kurā tas var tikt pielietots. Makro šablons satur regulāro izteiksmi no daļiņām un pseido-daļiņām, kas tālāk tiek izmantota lai atrast virkni, kurai šī transformācija ir pielietojama. Labā makro puse satur transformācijas funkciju un produkciju, kurai ir jāatbilst transformācijas rezultātam.
 
 Makro izteiksmes strādā stingri kaut kādas produkcijas ietvaros, tāpēc makro šablona sintaksē tiek lietoti produkciju nosaukumu apzīmējumi. Tie tiks lietoti lai pārbaudītu pseido-daļiņu virknes korektumu sākotnējās gramatikas ietvaros pēc sintakses izmaiņu ieviešanas. Par tipu pārbaudi tiks runāts zemāk šajā nodaļā.
 
@@ -85,7 +85,7 @@ match [{expr}] v = {|} {expr} {|}
 
 Šajā piemērā šablons \verb/{|} {expr} {|}/, strādājot \verb|{expr}| produkcijas ietvaros, atradīs sakritību ar trim daļiņām, \verb/|/, kaut kāda izteiksme, \verb/|/. Transformējot atrasto elementu sarakstu tiek veidots jauns saraksts no \verb|{id:abs}|, \verb|{(}|, atrastās izteiksmes \verb|v[1]| un \verb|{)}|. Izveidotam sarakstam jāatbilst produkcijai \verb|{expr}|.
 
-Vēl viens korektā makro piemērs: pieņemsim, ka funkcija \verb|replace| ir definēta transformāciju valodā ar trim argumentiem, un darba gaitā tā jebkurā pseido-daļiņu virknē, kas padota ka pirmais arguments, aizvieto elementus, kas sakrīt ar otro argumentu, ar trešo funkcijas argumentu. Pieņemsim, ka mums ir nepieciešams aizvietot visas funkcijas \verb|sum| izsaukšanas reizes ar tās argumentu summu. Funkcija \verb|sum| ir iespējams padot patvaļīgu argumentu skaitu, kas ir lielāks par vienu. Šādā gadījumā makro, kas parādīts \ref{fig:matchsample2} attēlā, izpildīs nepieciešamu darbību.
+Vēl viens korektā makro piemērs: pieņemsim, ka funkcija \verb|replace| ir definēta transformāciju valodā ar trim argumentiem, un darba gaitā tā jebkurā pseido-daļiņu virknē, kas padota ka pirmais arguments, aizvieto elementus, kas sakrīt ar otro argumentu, ar trešo funkcijas argumentu. Pieņemsim, ka ir nepieciešams aizvietot visas funkcijas \verb|sum| izsaukšanas reizes ar tās argumentu summu. Funkcija \verb|sum| ir iespējams padot patvaļīgu argumentu skaitu, kas ir lielāks par vienu. Šādā gadījumā makro, kas parādīts \ref{fig:matchsample2} attēlā, izpildīs nepieciešamu darbību.
 
 \begin{figure}[h!]
 \begin{verbatim}
@@ -127,9 +127,7 @@ Tātad lai varētu izpildīt atrastās daļiņu virknes apstrādi un modificēš
 
 Šīm uzdevumam varētu lietot kādu no imperatīvam programmēšanas valodām, piemēram C, vienkārši izveidojot saskarni ar tās valodas kompilatoru. Bet vairākumam šādu valodu nav statiskas tipu secināšanas iespējas. Statiska tipu secināšana C valodas gadījumā ir neiespējama rādītāju mainīgo dēļ, kuru tipus nevar izrēķināt parsēšanas laikā. Lai varētu ieviest statiskās tipu izsecināšanas iespējas, vajadzēs ierobežot valodas iespējas, tātad modificēt eksistējošo kompilatoru vai kaut kā citādāk ierobežot pieejamo konstrukciju kopu.
 
-Uzdevumam arī varētu lietot kādu no jau eksistējošām funkcionālām valodām ar tipu secināšanas īpašību. Tad nebūs nepieciešamības veidot savu valodu pilnīgi no jauna. Bet tas nozīmēs, ka būs rūpīgi jāizpēta izvēlētās valodas sintaksi, kas var būt pārāk grūti.
-
-Varētu lietot arī vienu no jau eksistējošām funkcionālām valodām ar tipu secināšanas īpašību, kas piemīt vairākumam funkcionālo valodu. Vēl viena ērtā funkcionālo valodu īpašība ir tas, ka tās funkcijām nepiemīt blakusefekti, tātad to izpilde nevarēs samainīt eksistējošos datus. Valoda, kuras funkcijām ir blakusefekti, varētu sabojāta parsētāja darbu.
+Varētu lietot arī vienu no jau eksistējošām funkcionālām valodām ar tipu secināšanas īpašību, kas piemīt vairākumam funkcionālo valodu. Vēl viena ērtā funkcionālo valodu īpašība ir tas, ka tās funkcijām nepiemīt blakusefekti, tātad to izpilde nevarēs samainīt eksistējošos datus. Valoda, kuras funkcijām ir blakusefekti, varētu sabojāta parsētāja darbu. Tomēr eksistējošās valodas lietošana nozīmēs, ka būs rūpīgi jāizpēta izvēlētās valodas tipu sistēmu.
 
 Šīs sistēmas implementācijā tika izvēlēts izveidot minimalistisku funkcionālu valodu, kura būs statiski tipizējama. Tātad visiem šīs valodas mainīgajiem varēs izsecināt piederību pie tipa un pie kaut kāda virstipa, kas tiks lietots lai nodrošināt transformāciju korektumu. Funkcionālā pieeja nodrošina arī to, ka apstrādes funkcijām nepiemīt blakusefekti, kas varētu samainīt eksistējošos datus. Apstrādes sistēmas mērķis ir ļaut izveidot atrasto daļiņu permutācijas ar kādiem papildinājumiem nepieciešamības gadījumā.
 
@@ -140,8 +138,6 @@ Lai būtu iespēja apstādināt rekursiju, šī valoda arī ļaus izpildīt arit
 Tiek plānots, ka šī valoda arī ļaus nepieciešamības gadījumā izpildīt daļēju novērtējumu izteiksmēm. Tas nozīmē, ka valodai jāsatur saskarne, kas ļaus piekļūt pie daļiņas vērtības. Šim mērķim ir domāta funkcija \verb|value|, kas ir pielietojama pseido-daļiņām ar skaitlisku vērtību, piemēram, lai dabūt skaitli \verb|5| no pseido-daļiņas \verb|{int:5}|. Valoda arī ļaus izveidot jaunas daļiņas ar izrēķinātu vērtību.
 
 Funkcija \verb|type|, savukārt, ļaus pārbaudīt daļiņu tipu, kas var būt nepieciešams transformācijas procesā, piemēram, lai atpazīt kādu operatoru.
-
-Lai būtu iespēja apstādināt rekursiju, šī valoda arī ļaus izpildīt aritmētiskās operācijas ar veseliem skaitļiem. Tas dos iespēju izveidot skaitītājus un izveidot rekursijas izejas nosacījumus.
 
 \subsubsection{\label{sbsbs:sys_typesystem}Tipu sistēma}
 

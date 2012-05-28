@@ -31,7 +31,7 @@ Lisp makro apstrādes spējas ir ļoti specifiskas tieši šai valodai. Tas var 
 
 Lisp ļauj pievienot valodai jaunus atslēgas vārdus, bet neļauj veidot jaunus operatorus ne infiksā, ne postfiksā formā. Visām jaunām konstrukcijām joprojām jābūt prefiksa notācijā un to argumentiem saraksta formā.
 
-Visas iegūtās konstrukcijas joprojām būs tīri funkcionālas, ar Lisp-specifisku sintaksi, t.i. nebūs iespējas izveidot moduļa pierakstu \verb/|a|/. Lisp sintakse ir grūti saprotama cilvēkasm, kas nepazīst valodu programmēšanas līmenī, t.i. ja nestrādāja ar to jau iepriekš. Ar Lisp makro sistēmu nav iespējams izveidot sintaksi, kas būtu lasāma un saprotāma cilvēkam kas neprogrammē.
+Visas iegūtās konstrukcijas joprojām būs tīri funkcionālas, ar Lisp-specifisku sintaksi, t.i. nebūs iespējas izveidot moduļa pierakstu \verb/|a|/. Lisp sintakse ir grūti saprotama cilvēkam, kas nepazīst valodu programmēšanas līmenī, t.i. ja nestrādāja ar to jau iepriekš. Ar Lisp makro sistēmu nav iespējams izveidot sintaksi, kas būtu lasāma un saprotāma cilvēkam kas neprogrammē.
 
 Plašāka informācija par Lisp un tās makro sistēmu ir atrodama, starp citiem avotiem, grāmatā \cite{Seibel:PracticalCommonLisp}.
 
@@ -57,7 +57,7 @@ Viena no svarīgākām Nemerle pazīmēm ir tas, ka tai ir raksturīga ļoti aug
 
 Nemerle makro sistēma dod iespēju ģenerēt bieži atkārtojāmo kodu bez programmētāja piepūles. Tas statiskā tipizācija ļauj kompilatoram izpildīt statiskas ģenerētā koda pārbaudes kompilācijas laikā. Tas kopumā dod iespēju programmatiski ģenerēt pārbaudāmu un tipu korektu kodu.
 
-Nemerle realizētā makro sistēma ir ļoti līdzīga aprakstītai transformāciju sistēmai, kaut arī tā ir ļoti spēcīga un ļauj izpildīt daļēju novērtēšanu, tā ir ļoti atkarīga no valodas specifikas. Tā kā Nemerle ir statiski tipizēta, tā dod iespēju kompilatoram pārbaudīt kompilēto kodu, nevis ķert tipu kļūdas programmas izpildes laikā. Diemžēl plaši lietojamas valodas ne vienmēr ir statiski tipizējamas (piem. C/C++, Python), un šāda pieeja nebūs realizējama vairākumam valodu. 
+Nemerle realizētā makro sistēma ir ļoti līdzīga aprakstītai transformāciju sistēmai, bet kaut arī tā ir ļoti spēcīga un ļauj izpildīt daļēju novērtēšanu, tā ir ļoti atkarīga no valodas specifikas. Tā kā Nemerle ir statiski tipizēta, tā dod iespēju kompilatoram pārbaudīt kompilēto kodu, nevis ķert tipu kļūdas programmas izpildes laikā. Diemžēl plaši lietojamas valodas ne vienmēr ir statiski tipizējamas (piem. C/C++, Python), un šāda pieeja nebūs realizējama vairākumam valodu. 
 
 Plašāka informācija par Nemerle valodu un makro sistēmas īpatnībām ir atrodama Nemerle mājaslapā \cite{NemerleWiki}.
 
